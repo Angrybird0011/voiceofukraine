@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Voice of Ukraine</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   ГОЛОС УКРАЇНИ · VOICE OF UKRAINE
+   Main Stylesheet — Editorial Magazine Aesthetic
+   ============================================================ */
+
+:root {
+  --blue:        #1a4d8f;
+  --blue-dark:   #0d2d5a;
+  --blue-mid:    #2563a8;
+  --blue-light:  #dbeafe;
+  --yellow:      #f5c518;
+  --yellow-dark: #d4a800;
+  --yellow-light:#fef9c3;
+  --red:         #dc2626;
+  --green:       #059669;
+  --text:        #111827;
+  --text-mid:    #374151;
+  --text-muted:  #6b7280;
+  --bg:          #fafaf8;
+  --surface:     #ffffff;
+  --border:      #e5e7eb;
+  --radius:      12px;
+  --shadow:      0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg:   0 12px 48px rgba(0,0,0,0.14);
+  --nav-h:       70px;
+  --font-serif:  'Playfair Display', Georgia, serif;
+  --font-body:   'Source Serif 4', Georgia, serif;
+  --font-mono:   'JetBrains Mono', monospace;
+}
+
+/* ── RESET ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text);
+       line-height: 1.65; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+input, select, textarea { font: inherit; }
+
+/* ── UTILITY ─────────────────────────────────────────── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.hidden { display: none !important; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  border-left: 3px solid var(--yellow);
+  padding-left: 10px;
+  margin-bottom: 28px;
+  display: inline-block;
+}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn { display: inline-flex; align-items: center; justify-content: center;
+       gap: 8px; border-radius: 7px; font-family: var(--font-mono);
+       font-size: 0.82rem; letter-spacing: 0.04em; cursor: pointer;
+       transition: all 0.2s; white-space: nowrap; }
+.btn-primary { background: var(--blue); color: #fff; padding: 11px 24px; border: 2px solid var(--blue); }
+.btn-primary:hover { background: var(--blue-dark); border-color: var(--blue-dark); transform: translateY(-1px); }
+.btn-yellow  { background: var(--yellow); color: var(--blue-dark); padding: 13px 28px; border: 2px solid var(--yellow); font-weight:600;}
+.btn-yellow:hover  { background: var(--yellow-dark); border-color: var(--yellow-dark); transform: translateY(-2px); }
+.btn-ghost   { background: transparent; color: var(--text-mid); padding: 10px 22px; border: 1.5px solid var(--border); }
+.btn-ghost:hover   { border-color: var(--blue); color: var(--blue); }
+.btn-full { width: 100%; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+
+/* ── NAV ─────────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--nav-h);
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+.nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+.nav-inner { display: flex; align-items: center; gap: 8px; height: 100%;
+             max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.nav-logo { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 900;
+            display: flex; align-items: baseline; gap: 2px; flex-shrink:0; }
+.logo-ua { color: var(--blue); }
+.logo-en { color: var(--yellow-dark); font-style: italic; }
+.nav-links { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.nav-link { padding: 7px 14px; border-radius: 6px; font-family: var(--font-mono);
+            font-size: 0.78rem; letter-spacing: 0.04em; color: var(--text-muted);
+            transition: all 0.2s; }
+.nav-link:hover, .nav-link.active { color: var(--blue); background: var(--blue-light); }
+.lang-toggle { display: flex; gap: 2px; margin: 0 10px; }
+.lang-btn { padding: 4px 10px; border-radius: 4px; font-family: var(--font-mono);
+            font-size: 0.7rem; color: var(--text-muted); transition: all 0.2s; }
+.lang-btn.active { background: var(--blue); color: #fff; }
+.nav-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; margin-left: 8px; }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--text);
+                  border-radius: 2px; transition: 0.3s; }
+.mobile-menu { display: none; flex-direction: column; padding: 12px 20px 16px;
+               background: #fff; border-top: 1px solid var(--border); gap: 2px; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { padding: 10px 12px; border-radius: 6px; font-family: var(--font-mono);
+                 font-size: 0.82rem; color: var(--text-mid); }
+.mobile-menu a:hover { background: var(--blue-light); color: var(--blue); }
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  background: var(--blue-dark);
+  display: flex; align-items: center;
+  position: relative; overflow: hidden;
+  padding-top: var(--nav-h);
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 55%, rgba(37,99,168,0.5) 0%, transparent 65%),
+    radial-gradient(ellipse at 78% 20%, rgba(245,197,24,0.12) 0%, transparent 50%);
+}
+.hero-flag-stripe {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
+  background: linear-gradient(to right, #005BBB 50%, #FFD700 50%);
+}
+.hero-content {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto;
+  padding: 80px 24px 100px;
+  text-align: center;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--yellow);
+  margin-bottom: 20px;
+  opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+}
+.hero-h1 {
+  font-family: var(--font-serif); font-size: clamp(3.2rem, 8vw, 6.5rem);
+  font-weight: 900; color: #fff; line-height: 1.0; margin-bottom: 24px;
+  opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+}
+.hero-h1 .thin { font-weight: 300; font-style: italic; font-size: 0.52em;
+                 display: block; color: rgba(255,255,255,0.65); }
+.hero-h1 .grad { background: linear-gradient(90deg,#fff,var(--yellow));
+                 -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                 background-clip: text; }
+.hero-sub { font-size: 1.1rem; color: rgba(255,255,255,0.72); max-width: 560px;
+            margin: 0 auto 36px;
+            opacity: 0; animation: fadeUp 0.8s 0.6s forwards; }
+.hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+            opacity: 0; animation: fadeUp 0.8s 0.8s forwards; }
+.hero-stats { display: flex; align-items: center; justify-content: center; gap: 28px;
+              margin-top: 56px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.12);
+              opacity: 0; animation: fadeUp 0.8s 1s forwards; }
+.stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.stat-n { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--yellow); }
+.stat-l { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em;
+          text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.stat-div { width: 1px; height: 36px; background: rgba(255,255,255,0.15); }
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ── ARTICLES SECTION ─────────────────────────────────── */
+.articles-wrap { padding: 72px 0; }
+.articles-header { display: flex; align-items: flex-start; justify-content: space-between;
+                   flex-wrap: wrap; gap: 16px; margin-bottom: 32px; }
+.filter-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn { padding: 6px 16px; border-radius: 20px; border: 1.5px solid var(--border);
+              font-family: var(--font-mono); font-size: 0.73rem; color: var(--text-muted);
+              background: var(--surface); transition: all 0.2s; cursor: pointer; }
+.filter-btn.active, .filter-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* Featured article */
+.featured-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.2s; margin-bottom: 32px;
+}
+.featured-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.fc-meta { display: flex; align-items: center; gap: 14px; padding: 28px 36px 0; flex-wrap: wrap; }
+.fc-title { font-family: var(--font-serif); font-size: clamp(1.5rem,2.8vw,2.2rem);
+            font-weight: 700; line-height: 1.25; padding: 16px 36px 0; }
+.fc-excerpt { padding: 12px 36px 0; color: var(--text-mid); font-size: 1.02rem;
+              max-width: 740px; }
+.fc-author { display: flex; align-items: center; gap: 12px; padding: 18px 36px;
+             border-top: 1px solid var(--border); margin-top: 16px; }
+.fc-author strong { display: block; font-weight: 600; font-size: 0.9rem; }
+.fc-author span { font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono); }
+
+/* Blur gate */
+.blur-gate { position: relative; overflow: hidden; }
+.blur-para { padding: 12px 36px; color: var(--text-mid); line-height: 1.72; }
+.blur-para.blurred { filter: blur(5px); user-select: none; pointer-events: none; }
+.blur-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 260px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.9) 40%, #fff 68%);
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 20px;
+}
+.blur-cta-box {
+  text-align: center; background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 22px 28px; max-width: 400px; width: 90%;
+}
+.blur-cta-box .lock { font-size: 1.8rem; margin-bottom: 8px; }
+.blur-cta-box h3 { font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 6px; }
+.blur-cta-box p  { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+.blur-cta-box .already { margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+.blur-cta-box .already a { color: var(--blue); }
+
+/* Article grid */
+.article-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+.a-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; cursor: pointer; transition: box-shadow 0.25s, transform 0.2s;
+          display: flex; flex-direction: column; }
+.a-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.a-card.hidden { display: none; }
+.a-card-img { height: 130px; display: flex; align-items: center; justify-content: center;
+              font-size: 2.8rem; position: relative; }
+.a-card-body { padding: 18px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.a-card-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.a-card-title { font-family: var(--font-serif); font-size: 1.05rem; font-weight: 700;
+                line-height: 1.35; }
+.a-card-preview { font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; }
+.a-blur-bar { display: flex; align-items: center; gap: 7px; padding: 9px 12px;
+              background: var(--yellow-light); border-radius: 6px; font-family: var(--font-mono);
+              font-size: 0.7rem; color: #7a5c00; margin-top: auto; }
+.a-footer { display: flex; align-items: center; gap: 8px; padding-top: 12px;
+            border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--text-muted);
+            font-family: var(--font-mono); }
+.a-footer .rt { margin-left: auto; }
+
+/* Badges */
+.badge { display: inline-block; padding: 3px 9px; border-radius: 4px; font-family: var(--font-mono);
+         font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.badge-frontlines { background:#fee2e2; color:#7f1d1d; }
+.badge-culture    { background:#dbeafe; color:#1e3a8a; }
+.badge-diaspora   { background:#f3e8ff; color:#581c87; }
+.badge-rebuild    { background:#d1fae5; color:#065f46; }
+.badge-future     { background:#fef3c7; color:#78350f; }
+
+/* Avatars */
+.avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-mono); font-weight: 500; color: #fff; flex-shrink: 0; }
+.avatar-md { width:40px; height:40px; font-size:0.75rem; }
+.avatar-sm { width:30px; height:30px; font-size:0.65rem; }
+
+/* Load more */
+.load-more { text-align: center; margin-top: 48px; }
+
+/* ── CTA BAND ─────────────────────────────────────────── */
+.cta-band { background: var(--blue-dark); padding: 64px 0; }
+.cta-inner { display: flex; align-items: center; justify-content: space-between;
+             gap: 32px; flex-wrap: wrap; }
+.cta-text h2 { font-family: var(--font-serif); font-size: clamp(1.5rem,3vw,2rem);
+               color: #fff; margin-bottom: 8px; }
+.cta-text p { color: rgba(255,255,255,0.6); font-size: 0.92rem; }
+
+/* ── FOOTER ──────────────────────────────────────────── */
+.footer { background: var(--blue-dark); border-top: 1px solid rgba(255,255,255,0.08);
+          padding: 60px 0 28px; color: rgba(255,255,255,0.65); }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+               gap: 48px; margin-bottom: 44px; }
+.footer-brand p { font-size: 0.88rem; color: rgba(255,255,255,0.5); max-width: 240px;
+                  margin: 14px 0; line-height: 1.65; }
+.footer-brand .flag { font-size: 1.8rem; }
+.footer-links h4 { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em;
+                   text-transform: uppercase; color: var(--yellow); margin-bottom: 14px; }
+.footer-links a { display: block; font-size: 0.86rem; color: rgba(255,255,255,0.5);
+                  margin-bottom: 9px; transition: color 0.2s; }
+.footer-links a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 22px;
+                 display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+                 font-family: var(--font-mono); font-size: 0.72rem;
+                 color: rgba(255,255,255,0.3); }
+
+/* ── FORMS (shared) ──────────────────────────────────── */
+.form-page { min-height: 100vh; background: linear-gradient(135deg, var(--blue-dark), #0a1a35);
+             display: flex; align-items: center; justify-content: center;
+             padding: calc(var(--nav-h) + 30px) 20px 50px; }
+.form-card { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-lg);
+             padding: 44px 40px; width: 100%; max-width: 520px; }
+.form-card.wide { max-width: 700px; }
+.form-header { text-align: center; margin-bottom: 32px; }
+.form-header .fh-icon { font-size: 2.4rem; margin-bottom: 14px; }
+.form-header h1 { font-family: var(--font-serif); font-size: 1.85rem; font-weight: 700;
+                  margin-bottom: 7px; }
+.form-header p { font-size: 0.9rem; color: var(--text-muted); }
+.fgroup { margin-bottom: 18px; }
+.fgroup label { display: block; font-family: var(--font-mono); font-size: 0.72rem;
+                letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-mid);
+                margin-bottom: 7px; }
+.fgroup label .opt { font-size: 0.65rem; color: var(--text-muted); text-transform: none;
+                     letter-spacing: 0; margin-left: 6px; }
+.fgroup input, .fgroup select, .fgroup textarea {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 0.94rem; color: var(--text); background: var(--bg); outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.fgroup input:focus, .fgroup select:focus, .fgroup textarea:focus {
+  border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,77,143,0.1);
+}
+.fgroup input.err-field { border-color: var(--red); }
+.ferr { font-family: var(--font-mono); font-size: 0.7rem; color: var(--red); margin-top: 4px; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.otp-row { display: flex; gap: 8px; }
+.otp-row input { flex: 1; }
+.otp-send-btn { padding: 0 14px; background: var(--blue-light); color: var(--blue);
+                border: 1.5px solid var(--blue); border-radius: 8px; font-family: var(--font-mono);
+                font-size: 0.72rem; white-space: nowrap; transition: all 0.2s; cursor: pointer; }
+.otp-send-btn:hover { background: var(--blue); color: #fff; }
+.otp-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+/* 6-digit OTP input boxes */
+.otp-digits { display: flex; gap: 8px; justify-content: center; margin: 12px 0; }
+.otp-d { width: 48px; height: 56px; border: 2px solid var(--border); border-radius: 9px;
+         font-family: var(--font-mono); font-size: 1.4rem; font-weight: 600;
+         text-align: center; outline: none; background: var(--bg);
+         transition: border-color 0.2s, box-shadow 0.2s; }
+.otp-d:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,77,143,0.14); }
+.otp-d.filled { border-color: var(--blue); background: var(--blue-light); }
+.otp-verified { display: none; align-items: center; gap: 6px; justify-content: center;
+                font-family: var(--font-mono); font-size: 0.75rem; color: var(--green); }
+.otp-verified.show { display: flex; }
+.resend-btn { background: none; border: none; font-family: var(--font-mono); font-size: 0.75rem;
+              color: var(--blue); text-decoration: underline; cursor: pointer; display: block;
+              margin: 6px auto; }
+.resend-btn:disabled { color: var(--text-muted); text-decoration: none; cursor: default; }
+/* Steps */
+.steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 30px; }
+.step-w { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.step-c { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border);
+          background: var(--bg); display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+          color: var(--text-muted); transition: all 0.3s; }
+.step-c.active { border-color: var(--blue); background: var(--blue); color: #fff; }
+.step-c.done   { border-color: var(--green); background: var(--green); color: #fff; }
+.step-l { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted); text-align: center; }
+.step-line { width: 44px; height: 2px; background: var(--border); margin-bottom: 16px; }
+.step-line.done { background: var(--green); }
+.progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 26px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(to right, var(--blue), var(--yellow));
+                 border-radius: 2px; transition: width 0.4s; }
+/* Toggle checkbox rows */
+.check-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+             background: var(--yellow-light); border: 1px solid #fde68a; border-radius: 8px;
+             margin-bottom: 16px; cursor: pointer; }
+.check-row input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--blue);
+                                   cursor: pointer; flex-shrink: 0; }
+.check-row label { font-size: 0.86rem; color: var(--text-mid); cursor: pointer; flex: 1; }
+.check-row .pill { font-family: var(--font-mono); font-size: 0.62rem; background: var(--blue);
+                   color: #fff; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; }
+.info-tip { background: var(--blue-light); border: 1px solid #bfdbfe; border-radius: 8px;
+            padding: 11px 14px; font-size: 0.82rem; color: var(--blue-dark);
+            display: flex; gap: 9px; align-items: flex-start; margin-bottom: 14px; }
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.form-note { text-align: center; margin-top: 18px; font-family: var(--font-mono);
+             font-size: 0.75rem; color: var(--text-muted); }
+.form-note a { color: var(--blue); }
+/* Success */
+.success-wrap { text-align: center; padding: 16px 0; }
+.success-wrap .s-icon { font-size: 4rem; margin-bottom: 16px; }
+.success-wrap h2 { font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 10px; }
+.success-wrap p { color: var(--text-muted); margin-bottom: 22px; }
+
+/* ── PAGE HEADER ─────────────────────────────────────── */
+.page-hero { background: var(--blue-dark); padding: calc(var(--nav-h) + 60px) 24px 60px;
+             text-align: center; }
+.page-hero h1 { font-family: var(--font-serif); font-size: clamp(2rem,5vw,3rem);
+                font-weight: 900; color: #fff; margin-bottom: 12px; }
+.page-hero p { color: rgba(255,255,255,0.68); font-size: 1.02rem; }
+
+/* ── ABOUT ────────────────────────────────────────────── */
+.about-section { padding: 72px 0; }
+.about-section.alt { background: var(--surface); }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.about-text h2 { font-family: var(--font-serif); font-size: 1.9rem; font-weight: 700;
+                 margin-bottom: 16px; }
+.about-text p { color: var(--text-mid); line-height: 1.78; margin-bottom: 12px; font-size: 0.98rem; }
+.about-text blockquote { border-left: 3px solid var(--yellow); padding-left: 18px;
+                          font-style: italic; color: var(--text-mid); margin: 22px 0; }
+.about-visual { border-radius: 16px; overflow: hidden; min-height: 280px;
+                display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+.values-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; }
+.val-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 22px; }
+.val-card .vi { font-size: 1.7rem; margin-bottom: 10px; }
+.val-card h3 { font-family: var(--font-serif); font-size: 1rem; margin-bottom: 6px; }
+.val-card p  { font-size: 0.83rem; color: var(--text-muted); }
+.team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+.team-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+             padding: 26px; text-align: center; box-shadow: var(--shadow); }
+.team-card .ta { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 12px;
+                 display: flex; align-items: center; justify-content: center;
+                 font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; color: #fff; }
+.team-card h3 { font-family: var(--font-serif); font-size: 1.02rem; margin-bottom: 3px; }
+.team-card .role { font-family: var(--font-mono); font-size: 0.68rem; color: var(--blue);
+                   letter-spacing: 0.08em; margin-bottom: 8px; }
+.team-card p { font-size: 0.82rem; color: var(--text-muted); }
+
+/* ── CONTACT ──────────────────────────────────────────── */
+.contact-wrap { padding: 72px 0; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; }
+.contact-info h2 { font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 14px; }
+.contact-info > p { color: var(--text-muted); margin-bottom: 28px; line-height: 1.7; font-size: 0.95rem; }
+.c-item { display: flex; gap: 13px; margin-bottom: 18px; }
+.c-item .ci { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+.c-item h4 { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em;
+             text-transform: uppercase; color: var(--blue); margin-bottom: 3px; }
+.c-item p, .c-item a { font-size: 0.9rem; color: var(--text-mid); }
+.secure-tip { background: var(--yellow-light); border: 1px solid #fde68a; border-radius: var(--radius);
+              padding: 16px 18px; margin-top: 24px; }
+.secure-tip h4 { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em;
+                 text-transform: uppercase; color: #7a5c00; margin-bottom: 5px; }
+.secure-tip p  { font-size: 0.84rem; color: var(--text-mid); }
+.char-count { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);
+              text-align: right; margin-top: 3px; }
+
+/* ── ADMIN ────────────────────────────────────────────── */
+.admin-page { padding-top: var(--nav-h); min-height: 100vh; background: #f1f5f9; }
+.admin-header { background: var(--blue-dark); padding: 28px 32px; display: flex;
+                align-items: center; justify-content: space-between; }
+.admin-header h1 { font-family: var(--font-serif); font-size: 1.5rem; color: #fff; }
+.admin-header .tag { font-family: var(--font-mono); font-size: 0.7rem; color: var(--yellow); }
+.admin-body { padding: 32px; max-width: 1400px; margin: 0 auto; }
+.admin-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-bottom: 32px; }
+.as-card { background: #fff; border-radius: var(--radius); padding: 22px 24px;
+           box-shadow: var(--shadow); }
+.as-card .as-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+                     text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+.as-card .as-num { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--blue); }
+.as-card .as-sub { font-size: 0.78rem; color: var(--green); margin-top: 3px; }
+.admin-table-wrap { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.admin-table-head { padding: 18px 24px; border-bottom: 1px solid var(--border);
+                    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.admin-table-head h2 { font-family: var(--font-serif); font-size: 1.15rem; }
+.admin-search { padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 7px;
+                font-family: var(--font-mono); font-size: 0.78rem; outline: none; width: 220px; }
+.admin-search:focus { border-color: var(--blue); }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: #f8fafc; padding: 11px 16px; text-align: left;
+           font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+           text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.85rem;
+           color: var(--text-mid); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f8fafc; }
+.status-pill { display: inline-block; padding: 2px 8px; border-radius: 4px;
+               font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; }
+.status-verified   { background: #d1fae5; color: #065f46; }
+.status-pending    { background: #fef3c7; color: #78350f; }
+.admin-actions { display: flex; gap: 6px; }
+.admin-btn { padding: 5px 11px; border-radius: 5px; font-family: var(--font-mono);
+             font-size: 0.68rem; cursor: pointer; border: none; transition: 0.2s; }
+.admin-btn-view { background: var(--blue-light); color: var(--blue); }
+.admin-btn-del  { background: #fee2e2; color: var(--red); }
+.admin-btn-view:hover { background: var(--blue); color: #fff; }
+.admin-btn-del:hover  { background: var(--red); color: #fff; }
+/* Modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+                  display: flex; align-items: center; justify-content: center; z-index: 9000; padding: 20px; }
+.modal-backdrop.hidden { display: none; }
+.modal { background: #fff; border-radius: 14px; max-width: 540px; width: 100%; padding: 32px;
+         box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+.modal h3 { font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 18px; }
+.modal-row { display: flex; gap: 10px; margin-bottom: 12px; padding-bottom: 12px;
+             border-bottom: 1px solid var(--border); }
+.modal-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.modal-row .mk { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase;
+                 letter-spacing: 0.08em; color: var(--text-muted); width: 110px; flex-shrink: 0; padding-top: 2px; }
+.modal-row .mv { font-size: 0.88rem; color: var(--text); word-break: break-all; }
+.modal-close { margin-top: 20px; }
+
+/* ── ARTICLE READER ──────────────────────────────────── */
+.article-page { padding-top: var(--nav-h); }
+.article-hero { background: var(--blue-dark); padding: 60px 24px; }
+.article-hero .badge { margin-bottom: 14px; }
+.article-hero h1 { font-family: var(--font-serif); font-size: clamp(1.8rem,4vw,3rem);
+                   font-weight: 700; color: #fff; max-width: 800px; margin: 0 auto 16px; line-height: 1.25; }
+.article-hero .meta { display: flex; align-items: center; gap: 16px; justify-content: center;
+                      flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.75rem;
+                      color: rgba(255,255,255,0.55); }
+.article-content { max-width: 740px; margin: 0 auto; padding: 52px 24px 80px; }
+.article-content p { font-size: 1.06rem; line-height: 1.82; color: var(--text-mid); margin-bottom: 22px; }
+.article-content h2 { font-family: var(--font-serif); font-size: 1.55rem; font-weight: 700;
+                      color: var(--text); margin: 36px 0 14px; }
+.article-content blockquote { border-left: 4px solid var(--yellow); padding: 10px 20px;
+                               font-style: italic; color: var(--text-mid); margin: 28px 0;
+                               background: var(--yellow-light); border-radius: 0 8px 8px 0; }
+
+/* ── TOAST ───────────────────────────────────────────── */
+.toast { position: fixed; bottom: 28px; right: 28px; max-width: 320px;
+         background: var(--text); color: #fff; padding: 13px 18px; border-radius: 10px;
+         font-family: var(--font-mono); font-size: 0.8rem; box-shadow: var(--shadow-lg);
+         z-index: 9999; transform: translateY(80px); opacity: 0;
+         transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: #065f46; }
+.toast.error   { background: #7f1d1d; }
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .article-grid { grid-template-columns: repeat(2,1fr); }
+  .footer-grid  { grid-template-columns: 1fr 1fr; }
+  .team-grid    { grid-template-columns: repeat(2,1fr); }
+  .admin-stats  { grid-template-columns: repeat(2,1fr); }
+  .about-grid   { grid-template-columns: 1fr; gap: 36px; }
+  .contact-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  :root { --nav-h: 62px; }
+  .nav-links, .nav-actions { display: none; }
+  .hamburger { display: flex; }
+  .article-grid { grid-template-columns: 1fr; }
+  .footer-grid  { grid-template-columns: 1fr; gap: 28px; }
+  .team-grid    { grid-template-columns: 1fr; }
+  .values-grid  { grid-template-columns: 1fr; }
+  .admin-stats  { grid-template-columns: 1fr 1fr; }
+  .frow { grid-template-columns: 1fr; }
+  .fc-meta, .fc-title, .fc-excerpt, .blur-para, .fc-author { padding-left: 18px; padding-right: 18px; }
+  .form-card { padding: 28px 18px; }
+  table { font-size: 0.78rem; }
+  thead th, tbody td { padding: 9px 10px; }
+}
+@media (max-width: 480px) {
+  .hero-cta { flex-direction: column; align-items: center; }
+  .hero-stats { flex-direction: column; gap: 14px; }
+  .stat-div { width: 40px; height: 1px; }
+  .admin-stats { grid-template-columns: 1fr; }
+  .otp-digits { gap: 5px; }
+  .otp-d { width: 40px; height: 48px; font-size: 1.2rem; }
+}
+
+</style>
+  <style>
+    body { background: #f1f5f9; }
+    .admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center;
+                   background: linear-gradient(135deg, var(--blue-dark), #0a1a35); padding: 20px; }
+  </style>
+</head>
+<body>
+
+<!-- Admin login gate -->
+<div id="adminLoginPage" class="admin-login">
+  <div class="form-card" style="max-width:420px;">
+    <div class="form-header">
+      <div class="fh-icon">🛡️</div>
+      <h1 style="font-size:1.6rem;">Admin Access</h1>
+      <p>Voice of Ukraine — Admin Panel</p>
+    </div>
+
+    <!-- Tab buttons -->
+    <div style="display:flex;gap:6px;margin-bottom:24px;background:#f1f5f9;border-radius:8px;padding:4px;">
+      <button onclick="showAdminTab('login')" id="tab-login"
+        style="flex:1;padding:8px;border:none;border-radius:6px;font-family:var(--font-mono);font-size:0.75rem;cursor:pointer;background:var(--blue);color:#fff;transition:all 0.2s;">
+        Sign In
+      </button>
+      <button onclick="showAdminTab('setpass')" id="tab-setpass"
+        style="flex:1;padding:8px;border:none;border-radius:6px;font-family:var(--font-mono);font-size:0.75rem;cursor:pointer;background:transparent;color:var(--text-muted);transition:all 0.2s;">
+        Set Password
+      </button>
+      <button onclick="showAdminTab('otp')" id="tab-otp"
+        style="flex:1;padding:8px;border:none;border-radius:6px;font-family:var(--font-mono);font-size:0.75rem;cursor:pointer;background:transparent;color:var(--text-muted);transition:all 0.2s;">
+        OTP Login
+      </button>
+    </div>
+
+    <!-- TAB 1: Normal login with email + password -->
+    <div id="adminTab-login">
+      <div class="fgroup">
+        <label>Admin Email</label>
+        <input type="email" id="adminEmail" placeholder="admin@voiceofukraine.org" />
+      </div>
+      <div class="fgroup">
+        <label>Password</label>
+        <input type="password" id="adminPass" placeholder="Your admin password"
+          onkeydown="if(event.key==='Enter')adminLogin()" />
+        <div class="ferr" id="err-adminLogin"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="adminLogin()">Sign In →</button>
+      <p style="text-align:center;margin-top:14px;font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);">
+        First time? Use the <a href="#" onclick="showAdminTab('setpass');return false" style="color:var(--blue);">Set Password</a> tab first.
+      </p>
+    </div>
+
+    <!-- TAB 2: Set password (first time setup or reset) -->
+    <div id="adminTab-setpass" style="display:none;">
+      <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:0.83rem;color:#7a5c00;">
+        <strong>First Time Setup:</strong> Enter your admin email to receive a one-time link.
+        Then return here, enter your email, the OTP code from the email, and your new password.
+      </div>
+
+      <div class="fgroup">
+        <label>Step 1 — Send Reset Link</label>
+        <div style="display:flex;gap:8px;">
+          <input type="email" id="resetEmail" placeholder="admin@voiceofukraine.org" style="flex:1;" />
+          <button onclick="sendAdminReset()"
+            style="padding:0 14px;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;font-family:var(--font-mono);font-size:0.72rem;cursor:pointer;white-space:nowrap;">
+            Send Link
+          </button>
+        </div>
+        <div class="ferr" id="err-resetEmail"></div>
+      </div>
+
+      <div id="setPassForm" style="display:none;">
+        <div style="height:1px;background:var(--border);margin:16px 0;"></div>
+        <div class="fgroup">
+          <label>Step 2 — OTP Code from Email</label>
+          <input type="text" id="resetOtp" placeholder="6-digit code from email" maxlength="6"
+            style="letter-spacing:0.2em;font-family:var(--font-mono);font-size:1.1rem;text-align:center;" />
+          <div class="ferr" id="err-resetOtp"></div>
+        </div>
+        <div class="fgroup">
+          <label>Step 3 — New Password</label>
+          <input type="password" id="newPass" placeholder="Minimum 8 characters" />
+          <div class="ferr" id="err-newPass"></div>
+        </div>
+        <div class="fgroup">
+          <label>Confirm New Password</label>
+          <input type="password" id="confirmPass" placeholder="Repeat password" />
+        </div>
+        <button class="btn btn-primary btn-full" onclick="setAdminPassword()">Set Password & Sign In →</button>
+      </div>
+      <div class="ferr" id="err-setpass" style="text-align:center;margin-top:8px;"></div>
+    </div>
+
+    <!-- TAB 3: OTP-only login (no password needed) -->
+    <div id="adminTab-otp" style="display:none;">
+      <div class="fgroup">
+        <label>Admin Email</label>
+        <div style="display:flex;gap:8px;">
+          <input type="email" id="otpAdminEmail" placeholder="admin@voiceofukraine.org" style="flex:1;" />
+          <button onclick="sendAdminOtp()"
+            style="padding:0 14px;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;font-family:var(--font-mono);font-size:0.72rem;cursor:pointer;white-space:nowrap;">
+            Send OTP
+          </button>
+        </div>
+      </div>
+      <div id="adminOtpBox" style="display:none;">
+        <div class="fgroup">
+          <label>6-Digit Code</label>
+          <div style="display:flex;gap:6px;justify-content:center;margin:10px 0;">
+            <input class="otp-d" maxlength="1" style="width:44px;height:52px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:1.3rem;font-weight:600;text-align:center;outline:none;background:var(--bg);" />
+            <input class="otp-d" maxlength="1" style="width:44px;height:52px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:1.3rem;font-weight:600;text-align:center;outline:none;background:var(--bg);" />
+            <input class="otp-d" maxlength="1" style="width:44px;height:52px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:1.3rem;font-weight:600;text-align:center;outline:none;background:var(--bg);" />
+            <input class="otp-d" maxlength="1" style="width:44px;height:52px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:1.3rem;font-weight:600;text-align:center;outline:none;background:var(--bg);" />
+            <input class="otp-d" maxlength="1" style="width:44px;height:52px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:1.3rem;font-weight:600;text-align:center;outline:none;background:var(--bg);" />
+            <input class="otp-d" maxlength="1" style="width:44px;height:52px;border:2px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:1.3rem;font-weight:600;text-align:center;outline:none;background:var(--bg);" />
+          </div>
+          <div class="ferr" id="err-adminOtp" style="text-align:center;"></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="verifyAdminOtp()">Sign In →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Admin dashboard (hidden until authenticated) -->
+<div id="adminDash" style="display:none;" class="admin-page">
+
+  <div class="admin-header">
+    <div>
+      <h1>🛡️ Admin Dashboard</h1>
+      <div class="tag">Voice of Ukraine — User Management</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="exportCsv()">⬇ Export CSV</button>
+      <button class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.3);" onclick="adminLogout()">Log Out</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- Stats cards -->
+    <div class="admin-stats" id="adminStats">
+      <div class="as-card"><div class="as-label">Total Users</div><div class="as-num" id="statTotal">—</div><div class="as-sub">registered members</div></div>
+      <div class="as-card"><div class="as-label">Email Verified</div><div class="as-num" id="statVerified">—</div><div class="as-sub">confirmed accounts</div></div>
+      <div class="as-card"><div class="as-label">With Phone</div><div class="as-num" id="statPhone">—</div><div class="as-sub">phone numbers collected</div></div>
+      <div class="as-card"><div class="as-label">With Location</div><div class="as-num" id="statGeo">—</div><div class="as-sub">GPS coordinates</div></div>
+    </div>
+
+    <!-- Users table -->
+    <div class="admin-table-wrap">
+      <div class="admin-table-head">
+        <h2>Registered Users</h2>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input class="admin-search" type="text" id="userSearch" placeholder="Search name, email, country…" oninput="filterUsers()" />
+          <select class="admin-search" id="countryFilter" onchange="filterUsers()" style="width:140px;">
+            <option value="">All countries</option>
+          </select>
+          <button class="btn btn-primary" style="padding:8px 16px;font-size:0.75rem;" onclick="loadUsers()">↻ Refresh</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Country</th>
+              <th>City</th>
+              <th>GPS</th>
+              <th>IP Address</th>
+              <th>IP Location</th>
+              <th>Verified</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="12" style="text-align:center;padding:32px;color:var(--text-muted);font-family:var(--font-mono);font-size:0.8rem;">Loading users…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="tablePager" style="padding:14px 20px;font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+        <span id="pageInfo"></span>
+        <div style="display:flex;gap:6px;">
+          <button class="admin-btn admin-btn-view" onclick="prevPage()" id="prevBtn">← Prev</button>
+          <button class="admin-btn admin-btn-view" onclick="nextPage()" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- User Detail Modal -->
+<div class="modal-backdrop hidden" id="userModal" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>👤 User Details</h3>
+    <div id="modalContent"></div>
+    <button class="btn btn-ghost btn-full modal-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+
+<script>
+const ADMIN_EMAIL = 'admin@voiceofukraine.org'; // Change to your admin email
+const PAGE_SIZE = 20;
+let allUsers = [];
+let filtered = [];
+let currentPage = 1;
+
+// ── Admin auth ──
+// ── Tab switcher ──────────────────────────────────────────
+function showAdminTab(tab) {
+  ['login','setpass','otp'].forEach(function(t) {
+    var panel = document.getElementById('adminTab-'+t);
+    var btn   = document.getElementById('tab-'+t);
+    if (panel) panel.style.display = t===tab ? 'block' : 'none';
+    if (btn) {
+      btn.style.background = t===tab ? 'var(--blue)' : 'transparent';
+      btn.style.color      = t===tab ? '#fff' : 'var(--text-muted)';
+    }
+  });
+}
+
+// ── Sign in with email + password ─────────────────────────
+async function adminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  setErr('err-adminLogin','');
+
+  if (!email) { setErr('err-adminLogin','Please enter your admin email.'); return; }
+  if (!pass)  { setErr('err-adminLogin','Please enter your password. Use the Set Password tab if first time.'); return; }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (data.error || !data.access_token) throw new Error(data.error_description || data.error?.message || 'Invalid credentials. Use Set Password tab if first time.');
+
+    localStorage.setItem('vou_admin_token', data.access_token);
+    document.getElementById('adminLoginPage').style.display = 'none';
+    document.getElementById('adminDash').style.display = 'block';
+    loadUsers();
+  } catch(e) {
+    setErr('err-adminLogin', '❌ ' + e.message);
+  }
+}
+
+// ── Send password reset / first-time setup email ──────────
+async function sendAdminReset() {
+  const email = document.getElementById('resetEmail').value.trim();
+  document.getElementById('err-resetEmail').textContent = '';
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('err-resetEmail').textContent = 'Please enter a valid email address.';
+    return;
+  }
+
+  if (IS_DEMO) {
+    document.getElementById('setPassForm').style.display = 'block';
+    showToast('DEMO: OTP is 123456 — enter it and set your password', 'info');
+    return;
+  }
+
+  try {
+    // Send OTP to email — user enters it along with new password
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
+      body: JSON.stringify({ email, create_user: false })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message || data.error);
+    document.getElementById('setPassForm').style.display = 'block';
+    showToast('📧 Check your email for the 6-digit code', 'success');
+  } catch(e) {
+    document.getElementById('err-setpass').textContent = '❌ ' + e.message;
+  }
+}
+
+// ── Verify OTP and set new password ──────────────────────
+async function setAdminPassword() {
+  const email   = document.getElementById('resetEmail').value.trim();
+  const otp     = document.getElementById('resetOtp').value.trim();
+  const pass    = document.getElementById('newPass').value;
+  const confirm = document.getElementById('confirmPass').value;
+  document.getElementById('err-resetOtp').textContent = '';
+  document.getElementById('err-newPass').textContent = '';
+  document.getElementById('err-setpass').textContent = '';
+
+  if (!otp || otp.length < 6) { document.getElementById('err-resetOtp').textContent = 'Enter the 6-digit code from your email.'; return; }
+  if (!pass || pass.length < 8) { document.getElementById('err-newPass').textContent = 'Password must be at least 8 characters.'; return; }
+  if (pass !== confirm) { document.getElementById('err-newPass').textContent = 'Passwords do not match.'; return; }
+
+  if (IS_DEMO) {
+    if (otp === '123456') {
+      localStorage.setItem('vou_admin_token','demo_admin');
+      document.getElementById('adminLoginPage').style.display = 'none';
+      document.getElementById('adminDash').style.display = 'block';
+      loadUsers();
+      showToast('✅ Demo admin access granted!', 'success');
+    } else {
+      document.getElementById('err-resetOtp').textContent = '❌ Demo OTP is 123456';
+    }
+    return;
+  }
+
+  try {
+    // Step 1: verify OTP to get a session
+    const verifyRes = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
+      body: JSON.stringify({ email, token: otp, type: 'email' })
+    });
+    const verifyData = await verifyRes.json();
+    if (!verifyData.access_token) throw new Error(verifyData.error?.message || 'Invalid OTP code');
+
+    // Step 2: use the session token to update the password
+    const updateRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method:'PUT',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPABASE_ANON,
+        'Authorization':'Bearer '+verifyData.access_token
+      },
+      body: JSON.stringify({ password: pass })
+    });
+    const updateData = await updateRes.json();
+    if (updateData.error) throw new Error(updateData.error.message || 'Password update failed');
+
+    // Step 3: log in with new password
+    localStorage.setItem('vou_admin_token', verifyData.access_token);
+    document.getElementById('adminLoginPage').style.display = 'none';
+    document.getElementById('adminDash').style.display = 'block';
+    loadUsers();
+    showToast('✅ Password set! You are now signed in.', 'success');
+  } catch(e) {
+    document.getElementById('err-setpass').textContent = '❌ ' + e.message;
+  }
+}
+
+// ── OTP-only login (no password) ─────────────────────────
+async function sendAdminOtp() {
+  const email = document.getElementById('otpAdminEmail').value.trim();
+  if (!email) { showToast('Enter your admin email', 'error'); return; }
+
+  if (IS_DEMO) {
+    document.getElementById('adminOtpBox').style.display = 'block';
+    initAdminOtpDigits(email);
+    showToast('DEMO: Enter 123456', 'info');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
+      body: JSON.stringify({ email, create_user: false })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message || data.error);
+    document.getElementById('adminOtpBox').style.display = 'block';
+    initAdminOtpDigits(email);
+    showToast('📧 6-digit code sent to ' + email, 'success');
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+}
+
+function initAdminOtpDigits(email) {
+  const box  = document.getElementById('adminOtpBox');
+  const ins  = Array.from(box.querySelectorAll('.otp-d'));
+  ins.forEach(function(inp, i) {
+    inp.style.borderColor = 'var(--border)';
+    inp.addEventListener('input', function(e) {
+      var v = e.target.value.replace(/\D/g,'');
+      e.target.value = v.slice(-1);
+      inp.style.borderColor = inp.value ? 'var(--blue)' : 'var(--border)';
+      inp.style.background  = inp.value ? 'var(--blue-light)' : 'var(--bg)';
+      if (v && i < ins.length-1) ins[i+1].focus();
+      var code = ins.map(function(x){return x.value}).join('');
+      if (code.length === 6) verifyAdminOtpCode(email, code);
+    });
+    inp.addEventListener('keydown', function(e) {
+      if (e.key==='Backspace' && !inp.value && i>0) {
+        ins[i-1].focus(); ins[i-1].value='';
+        ins[i-1].style.borderColor='var(--border)'; ins[i-1].style.background='var(--bg)';
+      }
+    });
+  });
+}
+
+async function verifyAdminOtp() {
+  const email = document.getElementById('otpAdminEmail').value.trim();
+  const box   = document.getElementById('adminOtpBox');
+  const code  = Array.from(box.querySelectorAll('.otp-d')).map(function(x){return x.value}).join('');
+  if (code.length < 6) { document.getElementById('err-adminOtp').textContent = 'Enter all 6 digits.'; return; }
+  await verifyAdminOtpCode(email, code);
+}
+
+async function verifyAdminOtpCode(email, code) {
+  document.getElementById('err-adminOtp').textContent = '';
+
+  if (IS_DEMO) {
+    if (code === '123456') {
+      localStorage.setItem('vou_admin_token','demo_admin');
+      document.getElementById('adminLoginPage').style.display = 'none';
+      document.getElementById('adminDash').style.display = 'block';
+      loadUsers();
+    } else {
+      document.getElementById('err-adminOtp').textContent = '❌ Demo code is 123456';
+    }
+    return;
+  }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
+      body: JSON.stringify({ email, token: code, type: 'email' })
+    });
+    const data = await res.json();
+    if (!data.access_token) throw new Error(data.error?.message || 'Invalid code');
+    localStorage.setItem('vou_admin_token', data.access_token);
+    document.getElementById('adminLoginPage').style.display = 'none';
+    document.getElementById('adminDash').style.display = 'block';
+    loadUsers();
+  } catch(e) {
+    document.getElementById('err-adminOtp').textContent = '❌ ' + e.message;
+  }
+}
+
+function adminLogout() {
+  localStorage.removeItem('vou_admin_token');
+  window.location.reload();
+}
+
+// Check if already logged in as admin
+if (localStorage.getItem('vou_admin_token')) {
+  document.getElementById('adminLoginPage').style.display = 'none';
+  document.getElementById('adminDash').style.display = 'block';
+  loadUsers();
+}
+
+// ── Load users from Supabase ──
+async function loadUsers() {
+  document.getElementById('usersTableBody').innerHTML =
+    '<tr><td colspan="12" style="text-align:center;padding:32px;color:var(--text-muted);font-family:var(--font-mono);">Loading…</td></tr>';
+  try {
+    const token = localStorage.getItem('vou_admin_token') || SUPABASE_ANON;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*&order=created_at.desc`, {
+      headers:{ 'apikey':SUPABASE_ANON, 'Authorization':'Bearer '+token }
+    });
+    allUsers = await res.json();
+    if (!Array.isArray(allUsers)) { allUsers = []; }
+
+    // Populate country filter
+    const countries = [...new Set(allUsers.map(u=>u.country).filter(Boolean))].sort();
+    const sel = document.getElementById('countryFilter');
+    sel.innerHTML = '<option value="">All countries</option>' +
+      countries.map(c=>`<option value="${c}">${c}</option>`).join('');
+
+    // Stats
+    document.getElementById('statTotal').textContent    = allUsers.length;
+    document.getElementById('statVerified').textContent = allUsers.length; // email verified = registered
+    document.getElementById('statPhone').textContent    = allUsers.filter(u=>u.phone).length;
+    document.getElementById('statGeo').textContent      = allUsers.filter(u=>u.lat).length;
+
+    filtered = [...allUsers];
+    currentPage = 1;
+    renderTable();
+  } catch(e) {
+    document.getElementById('usersTableBody').innerHTML =
+      `<tr><td colspan="12" style="text-align:center;padding:28px;color:var(--red);font-family:var(--font-mono);">Error: ${e.message}</td></tr>`;
+  }
+}
+
+// ── Render table page ──
+function renderTable() {
+  const start = (currentPage-1)*PAGE_SIZE;
+  const page  = filtered.slice(start, start+PAGE_SIZE);
+  const tbody = document.getElementById('usersTableBody');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:28px;color:var(--text-muted);">No users found.</td></tr>';
+    document.getElementById('pageInfo').textContent = '0 results';
+    return;
+  }
+
+  tbody.innerHTML = page.map((u,i) => `
+    <tr>
+      <td style="font-family:var(--font-mono);color:var(--text-muted);">${start+i+1}</td>
+      <td><strong>${esc(u.full_name||'—')}</strong></td>
+      <td style="font-family:var(--font-mono);font-size:0.78rem;">${esc(u.email||'—')}</td>
+      <td style="font-family:var(--font-mono);font-size:0.78rem;">${esc(u.phone||'—')}</td>
+      <td>${esc(u.country||'—')}</td>
+      <td>${esc(u.city||'—')}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${u.lat ? u.lat+', '+u.lon : '—'}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${esc(u.ip_address||'—')}</td>
+      <td style="font-size:0.78rem;">${esc(u.ip_city||'') + (u.ip_country?' ('+u.ip_country+')':'') || '—'}</td>
+      <td><span class="status-pill status-verified">✓ Email</span>${u.phone_verified?'<br><span class="status-pill status-verified" style="margin-top:3px;">✓ SMS</span>':''}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${fmtDate(u.created_at)}</td>
+      <td>
+        <div class="admin-actions">
+          <button class="admin-btn admin-btn-view" onclick='showUser(${JSON.stringify(u)})'>View</button>
+          <button class="admin-btn admin-btn-del"  onclick="deleteUser('${u.id}','${esc(u.full_name||'')}')">Del</button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  const total = filtered.length;
+  const pages = Math.ceil(total/PAGE_SIZE);
+  document.getElementById('pageInfo').textContent = `Showing ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total} users`;
+  document.getElementById('prevBtn').disabled = currentPage<=1;
+  document.getElementById('nextBtn').disabled = currentPage>=pages;
+}
+
+function prevPage() { if (currentPage>1) { currentPage--; renderTable(); } }
+function nextPage() { const pages=Math.ceil(filtered.length/PAGE_SIZE); if (currentPage<pages) { currentPage++; renderTable(); } }
+
+// ── Filter ──
+function filterUsers() {
+  const q  = document.getElementById('userSearch').value.toLowerCase();
+  const ct = document.getElementById('countryFilter').value;
+  filtered = allUsers.filter(u => {
+    const matchQ  = !q || [u.full_name,u.email,u.city,u.ip_address].some(f=>(f||'').toLowerCase().includes(q));
+    const matchCt = !ct || u.country === ct;
+    return matchQ && matchCt;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+// ── Show user modal ──
+function showUser(u) {
+  document.getElementById('modalContent').innerHTML = [
+    ['Full Name',   u.full_name],
+    ['Email',       u.email],
+    ['Phone',       u.phone || '—'],
+    ['SMS Verified',u.phone_verified ? 'Yes ✅' : 'No'],
+    ['Country',     u.country],
+    ['City',        u.city || '—'],
+    ['GPS Lat/Lon', u.lat ? `${u.lat}, ${u.lon}` : '—'],
+    ['IP Address',  u.ip_address || '—'],
+    ['IP City',     u.ip_city || '—'],
+    ['IP Country',  u.ip_country || '—'],
+    ['ISP/Org',     u.ip_isp || '—'],
+    ['User Agent',  u.user_agent ? u.user_agent.substring(0,60)+'…' : '—'],
+    ['Joined',      fmtDate(u.created_at)],
+    ['User ID',     u.id],
+  ].map(([k,v]) => `<div class="modal-row"><span class="mk">${k}</span><span class="mv">${esc(String(v||'—'))}</span></div>`).join('');
+  document.getElementById('userModal').classList.remove('hidden');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('userModal'))
+    document.getElementById('userModal').classList.add('hidden');
+}
+
+// ── Delete user ──
+async function deleteUser(id, name) {
+  if (!confirm(`Delete user "${name}"? This cannot be undone.`)) return;
+  try {
+    const token = localStorage.getItem('vou_admin_token') || SUPABASE_ANON;
+    await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${id}`, {
+      method:'DELETE',
+      headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+token}
+    });
+    toast('User deleted.', 'success');
+    loadUsers();
+  } catch(e) { toast('Delete error: '+e.message,'error'); }
+}
+
+// ── Export CSV ──
+function exportCsv() {
+  const cols = ['full_name','email','phone','phone_verified','country','city',
+                'lat','lon','ip_address','ip_city','ip_country','ip_isp','user_agent','created_at'];
+  const header = cols.join(',');
+  const rows = filtered.map(u =>
+    cols.map(c => `"${(u[c]||'').toString().replace(/"/g,'""')}"`).join(',')
+  );
+  const csv = [header,...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'vou-users-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  toast('CSV exported!', 'success');
+}
+
+// ── Helpers ──
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fmtDate(s) {
+  if (!s) return '—';
+  return new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+
+// Allow pressing Enter on admin login
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('adminPass')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') adminLogin();
+  });
+});
+</script>
+<script>
+/* ============================================================
+   ГОЛОС УКРАЇНИ · Voice of Ukraine — app.js
+   ============================================================ */
+'use strict';
+
+/* ── SUPABASE CONFIG ──────────────────────────────────────────
+   Replace these with your actual Supabase project values.
+   Get them from: https://supabase.com → Project → Settings → API
+   ──────────────────────────────────────────────────────────── */
+const SUPABASE_URL    = 'https://dfsxgjrruzwjxywizejf.supabase.co';
+const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
+
+
+/* ── LANGUAGE ─────────────────────────────────────────────── */
+let currentLang = localStorage.getItem('vou_lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('vou_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === lang));
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const v = el.getAttribute('data-' + lang);
+    if (!v) return;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = v;
+    else el.innerHTML = v;
+  });
+}
+
+/* ── NAV SCROLL ───────────────────────────────────────────── */
+const navEl = document.getElementById('nav');
+if (navEl) window.addEventListener('scroll', () =>
+  navEl.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
+
+/* ── HAMBURGER ────────────────────────────────────────────── */
+const hamburgerEl = document.getElementById('hamburger');
+const mobileMenuEl = document.getElementById('mobileMenu');
+if (hamburgerEl && mobileMenuEl)
+  hamburgerEl.addEventListener('click', () =>
+    mobileMenuEl.classList.toggle('open'));
+
+/* ── ARTICLE FILTER ───────────────────────────────────────── */
+function filterArticles(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.a-card').forEach(card => {
+    card.classList.toggle('hidden', cat !== 'all' && card.dataset.cat !== cat);
+  });
+}
+
+/* ── AUTH GATE (for blurred content) ─────────────────────── */
+function requireAuth(redirectUrl) {
+  if (localStorage.getItem('vou_token')) return true;
+  toast('Join free to read the full article.', 'info', 3500);
+  setTimeout(() => { window.location.href = 'signup.html?next=' + (redirectUrl || ''); }, 800);
+  return false;
+}
+
+/* ── OTP DIGIT BOXES ─────────────────────────────────────── */
+function initOtpDigits(groupId, onComplete) {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+  const inputs = Array.from(group.querySelectorAll('.otp-d'));
+  inputs.forEach((inp, i) => {
+    inp.addEventListener('input', e => {
+      const v = e.target.value.replace(/\D/g, '');
+      e.target.value = v.slice(-1);
+      inp.classList.toggle('filled', !!inp.value);
+      if (v && i < inputs.length - 1) inputs[i + 1].focus();
+      const code = inputs.map(x => x.value).join('');
+      if (code.length === 6 && onComplete) onComplete(code);
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) {
+        inputs[i - 1].focus(); inputs[i - 1].value = '';
+        inputs[i - 1].classList.remove('filled');
+      }
+    });
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const p = (e.clipboardData || window.clipboardData).getData('text')
+                  .replace(/\D/g,'').slice(0,6);
+      p.split('').forEach((ch, idx) => {
+        if (inputs[idx]) { inputs[idx].value = ch; inputs[idx].classList.add('filled'); }
+      });
+      if (p.length === 6 && onComplete) onComplete(p);
+    });
+  });
+}
+
+/* ── RESEND COUNTDOWN ─────────────────────────────────────── */
+function startCountdown(btnId, spanId, secs = 60) {
+  const btn = document.getElementById(btnId);
+  const span = document.getElementById(spanId);
+  if (!btn) return;
+  btn.disabled = true;
+  let s = secs;
+  if (span) span.textContent = s;
+  const iv = setInterval(() => {
+    s--;
+    if (span) span.textContent = s;
+    if (s <= 0) {
+      clearInterval(iv);
+      btn.disabled = false;
+      if (span) span.textContent = '';
+      btn.textContent = 'Resend code';
+    }
+  }, 1000);
+  return iv;
+}
+
+/* ── FIELD VALIDATION ─────────────────────────────────────── */
+function setErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = msg;
+  const inp = document.getElementById(id.replace('err-',''));
+  if (inp) inp.classList.toggle('err-field', !!msg);
+}
+function clearErrs(...ids) { ids.forEach(id => setErr(id, '')); }
+
+/* ── TOAST ────────────────────────────────────────────────── */
+function showToast(msg,type){toast(msg,type);}
+function toast(msg, type = 'info', dur = 3500) {
+  let t = document.getElementById('globalToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'globalToast'; t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+/* ── GEOLOCATION HELPER ───────────────────────────────────── */
+function getGeoLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude.toFixed(5),
+                       lon: pos.coords.longitude.toFixed(5),
+                       acc: pos.coords.accuracy }),
+      () => resolve(null),
+      { timeout: 8000 }
+    );
+  });
+}
+
+/* ── IP FETCH ─────────────────────────────────────────────── */
+async function getIpInfo() {
+  try {
+    const r = await fetch('https://api.ipapi.is/');
+    if (!r.ok) return {};
+    return await r.json();
+  } catch { return {}; }
+}
+
+/* ── SUPABASE HELPERS ─────────────────────────────────────── */
+const API = {
+  headers: () => ({
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_ANON,
+    'Authorization': 'Bearer ' + (localStorage.getItem('vou_token') || SUPABASE_ANON)
+  }),
+
+  async rpc(fn, body) {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+      method: 'POST',
+      headers: this.headers(),
+      body: JSON.stringify(body)
+    });
+    return r.json();
+  },
+
+  async insert(table, data) {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: { ...this.headers(), 'Prefer': 'return=representation' },
+      body: JSON.stringify(data)
+    });
+    return r.json();
+  },
+
+  async select(table, params = '') {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
+      headers: this.headers()
+    });
+    return r.json();
+  },
+
+  async delete(table, id) {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'DELETE', headers: this.headers()
+    });
+    return r.status;
+  }
+};
+
+/* ── SESSION ──────────────────────────────────────────────── */
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('vou_user') || 'null'); }
+  catch { return null; }
+}
+function saveSession(token, user) {
+  localStorage.setItem('vou_token', token);
+  localStorage.setItem('vou_user', JSON.stringify(user));
+}
+function clearSession() {
+  localStorage.removeItem('vou_token');
+  localStorage.removeItem('vou_user');
+}
+function logout() {
+  clearSession();
+  window.location.href = 'index.html';
+}
+
+/* ── INIT ─────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  setLang(currentLang);
+
+  // Update nav based on login state
+  const user = getUser();
+  const joinBtn = document.getElementById('navJoin');
+  const loginBtn = document.getElementById('navLogin');
+  const logoutBtn = document.getElementById('navLogout');
+  if (user) {
+    if (joinBtn) joinBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+  } else {
+    if (logoutBtn) logoutBtn.style.display = 'none';
+  }
+});
+
+</script>
+
+<script>
+var _IS_DEMO_ADMIN = typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL.indexOf('YOUR_PROJECT') !== -1;
+if (_IS_DEMO_ADMIN) {
+  window.adminLogin = function() {
+    var e=document.getElementById('adminEmail').value.trim();
+    var p=document.getElementById('adminPass').value;
+    if(e&&p){localStorage.setItem('vou_admin_token','demo_admin');document.getElementById('adminLoginPage').style.display='none';document.getElementById('adminDash').style.display='block';loadUsers();}
+    else{var el=document.getElementById('err-adminLogin');if(el)el.textContent='Enter any email and password for demo mode.';}
+  };
+  window.loadUsers = function() {
+    var users = JSON.parse(localStorage.getItem('vou_demo_users')||'[]');
+    var allUsers = users.map(function(u,i){return{id:'demo_'+i,full_name:u.full_name||u.name||'—',email:u.email||'—',phone:u.phone||null,phone_verified:u.phone_verified||false,country:u.country||'—',city:u.city||'—',lat:u.lat||null,lon:u.lon||null,ip_address:u.ip_address||'127.0.0.1 (demo)',ip_city:u.ip_city||null,ip_country:u.ip_country||null,ip_isp:u.ip_isp||null,user_agent:u.user_agent||navigator.userAgent,created_at:u.created_at||new Date().toISOString()}});
+    document.getElementById('statTotal').textContent=allUsers.length;
+    document.getElementById('statVerified').textContent=allUsers.length;
+    document.getElementById('statPhone').textContent=allUsers.filter(function(u){return u.phone}).length;
+    document.getElementById('statGeo').textContent=allUsers.filter(function(u){return u.lat}).length;
+    window.filtered=allUsers; window.allUsers=allUsers; window.currentPage=1;
+    if(typeof renderTable==='function')renderTable();
+    if(allUsers.length===0){var tb=document.getElementById('usersTableBody');if(tb)tb.innerHTML='<tr><td colspan="12" style="text-align:center;padding:32px;font-family:monospace;color:#6b7280;">No users yet — sign up via signup.html first!</td></tr>';}
+  };
+}
+if(localStorage.getItem('vou_admin_token')){document.getElementById('adminLoginPage').style.display='none';document.getElementById('adminDash').style.display='block';if(typeof loadUsers==='function')loadUsers();}
+</script>
+</body>
+</html>

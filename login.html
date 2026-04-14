@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign In — Voice of Ukraine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root{--blue:#1a4d8f;--blue-dark:#0d2d5a;--blue-mid:#2563a8;--blue-light:#dbeafe;--yellow:#f5c518;--yellow-dark:#d4a800;--yellow-light:#fef9c3;--green:#059669;--red:#dc2626;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--bg:#fafaf8;--surface:#fff;--border:#e5e7eb;--radius:12px;--nav-h:70px;--serif:'Playfair Display',Georgia,serif;--body:'Source Serif 4',Georgia,serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:var(--body);color:var(--text);line-height:1.65}a{color:inherit;text-decoration:none}button{cursor:pointer;border:none;background:none;font:inherit}input,select,textarea{font:inherit}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;height:100%;max-width:1200px;margin:0 auto;padding:0 24px;gap:8px}
+.nav-logo{font-family:var(--serif);font-size:1.3rem;font-weight:900;display:flex;align-items:baseline;gap:2px}.logo-ua{color:var(--blue)}.logo-en{color:var(--yellow-dark);font-style:italic}
+.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-family:var(--mono);font-size:.82rem;letter-spacing:.04em;cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none}
+.btn-primary{background:var(--blue);color:#fff;padding:11px 24px;border:2px solid var(--blue)}.btn-primary:hover{background:var(--blue-dark);transform:translateY(-1px)}
+.btn-yellow{background:var(--yellow);color:var(--blue-dark);padding:13px 28px;border:2px solid var(--yellow);font-weight:600}.btn-yellow:hover{background:var(--yellow-dark);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--text-mid);padding:10px 22px;border:1.5px solid var(--border)}.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-full{width:100%;justify-content:center}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.page-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h)+30px) 20px 50px}
+.card{background:var(--surface);border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.14);padding:44px 40px;width:100%;max-width:520px}
+.fh{text-align:center;margin-bottom:32px}.fh .icon{font-size:2.4rem;margin-bottom:14px}.fh h1{font-family:var(--serif);font-size:1.85rem;font-weight:700;margin-bottom:7px}.fh p{font-size:.9rem;color:var(--text-muted)}
+.fg{margin-bottom:18px}.fg label{display:block;font-family:var(--mono);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--text-mid);margin-bottom:7px}
+.fg input,.fg select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:.94rem;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s,box-shadow .2s}
+.fg input:focus,.fg select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,77,143,.1)}
+.ferr{font-family:var(--mono);font-size:.7rem;color:var(--red);margin-top:4px}
+.form-note{text-align:center;margin-top:18px;font-family:var(--mono);font-size:.75rem;color:var(--text-muted)}.form-note a{color:var(--blue)}
+.success-wrap{text-align:center;padding:16px 0}.success-wrap .s-icon{font-size:4rem;margin-bottom:16px}.success-wrap h2{font-family:var(--serif);font-size:1.75rem;margin-bottom:10px}.success-wrap p{color:var(--text-muted);margin-bottom:22px}
+.toast{position:fixed;bottom:28px;right:28px;max-width:320px;background:var(--text);color:#fff;padding:13px 18px;border-radius:10px;font-family:var(--mono);font-size:.8rem;z-index:9999;transform:translateY(80px);opacity:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s}.toast.show{transform:translateY(0);opacity:1}.toast.success{background:#065f46}.toast.error{background:#7f1d1d}
+.section-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);border-left:3px solid var(--yellow);padding-left:10px;margin-bottom:28px;display:inline-block}
+.cta-band{background:var(--blue-dark);padding:64px 0}.cta-inner{display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}.cta-text h2{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2rem);color:#fff;margin-bottom:8px}.cta-text p{color:rgba(255,255,255,.6);font-size:.92rem}
+.footer{background:var(--blue-dark);border-top:1px solid rgba(255,255,255,.08);padding:60px 0 28px;color:rgba(255,255,255,.65)}.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:44px}.footer-brand p{font-size:.88rem;color:rgba(255,255,255,.5);max-width:240px;margin:14px 0;line-height:1.65}.footer-brand .flag{font-size:1.8rem}.footer-links h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--yellow);margin-bottom:14px}.footer-links a{display:block;font-size:.86rem;color:rgba(255,255,255,.5);margin-bottom:9px;transition:color .2s}.footer-links a:hover{color:#fff}.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-family:var(--mono);font-size:.72rem;color:rgba(255,255,255,.3)}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr;gap:28px}.card{padding:28px 18px}}
+
+body{background:linear-gradient(135deg,var(--blue-dark),#0a1a35)}
+.otp-digits{display:flex;gap:8px;justify-content:center;margin:12px 0}
+.otp-d{width:48px;height:56px;border:2px solid var(--border);border-radius:9px;font-family:var(--mono);font-size:1.4rem;font-weight:600;text-align:center;outline:none;background:var(--bg);transition:border-color .2s,box-shadow .2s}
+.otp-d:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,77,143,.14)}
+.otp-d.filled{border-color:var(--blue);background:var(--blue-light)}
+.or-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--text-muted);font-family:var(--mono);font-size:.73rem}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.otp-row{display:flex;gap:8px}.otp-row input{flex:1}
+.otp-send{padding:0 14px;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;font-family:var(--mono);font-size:.72rem;white-space:nowrap;cursor:pointer;transition:all .2s}.otp-send:hover{background:var(--blue);color:#fff}
+.ferr{font-family:var(--mono);font-size:.7rem;color:var(--red);margin-top:4px}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><span class="logo-ua">Голос</span><span class="logo-en">Ukraine</span></a>
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+      <a href="signup.html" class="btn btn-primary">Join Free</a>
+    </div>
+  </div>
+</nav>
+<div class="page-wrap">
+  <div class="card">
+    <div id="loginView">
+      <div class="fh"><div class="icon">🔐</div><h1>Welcome Back</h1><p>Sign in with a magic code — no password needed.</p></div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com">
+        <div class="ferr" id="err-login"></div>
+      </div>
+      <button class="btn btn-primary btn-full" id="magicBtn" onclick="sendMagic()">Send Magic Code →</button>
+      <div class="or-divider">or enter OTP directly</div>
+      <div class="fg">
+        <label>Email for OTP</label>
+        <div class="otp-row">
+          <input type="email" id="otpEmail" placeholder="you@example.com">
+          <button class="otp-send" onclick="sendOtp()">Send OTP</button>
+        </div>
+      </div>
+      <div id="otpSection" style="display:none">
+        <div class="fg">
+          <label>Enter 6-digit code</label>
+          <div class="otp-digits" id="loginDigits">
+            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+          </div>
+          <div class="ferr" id="err-otp" style="text-align:center"></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="verifyOtp()">Sign In →</button>
+      </div>
+      <p class="form-note">Don't have an account? <a href="signup.html">Join free →</a></p>
+    </div>
+    <div id="sentView" style="display:none">
+      <div class="success-wrap">
+        <div class="s-icon">📧</div>
+        <h2>Check Your Email</h2>
+        <p>We sent a magic link to <strong id="sentEmail"></strong>. Click it to sign in instantly.</p>
+        <button class="btn btn-ghost btn-full" onclick="document.getElementById('loginView').style.display='block';document.getElementById('sentView').style.display='none'" style="margin-top:8px">← Use a different email</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var SUPABASE_URL  = 'https://dfsxgjrruzwjxywizejf.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
+var IS_DEMO=SUPABASE_URL.indexOf('YOUR_PROJECT')!==-1;
+
+function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type?' '+type:'');requestAnimationFrame(function(){requestAnimationFrame(function(){t.classList.add('show')})});setTimeout(function(){t.classList.remove('show')},3500);}
+
+function initDigits(groupId,onDone){var g=document.getElementById(groupId);if(!g)return;var ins=Array.from(g.querySelectorAll('.otp-d'));ins.forEach(function(inp,i){inp.addEventListener('input',function(e){var v=e.target.value.replace(/\D/g,'');e.target.value=v.slice(-1);inp.classList.toggle('filled',!!inp.value);if(v&&i<ins.length-1)ins[i+1].focus();var code=ins.map(function(x){return x.value}).join('');if(code.length===6&&onDone)onDone(code)});inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!inp.value&&i>0){ins[i-1].focus();ins[i-1].value='';ins[i-1].classList.remove('filled')}});})}
+async function sendMagic(){
+  var email=document.getElementById('loginEmail').value.trim();
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){document.getElementById('err-login').textContent='Please enter a valid email.';return;}
+  if(IS_DEMO){localStorage.setItem('vou_token','demo_token');localStorage.setItem('vou_user',JSON.stringify({email:email,id:'demo_'+Date.now()}));toast('✅ Demo login!','success');setTimeout(function(){window.location.href='index.html'},1200);return;}
+  var btn=document.getElementById('magicBtn');btn.disabled=true;btn.textContent='Sending…';
+  try{await fetch(SUPABASE_URL+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},body:JSON.stringify({email:email,create_user:false})});document.getElementById('sentEmail').textContent=email;document.getElementById('loginView').style.display='none';document.getElementById('sentView').style.display='block';}catch(e){toast('Error: '+e.message,'error');}btn.disabled=false;btn.textContent='Send Magic Code →';
+}
+async function sendOtp(){
+  var email=document.getElementById('otpEmail').value.trim();
+  if(!email){toast('Enter your email','error');return;}
+  document.getElementById('otpSection').style.display='block';
+  initDigits('loginDigits',function(code){verifyCode(email,code)});
+  if(IS_DEMO){toast('📧 DEMO: Enter 123456','info');return;}
+  await fetch(SUPABASE_URL+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},body:JSON.stringify({email:email,create_user:false})});
+  toast('📧 Code sent!','success');
+}
+async function verifyOtp(){
+  var email=document.getElementById('otpEmail').value.trim();
+  var code=Array.from(document.querySelectorAll('#loginDigits .otp-d')).map(function(x){return x.value}).join('');
+  if(code.length<6){document.getElementById('err-otp').textContent='Enter all 6 digits.';return;}
+  await verifyCode(email,code);
+}
+async function verifyCode(email,code){
+  if(IS_DEMO){if(code==='123456'){localStorage.setItem('vou_token','demo_token');localStorage.setItem('vou_user',JSON.stringify({email:email,id:'demo_'+Date.now()}));toast('✅ Signed in!','success');setTimeout(function(){window.location.href='index.html'},1000);}else{document.getElementById('err-otp').textContent='❌ Demo code is 123456'}return;}
+  try{var res=await fetch(SUPABASE_URL+'/auth/v1/verify',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},body:JSON.stringify({email:email,token:code,type:'email'})});var data=await res.json();if(!data.access_token)throw new Error(data.error?.message||'Invalid code');localStorage.setItem('vou_token',data.access_token);localStorage.setItem('vou_user',JSON.stringify({id:data.user.id,email:email}));toast('✅ Signed in!','success');setTimeout(function(){window.location.href='index.html'},1000);}catch(e){document.getElementById('err-otp').textContent='❌ '+e.message;}
+}
+var hash=new URLSearchParams(window.location.hash.slice(1));var at=hash.get('access_token');
+if(at){localStorage.setItem('vou_token',at);toast('✅ Signed in!','success');setTimeout(function(){window.location.href='index.html'},1000);}
+</script>
+</body></html>

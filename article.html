@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Article — Voice of Ukraine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   ГОЛОС УКРАЇНИ · VOICE OF UKRAINE
+   Main Stylesheet — Editorial Magazine Aesthetic
+   ============================================================ */
+
+:root {
+  --blue:        #1a4d8f;
+  --blue-dark:   #0d2d5a;
+  --blue-mid:    #2563a8;
+  --blue-light:  #dbeafe;
+  --yellow:      #f5c518;
+  --yellow-dark: #d4a800;
+  --yellow-light:#fef9c3;
+  --red:         #dc2626;
+  --green:       #059669;
+  --text:        #111827;
+  --text-mid:    #374151;
+  --text-muted:  #6b7280;
+  --bg:          #fafaf8;
+  --surface:     #ffffff;
+  --border:      #e5e7eb;
+  --radius:      12px;
+  --shadow:      0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg:   0 12px 48px rgba(0,0,0,0.14);
+  --nav-h:       70px;
+  --font-serif:  'Playfair Display', Georgia, serif;
+  --font-body:   'Source Serif 4', Georgia, serif;
+  --font-mono:   'JetBrains Mono', monospace;
+}
+
+/* ── RESET ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text);
+       line-height: 1.65; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+input, select, textarea { font: inherit; }
+
+/* ── UTILITY ─────────────────────────────────────────── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.hidden { display: none !important; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  border-left: 3px solid var(--yellow);
+  padding-left: 10px;
+  margin-bottom: 28px;
+  display: inline-block;
+}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn { display: inline-flex; align-items: center; justify-content: center;
+       gap: 8px; border-radius: 7px; font-family: var(--font-mono);
+       font-size: 0.82rem; letter-spacing: 0.04em; cursor: pointer;
+       transition: all 0.2s; white-space: nowrap; }
+.btn-primary { background: var(--blue); color: #fff; padding: 11px 24px; border: 2px solid var(--blue); }
+.btn-primary:hover { background: var(--blue-dark); border-color: var(--blue-dark); transform: translateY(-1px); }
+.btn-yellow  { background: var(--yellow); color: var(--blue-dark); padding: 13px 28px; border: 2px solid var(--yellow); font-weight:600;}
+.btn-yellow:hover  { background: var(--yellow-dark); border-color: var(--yellow-dark); transform: translateY(-2px); }
+.btn-ghost   { background: transparent; color: var(--text-mid); padding: 10px 22px; border: 1.5px solid var(--border); }
+.btn-ghost:hover   { border-color: var(--blue); color: var(--blue); }
+.btn-full { width: 100%; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+
+/* ── NAV ─────────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--nav-h);
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+.nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+.nav-inner { display: flex; align-items: center; gap: 8px; height: 100%;
+             max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.nav-logo { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 900;
+            display: flex; align-items: baseline; gap: 2px; flex-shrink:0; }
+.logo-ua { color: var(--blue); }
+.logo-en { color: var(--yellow-dark); font-style: italic; }
+.nav-links { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.nav-link { padding: 7px 14px; border-radius: 6px; font-family: var(--font-mono);
+            font-size: 0.78rem; letter-spacing: 0.04em; color: var(--text-muted);
+            transition: all 0.2s; }
+.nav-link:hover, .nav-link.active { color: var(--blue); background: var(--blue-light); }
+.lang-toggle { display: flex; gap: 2px; margin: 0 10px; }
+.lang-btn { padding: 4px 10px; border-radius: 4px; font-family: var(--font-mono);
+            font-size: 0.7rem; color: var(--text-muted); transition: all 0.2s; }
+.lang-btn.active { background: var(--blue); color: #fff; }
+.nav-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; margin-left: 8px; }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--text);
+                  border-radius: 2px; transition: 0.3s; }
+.mobile-menu { display: none; flex-direction: column; padding: 12px 20px 16px;
+               background: #fff; border-top: 1px solid var(--border); gap: 2px; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { padding: 10px 12px; border-radius: 6px; font-family: var(--font-mono);
+                 font-size: 0.82rem; color: var(--text-mid); }
+.mobile-menu a:hover { background: var(--blue-light); color: var(--blue); }
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  background: var(--blue-dark);
+  display: flex; align-items: center;
+  position: relative; overflow: hidden;
+  padding-top: var(--nav-h);
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 55%, rgba(37,99,168,0.5) 0%, transparent 65%),
+    radial-gradient(ellipse at 78% 20%, rgba(245,197,24,0.12) 0%, transparent 50%);
+}
+.hero-flag-stripe {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
+  background: linear-gradient(to right, #005BBB 50%, #FFD700 50%);
+}
+.hero-content {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto;
+  padding: 80px 24px 100px;
+  text-align: center;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--yellow);
+  margin-bottom: 20px;
+  opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+}
+.hero-h1 {
+  font-family: var(--font-serif); font-size: clamp(3.2rem, 8vw, 6.5rem);
+  font-weight: 900; color: #fff; line-height: 1.0; margin-bottom: 24px;
+  opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+}
+.hero-h1 .thin { font-weight: 300; font-style: italic; font-size: 0.52em;
+                 display: block; color: rgba(255,255,255,0.65); }
+.hero-h1 .grad { background: linear-gradient(90deg,#fff,var(--yellow));
+                 -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                 background-clip: text; }
+.hero-sub { font-size: 1.1rem; color: rgba(255,255,255,0.72); max-width: 560px;
+            margin: 0 auto 36px;
+            opacity: 0; animation: fadeUp 0.8s 0.6s forwards; }
+.hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+            opacity: 0; animation: fadeUp 0.8s 0.8s forwards; }
+.hero-stats { display: flex; align-items: center; justify-content: center; gap: 28px;
+              margin-top: 56px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.12);
+              opacity: 0; animation: fadeUp 0.8s 1s forwards; }
+.stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.stat-n { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--yellow); }
+.stat-l { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em;
+          text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.stat-div { width: 1px; height: 36px; background: rgba(255,255,255,0.15); }
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ── ARTICLES SECTION ─────────────────────────────────── */
+.articles-wrap { padding: 72px 0; }
+.articles-header { display: flex; align-items: flex-start; justify-content: space-between;
+                   flex-wrap: wrap; gap: 16px; margin-bottom: 32px; }
+.filter-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn { padding: 6px 16px; border-radius: 20px; border: 1.5px solid var(--border);
+              font-family: var(--font-mono); font-size: 0.73rem; color: var(--text-muted);
+              background: var(--surface); transition: all 0.2s; cursor: pointer; }
+.filter-btn.active, .filter-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* Featured article */
+.featured-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.2s; margin-bottom: 32px;
+}
+.featured-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.fc-meta { display: flex; align-items: center; gap: 14px; padding: 28px 36px 0; flex-wrap: wrap; }
+.fc-title { font-family: var(--font-serif); font-size: clamp(1.5rem,2.8vw,2.2rem);
+            font-weight: 700; line-height: 1.25; padding: 16px 36px 0; }
+.fc-excerpt { padding: 12px 36px 0; color: var(--text-mid); font-size: 1.02rem;
+              max-width: 740px; }
+.fc-author { display: flex; align-items: center; gap: 12px; padding: 18px 36px;
+             border-top: 1px solid var(--border); margin-top: 16px; }
+.fc-author strong { display: block; font-weight: 600; font-size: 0.9rem; }
+.fc-author span { font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono); }
+
+/* Blur gate */
+.blur-gate { position: relative; overflow: hidden; }
+.blur-para { padding: 12px 36px; color: var(--text-mid); line-height: 1.72; }
+.blur-para.blurred { filter: blur(5px); user-select: none; pointer-events: none; }
+.blur-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 260px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.9) 40%, #fff 68%);
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 20px;
+}
+.blur-cta-box {
+  text-align: center; background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 22px 28px; max-width: 400px; width: 90%;
+}
+.blur-cta-box .lock { font-size: 1.8rem; margin-bottom: 8px; }
+.blur-cta-box h3 { font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 6px; }
+.blur-cta-box p  { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+.blur-cta-box .already { margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+.blur-cta-box .already a { color: var(--blue); }
+
+/* Article grid */
+.article-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+.a-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; cursor: pointer; transition: box-shadow 0.25s, transform 0.2s;
+          display: flex; flex-direction: column; }
+.a-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.a-card.hidden { display: none; }
+.a-card-img { height: 130px; display: flex; align-items: center; justify-content: center;
+              font-size: 2.8rem; position: relative; }
+.a-card-body { padding: 18px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.a-card-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.a-card-title { font-family: var(--font-serif); font-size: 1.05rem; font-weight: 700;
+                line-height: 1.35; }
+.a-card-preview { font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; }
+.a-blur-bar { display: flex; align-items: center; gap: 7px; padding: 9px 12px;
+              background: var(--yellow-light); border-radius: 6px; font-family: var(--font-mono);
+              font-size: 0.7rem; color: #7a5c00; margin-top: auto; }
+.a-footer { display: flex; align-items: center; gap: 8px; padding-top: 12px;
+            border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--text-muted);
+            font-family: var(--font-mono); }
+.a-footer .rt { margin-left: auto; }
+
+/* Badges */
+.badge { display: inline-block; padding: 3px 9px; border-radius: 4px; font-family: var(--font-mono);
+         font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.badge-frontlines { background:#fee2e2; color:#7f1d1d; }
+.badge-culture    { background:#dbeafe; color:#1e3a8a; }
+.badge-diaspora   { background:#f3e8ff; color:#581c87; }
+.badge-rebuild    { background:#d1fae5; color:#065f46; }
+.badge-future     { background:#fef3c7; color:#78350f; }
+
+/* Avatars */
+.avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-mono); font-weight: 500; color: #fff; flex-shrink: 0; }
+.avatar-md { width:40px; height:40px; font-size:0.75rem; }
+.avatar-sm { width:30px; height:30px; font-size:0.65rem; }
+
+/* Load more */
+.load-more { text-align: center; margin-top: 48px; }
+
+/* ── CTA BAND ─────────────────────────────────────────── */
+.cta-band { background: var(--blue-dark); padding: 64px 0; }
+.cta-inner { display: flex; align-items: center; justify-content: space-between;
+             gap: 32px; flex-wrap: wrap; }
+.cta-text h2 { font-family: var(--font-serif); font-size: clamp(1.5rem,3vw,2rem);
+               color: #fff; margin-bottom: 8px; }
+.cta-text p { color: rgba(255,255,255,0.6); font-size: 0.92rem; }
+
+/* ── FOOTER ──────────────────────────────────────────── */
+.footer { background: var(--blue-dark); border-top: 1px solid rgba(255,255,255,0.08);
+          padding: 60px 0 28px; color: rgba(255,255,255,0.65); }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+               gap: 48px; margin-bottom: 44px; }
+.footer-brand p { font-size: 0.88rem; color: rgba(255,255,255,0.5); max-width: 240px;
+                  margin: 14px 0; line-height: 1.65; }
+.footer-brand .flag { font-size: 1.8rem; }
+.footer-links h4 { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em;
+                   text-transform: uppercase; color: var(--yellow); margin-bottom: 14px; }
+.footer-links a { display: block; font-size: 0.86rem; color: rgba(255,255,255,0.5);
+                  margin-bottom: 9px; transition: color 0.2s; }
+.footer-links a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 22px;
+                 display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+                 font-family: var(--font-mono); font-size: 0.72rem;
+                 color: rgba(255,255,255,0.3); }
+
+/* ── FORMS (shared) ──────────────────────────────────── */
+.form-page { min-height: 100vh; background: linear-gradient(135deg, var(--blue-dark), #0a1a35);
+             display: flex; align-items: center; justify-content: center;
+             padding: calc(var(--nav-h) + 30px) 20px 50px; }
+.form-card { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow-lg);
+             padding: 44px 40px; width: 100%; max-width: 520px; }
+.form-card.wide { max-width: 700px; }
+.form-header { text-align: center; margin-bottom: 32px; }
+.form-header .fh-icon { font-size: 2.4rem; margin-bottom: 14px; }
+.form-header h1 { font-family: var(--font-serif); font-size: 1.85rem; font-weight: 700;
+                  margin-bottom: 7px; }
+.form-header p { font-size: 0.9rem; color: var(--text-muted); }
+.fgroup { margin-bottom: 18px; }
+.fgroup label { display: block; font-family: var(--font-mono); font-size: 0.72rem;
+                letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-mid);
+                margin-bottom: 7px; }
+.fgroup label .opt { font-size: 0.65rem; color: var(--text-muted); text-transform: none;
+                     letter-spacing: 0; margin-left: 6px; }
+.fgroup input, .fgroup select, .fgroup textarea {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 0.94rem; color: var(--text); background: var(--bg); outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.fgroup input:focus, .fgroup select:focus, .fgroup textarea:focus {
+  border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,77,143,0.1);
+}
+.fgroup input.err-field { border-color: var(--red); }
+.ferr { font-family: var(--font-mono); font-size: 0.7rem; color: var(--red); margin-top: 4px; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.otp-row { display: flex; gap: 8px; }
+.otp-row input { flex: 1; }
+.otp-send-btn { padding: 0 14px; background: var(--blue-light); color: var(--blue);
+                border: 1.5px solid var(--blue); border-radius: 8px; font-family: var(--font-mono);
+                font-size: 0.72rem; white-space: nowrap; transition: all 0.2s; cursor: pointer; }
+.otp-send-btn:hover { background: var(--blue); color: #fff; }
+.otp-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+/* 6-digit OTP input boxes */
+.otp-digits { display: flex; gap: 8px; justify-content: center; margin: 12px 0; }
+.otp-d { width: 48px; height: 56px; border: 2px solid var(--border); border-radius: 9px;
+         font-family: var(--font-mono); font-size: 1.4rem; font-weight: 600;
+         text-align: center; outline: none; background: var(--bg);
+         transition: border-color 0.2s, box-shadow 0.2s; }
+.otp-d:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,77,143,0.14); }
+.otp-d.filled { border-color: var(--blue); background: var(--blue-light); }
+.otp-verified { display: none; align-items: center; gap: 6px; justify-content: center;
+                font-family: var(--font-mono); font-size: 0.75rem; color: var(--green); }
+.otp-verified.show { display: flex; }
+.resend-btn { background: none; border: none; font-family: var(--font-mono); font-size: 0.75rem;
+              color: var(--blue); text-decoration: underline; cursor: pointer; display: block;
+              margin: 6px auto; }
+.resend-btn:disabled { color: var(--text-muted); text-decoration: none; cursor: default; }
+/* Steps */
+.steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 30px; }
+.step-w { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.step-c { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border);
+          background: var(--bg); display: flex; align-items: center; justify-content: center;
+          font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+          color: var(--text-muted); transition: all 0.3s; }
+.step-c.active { border-color: var(--blue); background: var(--blue); color: #fff; }
+.step-c.done   { border-color: var(--green); background: var(--green); color: #fff; }
+.step-l { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted); text-align: center; }
+.step-line { width: 44px; height: 2px; background: var(--border); margin-bottom: 16px; }
+.step-line.done { background: var(--green); }
+.progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 26px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(to right, var(--blue), var(--yellow));
+                 border-radius: 2px; transition: width 0.4s; }
+/* Toggle checkbox rows */
+.check-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+             background: var(--yellow-light); border: 1px solid #fde68a; border-radius: 8px;
+             margin-bottom: 16px; cursor: pointer; }
+.check-row input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--blue);
+                                   cursor: pointer; flex-shrink: 0; }
+.check-row label { font-size: 0.86rem; color: var(--text-mid); cursor: pointer; flex: 1; }
+.check-row .pill { font-family: var(--font-mono); font-size: 0.62rem; background: var(--blue);
+                   color: #fff; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; }
+.info-tip { background: var(--blue-light); border: 1px solid #bfdbfe; border-radius: 8px;
+            padding: 11px 14px; font-size: 0.82rem; color: var(--blue-dark);
+            display: flex; gap: 9px; align-items: flex-start; margin-bottom: 14px; }
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.form-note { text-align: center; margin-top: 18px; font-family: var(--font-mono);
+             font-size: 0.75rem; color: var(--text-muted); }
+.form-note a { color: var(--blue); }
+/* Success */
+.success-wrap { text-align: center; padding: 16px 0; }
+.success-wrap .s-icon { font-size: 4rem; margin-bottom: 16px; }
+.success-wrap h2 { font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 10px; }
+.success-wrap p { color: var(--text-muted); margin-bottom: 22px; }
+
+/* ── PAGE HEADER ─────────────────────────────────────── */
+.page-hero { background: var(--blue-dark); padding: calc(var(--nav-h) + 60px) 24px 60px;
+             text-align: center; }
+.page-hero h1 { font-family: var(--font-serif); font-size: clamp(2rem,5vw,3rem);
+                font-weight: 900; color: #fff; margin-bottom: 12px; }
+.page-hero p { color: rgba(255,255,255,0.68); font-size: 1.02rem; }
+
+/* ── ABOUT ────────────────────────────────────────────── */
+.about-section { padding: 72px 0; }
+.about-section.alt { background: var(--surface); }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.about-text h2 { font-family: var(--font-serif); font-size: 1.9rem; font-weight: 700;
+                 margin-bottom: 16px; }
+.about-text p { color: var(--text-mid); line-height: 1.78; margin-bottom: 12px; font-size: 0.98rem; }
+.about-text blockquote { border-left: 3px solid var(--yellow); padding-left: 18px;
+                          font-style: italic; color: var(--text-mid); margin: 22px 0; }
+.about-visual { border-radius: 16px; overflow: hidden; min-height: 280px;
+                display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+.values-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; }
+.val-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 22px; }
+.val-card .vi { font-size: 1.7rem; margin-bottom: 10px; }
+.val-card h3 { font-family: var(--font-serif); font-size: 1rem; margin-bottom: 6px; }
+.val-card p  { font-size: 0.83rem; color: var(--text-muted); }
+.team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+.team-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+             padding: 26px; text-align: center; box-shadow: var(--shadow); }
+.team-card .ta { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 12px;
+                 display: flex; align-items: center; justify-content: center;
+                 font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; color: #fff; }
+.team-card h3 { font-family: var(--font-serif); font-size: 1.02rem; margin-bottom: 3px; }
+.team-card .role { font-family: var(--font-mono); font-size: 0.68rem; color: var(--blue);
+                   letter-spacing: 0.08em; margin-bottom: 8px; }
+.team-card p { font-size: 0.82rem; color: var(--text-muted); }
+
+/* ── CONTACT ──────────────────────────────────────────── */
+.contact-wrap { padding: 72px 0; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; }
+.contact-info h2 { font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 14px; }
+.contact-info > p { color: var(--text-muted); margin-bottom: 28px; line-height: 1.7; font-size: 0.95rem; }
+.c-item { display: flex; gap: 13px; margin-bottom: 18px; }
+.c-item .ci { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+.c-item h4 { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em;
+             text-transform: uppercase; color: var(--blue); margin-bottom: 3px; }
+.c-item p, .c-item a { font-size: 0.9rem; color: var(--text-mid); }
+.secure-tip { background: var(--yellow-light); border: 1px solid #fde68a; border-radius: var(--radius);
+              padding: 16px 18px; margin-top: 24px; }
+.secure-tip h4 { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em;
+                 text-transform: uppercase; color: #7a5c00; margin-bottom: 5px; }
+.secure-tip p  { font-size: 0.84rem; color: var(--text-mid); }
+.char-count { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);
+              text-align: right; margin-top: 3px; }
+
+/* ── ADMIN ────────────────────────────────────────────── */
+.admin-page { padding-top: var(--nav-h); min-height: 100vh; background: #f1f5f9; }
+.admin-header { background: var(--blue-dark); padding: 28px 32px; display: flex;
+                align-items: center; justify-content: space-between; }
+.admin-header h1 { font-family: var(--font-serif); font-size: 1.5rem; color: #fff; }
+.admin-header .tag { font-family: var(--font-mono); font-size: 0.7rem; color: var(--yellow); }
+.admin-body { padding: 32px; max-width: 1400px; margin: 0 auto; }
+.admin-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-bottom: 32px; }
+.as-card { background: #fff; border-radius: var(--radius); padding: 22px 24px;
+           box-shadow: var(--shadow); }
+.as-card .as-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+                     text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+.as-card .as-num { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--blue); }
+.as-card .as-sub { font-size: 0.78rem; color: var(--green); margin-top: 3px; }
+.admin-table-wrap { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.admin-table-head { padding: 18px 24px; border-bottom: 1px solid var(--border);
+                    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.admin-table-head h2 { font-family: var(--font-serif); font-size: 1.15rem; }
+.admin-search { padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 7px;
+                font-family: var(--font-mono); font-size: 0.78rem; outline: none; width: 220px; }
+.admin-search:focus { border-color: var(--blue); }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: #f8fafc; padding: 11px 16px; text-align: left;
+           font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+           text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.85rem;
+           color: var(--text-mid); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f8fafc; }
+.status-pill { display: inline-block; padding: 2px 8px; border-radius: 4px;
+               font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; }
+.status-verified   { background: #d1fae5; color: #065f46; }
+.status-pending    { background: #fef3c7; color: #78350f; }
+.admin-actions { display: flex; gap: 6px; }
+.admin-btn { padding: 5px 11px; border-radius: 5px; font-family: var(--font-mono);
+             font-size: 0.68rem; cursor: pointer; border: none; transition: 0.2s; }
+.admin-btn-view { background: var(--blue-light); color: var(--blue); }
+.admin-btn-del  { background: #fee2e2; color: var(--red); }
+.admin-btn-view:hover { background: var(--blue); color: #fff; }
+.admin-btn-del:hover  { background: var(--red); color: #fff; }
+/* Modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+                  display: flex; align-items: center; justify-content: center; z-index: 9000; padding: 20px; }
+.modal-backdrop.hidden { display: none; }
+.modal { background: #fff; border-radius: 14px; max-width: 540px; width: 100%; padding: 32px;
+         box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+.modal h3 { font-family: var(--font-serif); font-size: 1.4rem; margin-bottom: 18px; }
+.modal-row { display: flex; gap: 10px; margin-bottom: 12px; padding-bottom: 12px;
+             border-bottom: 1px solid var(--border); }
+.modal-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.modal-row .mk { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase;
+                 letter-spacing: 0.08em; color: var(--text-muted); width: 110px; flex-shrink: 0; padding-top: 2px; }
+.modal-row .mv { font-size: 0.88rem; color: var(--text); word-break: break-all; }
+.modal-close { margin-top: 20px; }
+
+/* ── ARTICLE READER ──────────────────────────────────── */
+.article-page { padding-top: var(--nav-h); }
+.article-hero { background: var(--blue-dark); padding: 60px 24px; }
+.article-hero .badge { margin-bottom: 14px; }
+.article-hero h1 { font-family: var(--font-serif); font-size: clamp(1.8rem,4vw,3rem);
+                   font-weight: 700; color: #fff; max-width: 800px; margin: 0 auto 16px; line-height: 1.25; }
+.article-hero .meta { display: flex; align-items: center; gap: 16px; justify-content: center;
+                      flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.75rem;
+                      color: rgba(255,255,255,0.55); }
+.article-content { max-width: 740px; margin: 0 auto; padding: 52px 24px 80px; }
+.article-content p { font-size: 1.06rem; line-height: 1.82; color: var(--text-mid); margin-bottom: 22px; }
+.article-content h2 { font-family: var(--font-serif); font-size: 1.55rem; font-weight: 700;
+                      color: var(--text); margin: 36px 0 14px; }
+.article-content blockquote { border-left: 4px solid var(--yellow); padding: 10px 20px;
+                               font-style: italic; color: var(--text-mid); margin: 28px 0;
+                               background: var(--yellow-light); border-radius: 0 8px 8px 0; }
+
+/* ── TOAST ───────────────────────────────────────────── */
+.toast { position: fixed; bottom: 28px; right: 28px; max-width: 320px;
+         background: var(--text); color: #fff; padding: 13px 18px; border-radius: 10px;
+         font-family: var(--font-mono); font-size: 0.8rem; box-shadow: var(--shadow-lg);
+         z-index: 9999; transform: translateY(80px); opacity: 0;
+         transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: #065f46; }
+.toast.error   { background: #7f1d1d; }
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .article-grid { grid-template-columns: repeat(2,1fr); }
+  .footer-grid  { grid-template-columns: 1fr 1fr; }
+  .team-grid    { grid-template-columns: repeat(2,1fr); }
+  .admin-stats  { grid-template-columns: repeat(2,1fr); }
+  .about-grid   { grid-template-columns: 1fr; gap: 36px; }
+  .contact-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  :root { --nav-h: 62px; }
+  .nav-links, .nav-actions { display: none; }
+  .hamburger { display: flex; }
+  .article-grid { grid-template-columns: 1fr; }
+  .footer-grid  { grid-template-columns: 1fr; gap: 28px; }
+  .team-grid    { grid-template-columns: 1fr; }
+  .values-grid  { grid-template-columns: 1fr; }
+  .admin-stats  { grid-template-columns: 1fr 1fr; }
+  .frow { grid-template-columns: 1fr; }
+  .fc-meta, .fc-title, .fc-excerpt, .blur-para, .fc-author { padding-left: 18px; padding-right: 18px; }
+  .form-card { padding: 28px 18px; }
+  table { font-size: 0.78rem; }
+  thead th, tbody td { padding: 9px 10px; }
+}
+@media (max-width: 480px) {
+  .hero-cta { flex-direction: column; align-items: center; }
+  .hero-stats { flex-direction: column; gap: 14px; }
+  .stat-div { width: 40px; height: 1px; }
+  .admin-stats { grid-template-columns: 1fr; }
+  .otp-digits { gap: 5px; }
+  .otp-d { width: 40px; height: 48px; font-size: 1.2rem; }
+}
+
+</style>
+</head>
+<body>
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><span class="logo-ua">Голос</span><span class="logo-en">Ukraine</span></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">← All Articles</a>
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="uk" onclick="setLang('uk')">UA</button>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" id="navLogout" onclick="logout()">Log Out</button>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">← All Articles</a>
+  </div>
+</nav>
+
+<div class="article-page">
+  <div class="article-hero" id="articleHero" style="text-align:center;">
+    <div style="height:200px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.8rem;color:rgba(255,255,255,0.5);">Loading…</div>
+  </div>
+  <div class="article-content" id="articleContent"></div>
+</div>
+
+<section class="cta-band">
+  <div class="container">
+    <div class="cta-inner">
+      <div class="cta-text">
+        <h2>Share this article</h2>
+        <p>Help spread the voice of Ukraine to more people around the world.</p>
+      </div>
+      <button class="btn btn-yellow" onclick="shareArticle()">Share 🇺🇦</button>
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+  // Protect article — redirect if not logged in
+  if (!localStorage.getItem('vou_token')) {
+    window.location.href = 'signup.html?next=' + encodeURIComponent(window.location.href);
+  } else {
+    document.addEventListener('DOMContentLoaded', loadArticlePage);
+  }
+
+  function shareArticle() {
+    if (navigator.share) {
+      navigator.share({ title: document.title, url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast('Link copied!', 'success');
+    }
+  }
+</script>
+
+<script>
+/* ============================================================
+   ГОЛОС УКРАЇНИ · Voice of Ukraine — app.js
+   ============================================================ */
+'use strict';
+
+/* ── SUPABASE CONFIG ──────────────────────────────────────────
+   Replace these with your actual Supabase project values.
+   Get them from: https://supabase.com → Project → Settings → API
+   ──────────────────────────────────────────────────────────── */
+const SUPABASE_URL    = 'https://dfsxgjrruzwjxywizejf.supabase.co';
+const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
+
+
+/* ── LANGUAGE ─────────────────────────────────────────────── */
+let currentLang = localStorage.getItem('vou_lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('vou_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === lang));
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const v = el.getAttribute('data-' + lang);
+    if (!v) return;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = v;
+    else el.innerHTML = v;
+  });
+}
+
+/* ── NAV SCROLL ───────────────────────────────────────────── */
+const navEl = document.getElementById('nav');
+if (navEl) window.addEventListener('scroll', () =>
+  navEl.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
+
+/* ── HAMBURGER ────────────────────────────────────────────── */
+const hamburgerEl = document.getElementById('hamburger');
+const mobileMenuEl = document.getElementById('mobileMenu');
+if (hamburgerEl && mobileMenuEl)
+  hamburgerEl.addEventListener('click', () =>
+    mobileMenuEl.classList.toggle('open'));
+
+/* ── ARTICLE FILTER ───────────────────────────────────────── */
+function filterArticles(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.a-card').forEach(card => {
+    card.classList.toggle('hidden', cat !== 'all' && card.dataset.cat !== cat);
+  });
+}
+
+/* ── AUTH GATE (for blurred content) ─────────────────────── */
+function requireAuth(redirectUrl) {
+  if (localStorage.getItem('vou_token')) return true;
+  toast('Join free to read the full article.', 'info', 3500);
+  setTimeout(() => { window.location.href = 'signup.html?next=' + (redirectUrl || ''); }, 800);
+  return false;
+}
+
+/* ── OTP DIGIT BOXES ─────────────────────────────────────── */
+function initOtpDigits(groupId, onComplete) {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+  const inputs = Array.from(group.querySelectorAll('.otp-d'));
+  inputs.forEach((inp, i) => {
+    inp.addEventListener('input', e => {
+      const v = e.target.value.replace(/\D/g, '');
+      e.target.value = v.slice(-1);
+      inp.classList.toggle('filled', !!inp.value);
+      if (v && i < inputs.length - 1) inputs[i + 1].focus();
+      const code = inputs.map(x => x.value).join('');
+      if (code.length === 6 && onComplete) onComplete(code);
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) {
+        inputs[i - 1].focus(); inputs[i - 1].value = '';
+        inputs[i - 1].classList.remove('filled');
+      }
+    });
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const p = (e.clipboardData || window.clipboardData).getData('text')
+                  .replace(/\D/g,'').slice(0,6);
+      p.split('').forEach((ch, idx) => {
+        if (inputs[idx]) { inputs[idx].value = ch; inputs[idx].classList.add('filled'); }
+      });
+      if (p.length === 6 && onComplete) onComplete(p);
+    });
+  });
+}
+
+/* ── RESEND COUNTDOWN ─────────────────────────────────────── */
+function startCountdown(btnId, spanId, secs = 60) {
+  const btn = document.getElementById(btnId);
+  const span = document.getElementById(spanId);
+  if (!btn) return;
+  btn.disabled = true;
+  let s = secs;
+  if (span) span.textContent = s;
+  const iv = setInterval(() => {
+    s--;
+    if (span) span.textContent = s;
+    if (s <= 0) {
+      clearInterval(iv);
+      btn.disabled = false;
+      if (span) span.textContent = '';
+      btn.textContent = 'Resend code';
+    }
+  }, 1000);
+  return iv;
+}
+
+/* ── FIELD VALIDATION ─────────────────────────────────────── */
+function setErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = msg;
+  const inp = document.getElementById(id.replace('err-',''));
+  if (inp) inp.classList.toggle('err-field', !!msg);
+}
+function clearErrs(...ids) { ids.forEach(id => setErr(id, '')); }
+
+/* ── TOAST ────────────────────────────────────────────────── */
+function toast(msg, type = 'info', dur = 3500) {
+  let t = document.getElementById('globalToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'globalToast'; t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+/* ── GEOLOCATION HELPER ───────────────────────────────────── */
+function getGeoLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude.toFixed(5),
+                       lon: pos.coords.longitude.toFixed(5),
+                       acc: pos.coords.accuracy }),
+      () => resolve(null),
+      { timeout: 8000 }
+    );
+  });
+}
+
+/* ── IP FETCH ─────────────────────────────────────────────── */
+async function getIpInfo() {
+  try {
+    const r = await fetch('https://api.ipapi.is/');
+    if (!r.ok) return {};
+    return await r.json();
+  } catch { return {}; }
+}
+
+/* ── SUPABASE HELPERS ─────────────────────────────────────── */
+const API = {
+  headers: () => ({
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_ANON,
+    'Authorization': 'Bearer ' + (localStorage.getItem('vou_token') || SUPABASE_ANON)
+  }),
+
+  async rpc(fn, body) {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+      method: 'POST',
+      headers: this.headers(),
+      body: JSON.stringify(body)
+    });
+    return r.json();
+  },
+
+  async insert(table, data) {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: { ...this.headers(), 'Prefer': 'return=representation' },
+      body: JSON.stringify(data)
+    });
+    return r.json();
+  },
+
+  async select(table, params = '') {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
+      headers: this.headers()
+    });
+    return r.json();
+  },
+
+  async delete(table, id) {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'DELETE', headers: this.headers()
+    });
+    return r.status;
+  }
+};
+
+/* ── SESSION ──────────────────────────────────────────────── */
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('vou_user') || 'null'); }
+  catch { return null; }
+}
+function saveSession(token, user) {
+  localStorage.setItem('vou_token', token);
+  localStorage.setItem('vou_user', JSON.stringify(user));
+}
+function clearSession() {
+  localStorage.removeItem('vou_token');
+  localStorage.removeItem('vou_user');
+}
+function logout() {
+  clearSession();
+  window.location.href = 'index.html';
+}
+
+/* ── INIT ─────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  setLang(currentLang);
+
+  // Update nav based on login state
+  const user = getUser();
+  const joinBtn = document.getElementById('navJoin');
+  const loginBtn = document.getElementById('navLogin');
+  const logoutBtn = document.getElementById('navLogout');
+  if (user) {
+    if (joinBtn) joinBtn.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+  } else {
+    if (logoutBtn) logoutBtn.style.display = 'none';
+  }
+});
+
+</script>
+<script>
+/* ============================================================
+   articles.js — Loads and renders .md article files
+   ============================================================
+   HOW TO ADD ARTICLES:
+   1. Create a new .md file in /articles/ folder
+   2. Add its filename to ARTICLE_INDEX below
+   3. That's it — the site auto-updates.
+   ============================================================ */
+'use strict';
+
+/* ── ARTICLE INDEX ────────────────────────────────────────────
+   Add new article filenames here in order (newest first).
+   ──────────────────────────────────────────────────────────── */
+const ARTICLE_INDEX = [
+  'ukraine-sunrise-2027.md',
+  'kharkiv-resilience.md',
+  'culture-renaissance.md',
+  'diaspora-warsaw.md',
+  'solar-ukraine.md',
+  'mariupol-architects.md',
+  'medics-93rd.md',
+  'language-revival.md',
+];
+
+/* ── ARTICLE METADATA ─────────────────────────────────────────
+   Frontmatter is parsed from the .md files automatically.
+   Format at top of each .md file:
+   ---
+   title: Article Title Here
+   title_uk: Назва статті
+   author: Author Name
+   author_initials: AB
+   author_color: #1a4d8f
+   date: 2025-03-20
+   category: frontlines
+   read_time: 8
+   excerpt: Short 1–2 sentence summary.
+   excerpt_uk: Короткий 1–2 речення.
+   emoji: 🪖
+   ---
+   ──────────────────────────────────────────────────────────── */
+
+/* ── SIMPLE MARKDOWN RENDERER ─────────────────────────────── */
+function renderMarkdown(md) {
+  return md
+    // strip frontmatter
+    .replace(/^---[\s\S]*?---\n?/, '')
+    // h2
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    // h3
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    // bold
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // italic
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // blockquote
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    // paragraphs (double newline)
+    .replace(/\n\n+/g, '</p><p>')
+    // wrap
+    .replace(/^(?!<)(.+)/gm, (m) => m.trim() ? m : '')
+    .replace(/^(.+)/, '<p>$1')
+    .concat('</p>')
+    // clean empty tags
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<h[23]>)/g, '$1')
+    .replace(/(<\/h[23]>)<\/p>/g, '$1')
+    .replace(/<p>(<blockquote>)/g, '$1')
+    .replace(/(<\/blockquote>)<\/p>/g, '$1');
+}
+
+/* ── PARSE FRONTMATTER ────────────────────────────────────── */
+function parseFrontmatter(md) {
+  const match = md.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return {};
+  const fm = {};
+  match[1].split('\n').forEach(line => {
+    const [k, ...v] = line.split(':');
+    if (k) fm[k.trim()] = v.join(':').trim().replace(/^["']|["']$/g, '');
+  });
+  return fm;
+}
+
+/* ── FETCH AND PARSE ONE ARTICLE ──────────────────────────── */
+async function fetchArticle(filename) {
+  try {
+    const r = await fetch('./articles/' + filename);
+    if (!r.ok) return null;
+    const md = await r.text();
+    const fm = parseFrontmatter(md);
+    fm._raw = md;
+    fm._html = renderMarkdown(md);
+    fm._filename = filename;
+    return fm;
+  } catch { return null; }
+}
+
+/* ── BUILD FEATURED CARD HTML ─────────────────────────────── */
+function buildFeaturedCard(a, lang) {
+  const title   = lang === 'uk' ? (a.title_uk   || a.title)   : a.title;
+  const excerpt = lang === 'uk' ? (a.excerpt_uk || a.excerpt) : a.excerpt;
+  return `
+  <article class="featured-card" onclick="openArticle('${a._filename}')">
+    <div class="fc-meta">
+      <span class="badge badge-${a.category}">${categoryLabel(a.category, lang)}</span>
+      <time datetime="${a.date}">${formatDate(a.date, lang)}</time>
+      <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted);">
+        ${a.read_time} ${lang === 'uk' ? 'хв читання' : 'min read'}
+      </span>
+    </div>
+    <h2 class="fc-title">${title}</h2>
+    <p class="fc-excerpt">${excerpt}</p>
+    <div class="blur-gate">
+      <p class="blur-para">${getFirstParagraph(a._raw)}</p>
+      <p class="blur-para blurred">${getSecondParagraph(a._raw)}</p>
+      <div class="blur-overlay">
+        <div class="blur-cta-box">
+          <div class="lock">🔒</div>
+          <h3 data-en="Join Free to Read" data-uk="Приєднайтесь, щоб читати">Join Free to Read</h3>
+          <p data-en="Free membership — instant access to all articles in EN & UA."
+             data-uk="Безкоштовне членство — миттєвий доступ до всіх статей.">
+             Free membership — instant access to all articles in EN & UA.
+          </p>
+          <a href="signup.html" class="btn btn-primary">
+            ${lang === 'uk' ? 'Приєднатись безкоштовно' : 'Join Free — No Card Needed'}
+          </a>
+          <p class="already">
+            ${lang === 'uk' ? 'Вже є акаунт? <a href="login.html">Увійти</a>'
+                            : 'Already a member? <a href="login.html">Sign in</a>'}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="fc-author">
+      <div class="avatar avatar-md" style="background:${a.author_color || '#1a4d8f'};">${a.author_initials || 'VU'}</div>
+      <div>
+        <strong>${a.author || 'Editorial Team'}</strong>
+        <span>${a.author_role || ''}</span>
+      </div>
+    </div>
+  </article>`;
+}
+
+/* ── BUILD GRID CARD HTML ─────────────────────────────────── */
+function buildGridCard(a, lang) {
+  const title   = lang === 'uk' ? (a.title_uk   || a.title)   : a.title;
+  const excerpt = lang === 'uk' ? (a.excerpt_uk || a.excerpt) : a.excerpt;
+  return `
+  <article class="a-card" data-cat="${a.category}" onclick="openArticle('${a._filename}')">
+    <div class="a-card-img" style="background:${catGradient(a.category)};">
+      <span style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));">${a.emoji || '📰'}</span>
+    </div>
+    <div class="a-card-body">
+      <div class="a-card-meta">
+        <span class="badge badge-${a.category}">${categoryLabel(a.category, lang)}</span>
+        <time style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);"
+              datetime="${a.date}">${formatDate(a.date, lang, true)}</time>
+      </div>
+      <h3 class="a-card-title">${title}</h3>
+      <p class="a-card-preview">${excerpt}</p>
+      <div class="a-blur-bar">🔒 <span>${lang === 'uk' ? 'Зареєструйтесь, щоб читати' : 'Sign up to read full article'}</span></div>
+      <div class="a-footer">
+        <div class="avatar avatar-sm" style="background:${a.author_color || '#1a4d8f'};">${a.author_initials || 'VU'}</div>
+        <span>${a.author || 'Editorial'}</span>
+        <span class="rt">${a.read_time || '5'} ${lang === 'uk' ? 'хв' : 'min'}</span>
+      </div>
+    </div>
+  </article>`;
+}
+
+/* ── OPEN ARTICLE PAGE ────────────────────────────────────── */
+function openArticle(filename) {
+  if (!localStorage.getItem('vou_token')) {
+    window.location.href = 'signup.html?next=article.html?f=' + encodeURIComponent(filename);
+  } else {
+    window.location.href = 'article.html?f=' + encodeURIComponent(filename);
+  }
+}
+
+/* ── LOAD ALL ARTICLES INTO INDEX PAGE ──────────────────────── */
+async function loadArticlesIndex() {
+  const featuredEl = document.getElementById('featuredSlot');
+  const gridEl     = document.getElementById('articleGrid');
+  if (!featuredEl || !gridEl) return;
+
+  const lang = localStorage.getItem('vou_lang') || 'en';
+  const articles = (await Promise.all(ARTICLE_INDEX.map(fetchArticle))).filter(Boolean);
+
+  if (articles.length === 0) {
+    gridEl.innerHTML = '<p style="color:var(--text-muted);font-family:var(--font-mono);">No articles loaded.</p>';
+    return;
+  }
+
+  // Featured = first article
+  featuredEl.innerHTML = buildFeaturedCard(articles[0], lang);
+
+  // Rest in grid
+  gridEl.innerHTML = articles.slice(1).map(a => buildGridCard(a, lang)).join('');
+}
+
+/* ── LOAD SINGLE ARTICLE ──────────────────────────────────── */
+async function loadArticlePage() {
+  const params = new URLSearchParams(window.location.search);
+  const filename = params.get('f');
+  if (!filename) { window.location.href = 'index.html'; return; }
+
+  const a = await fetchArticle(filename);
+  if (!a) { window.location.href = 'index.html'; return; }
+
+  const lang  = localStorage.getItem('vou_lang') || 'en';
+  const title = lang === 'uk' ? (a.title_uk || a.title) : a.title;
+
+  document.title = title + ' — Voice of Ukraine';
+
+  const heroEl    = document.getElementById('articleHero');
+  const contentEl = document.getElementById('articleContent');
+  if (!heroEl || !contentEl) return;
+
+  heroEl.innerHTML = `
+    <span class="badge badge-${a.category}" style="margin-bottom:14px;display:inline-block;">${categoryLabel(a.category, lang)}</span>
+    <h1>${title}</h1>
+    <div class="meta">
+      <span>${a.author || 'Editorial'}</span>
+      <span>·</span>
+      <time datetime="${a.date}">${formatDate(a.date, lang)}</time>
+      <span>·</span>
+      <span>${a.read_time || '5'} ${lang === 'uk' ? 'хв читання' : 'min read'}</span>
+    </div>`;
+
+  contentEl.innerHTML = a._html;
+}
+
+/* ── HELPERS ──────────────────────────────────────────────── */
+function categoryLabel(cat, lang) {
+  const map = {
+    frontlines: { en: 'Front Lines', uk: 'Передова' },
+    culture:    { en: 'Culture',     uk: 'Культура' },
+    diaspora:   { en: 'Diaspora',    uk: 'Діаспора' },
+    rebuild:    { en: 'Rebuilding',  uk: 'Відбудова' },
+    future:     { en: 'Predictions', uk: 'Передбачення' },
+  };
+  return (map[cat] || { en: cat, uk: cat })[lang] || cat;
+}
+
+function catGradient(cat) {
+  const g = {
+    frontlines: 'linear-gradient(135deg,#7f1d1d,#dc2626)',
+    culture:    'linear-gradient(135deg,#0c4a6e,#0284c7)',
+    diaspora:   'linear-gradient(135deg,#7c2d8f,#a855f7)',
+    rebuild:    'linear-gradient(135deg,#065f46,#059669)',
+    future:     'linear-gradient(135deg,#713f12,#f59e0b)',
+  };
+  return g[cat] || 'linear-gradient(135deg,#1a4d8f,#2563a8)';
+}
+
+function formatDate(dateStr, lang, short = false) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (lang === 'uk') {
+    const months = ['січня','лютого','березня','квітня','травня','червня',
+                    'липня','серпня','вересня','жовтня','листопада','грудня'];
+    return short ? `${d.getDate()} ${months[d.getMonth()].slice(0,3)}`
+                 : `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+  return d.toLocaleDateString('en-GB', short
+    ? { day: 'numeric', month: 'short' }
+    : { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function getFirstParagraph(md) {
+  const clean = md.replace(/^---[\s\S]*?---\n?/, '');
+  const paras = clean.split(/\n\n+/).filter(p => p.trim() && !p.startsWith('#'));
+  return paras[0] ? paras[0].replace(/[*_#>]/g,'').trim() : '';
+}
+function getSecondParagraph(md) {
+  const clean = md.replace(/^---[\s\S]*?---\n?/, '');
+  const paras = clean.split(/\n\n+/).filter(p => p.trim() && !p.startsWith('#'));
+  return paras[1] ? paras[1].replace(/[*_#>]/g,'').trim() : '';
+}
+
+</script>
+<script>
+var ARTICLES = [
+  {
+    title: "Ukraine 2027 — The Dawn Nobody Predicted",
+    title_uk: "Україна 2027 — Світанок, якого ніхто не передбачив",
+    author: "Yuliya Karpenko", author_initials: "YK", author_color: "#1a4d8f",
+    author_role: "Editor-in-Chief, Kyiv", date: "2025-03-28",
+    category: "future", read_time: "10", emoji: "🌅",
+    excerpt: "Three years from now, analysts predict Ukraine will emerge not broken, but transformed — a nation remade by fire, ready to become Europe's most resilient democracy.",
+    excerpt_uk: "Через три роки аналітики передбачають, що Україна постане не зламаною, а трансформованою.",
+    _filename: "ukraine-sunrise-2027.md",
+    body: `<p>There is a version of 2027 that the world's comfortable chancelleries have not yet dared to speak aloud. It is the version where Ukraine wins — not merely survives, not merely holds a line on a map, but genuinely, structurally, irreversibly wins.</p><p>This is not wishful thinking. This is what the data, the demography, and the determination of forty-four million people are pointing toward.</p><h2>The Economy No One Expected</h2><p>In January 2025, the International Monetary Fund revised its Ukrainian GDP growth forecast upward for the third consecutive quarter. The number — 4.2% projected growth — would be remarkable for any country. For a nation absorbing thousands of missiles and sustaining active frontline combat, it is nothing short of extraordinary.</p><blockquote>"We didn't rebuild the country we had. We built the country we always should have had." — Oleksiy Honcharuk, former Prime Minister</blockquote><p>By 2027, independent forecasters suggest Ukraine's IT sector alone will account for over $12 billion in annual exports. The war that was meant to erase Ukraine from the map has instead concentrated its most talented citizens into a nation-scale startup.</p><h2>The Political Transformation</h2><p>Something quieter, and perhaps more important, is happening in Ukrainian politics. The war has produced a civic culture unlike anything in the post-Soviet space — a genuine, ground-up accountability between citizens and their institutions.</p><p>In 2027, Ukraine will almost certainly be a candidate for European Union accession — likely one of the fastest-track applications in EU history. The structural reforms required for accession, reforms that took Poland a decade, Ukraine is compressing into three years.</p><h2>A New Role in Europe</h2><p>Ukraine, which the Kremlin imagined it could erase, is positioned to become a central pillar of European security architecture. Its military experience — hard-won, brutal, irreplaceable — will shape NATO doctrine for a generation.</p><h2>The Human Cost and the Human Future</h2><p>None of this minimises the grief. But grief, in Ukrainian culture, has never been passive. From the Holodomor to Chernobyl to Maidan, Ukrainians have transformed their deepest wounds into acts of construction.</p><p>The 2027 that awaits Ukraine will be Ukrainian. Unambiguously, permanently, proudly Ukrainian. And that — is enough to call it a victory.</p>`
+  },
+  {
+    title: "The Villages That Refused to Fall — Resilience in Kharkiv",
+    title_uk: "Села, які відмовились капітулювати — стійкість Харківщини",
+    author: "Yuliya Karpenko", author_initials: "YK", author_color: "#1a4d8f",
+    author_role: "Senior Correspondent, Kharkiv", date: "2025-03-20",
+    category: "frontlines", read_time: "8", emoji: "🪖",
+    excerpt: "Three years into the full-scale invasion, communities near Kharkiv have rebuilt, regrouped, and refuse to be erased from history.",
+    excerpt_uk: "Через три роки після вторгнення громади поблизу Харкова відбудувались і відмовляються бути стертими з історії.",
+    _filename: "kharkiv-resilience.md",
+    body: `<p>When Oksana Kovalenko returned to her village of Vesele in September 2022, she found the school where she had taught for twenty years reduced to rubble. The blackboard still stood, improbably, in the open air — a geometry lesson half-erased, as if the children had simply stepped outside for a moment.</p><p>"I thought: we will rebuild," she told us, her voice steady. "We will rebuild because we have no other choice."</p><h2>A City That Refused to Break</h2><p>The city itself, Ukraine's second largest, absorbed over three thousand missile and artillery strikes in the first year. Yet by early 2025, new apartment buildings have risen where craters once gaped. Tram lines now run on schedule. Cafés fill on weekends. Life, stubborn and ordinary, has resumed.</p><blockquote>"They wanted to make us disappear. Instead they made us remember who we are."</blockquote><h2>The Mayors Who Stayed</h2><p>In the village of Mala Rohan, Mayor Vasyl Bondarenko never left — not when the first shells fell, not when Russian troops occupied the streets for six weeks. He hid documents. He kept lists. He remembered every resident by name.</p><p>"If I had left, there would have been no one to come back to," he says simply. "Someone had to be the anchor."</p><h2>What 2027 Might Look Like</h2><p>Analysts project that by 2027, the Kharkiv region will have restored over 95% of pre-war housing stock. The region's agricultural output is forecast to exceed 2021 levels within two years.</p><p>These villages have survived. They are building. And they are not finished.</p>`
+  },
+  {
+    title: "Theatre Without Walls — Art Under Air Raid Sirens",
+    title_uk: "Театр без стін — мистецтво під час повітряних тривог",
+    author: "Ivan Marchenko", author_initials: "IM", author_color: "#b45309",
+    author_role: "Culture Editor", date: "2025-03-18",
+    category: "culture", read_time: "5", emoji: "🎭",
+    excerpt: "Kyiv's theatre companies have found extraordinary ways to keep performing — in metro stations, bunkers, and open courtyards between blackouts.",
+    excerpt_uk: "Театральні трупи Києва знайшли неймовірні способи продовжувати виступи — у метро, бункерах та дворах.",
+    _filename: "culture-renaissance.md",
+    body: `<p>The stage is a platform on Line 3 of the Kyiv Metro. The audience sits on folding chairs, on their own luggage, on the concrete itself. Above them, somewhere in the dark city, an air raid alert is in its fourth hour.</p><p>But down here, a woman is singing. Her name is Olena Sorokina. Tonight she is performing Verdi for an audience of two hundred strangers in a bomb shelter two floors beneath Khreshchatyk Street.</p><blockquote>"Art is not a luxury. Art is what tells us we are still human." — Olena Sorokina</blockquote><h2>The Companies That Didn't Stop</h2><p>The Dakh Theatre turned its building into a shelter, a rehearsal space, and an impromptu cultural centre simultaneously. Its director, Vlad Troitskyi, has not left Kyiv for three years.</p><p>"We used to ask: what does it mean to make art in difficult times? Now we know. It means to make art anyway."</p><h2>A Cultural Renaissance</h2><p>Ukrainian-language books are selling at record numbers. Ukrainian cinema is winning international prizes. Ukrainian music is filling clubs in Warsaw, Berlin, and London.</p><p>"They wanted to prove we don't exist. We are proving the opposite. Every night, in every venue, under every siren. We exist. We have always existed."</p>`
+  },
+  {
+    title: "Two Years in Warsaw — Ukrainian Mothers Who Built a New World",
+    title_uk: "Два роки у Варшаві — українські матері, які побудували новий світ",
+    author: "Olena Bondar", author_initials: "OB", author_color: "#7c2d8f",
+    author_role: "Diaspora Correspondent, Warsaw", date: "2025-03-12",
+    category: "diaspora", read_time: "10", emoji: "🌍",
+    excerpt: "Over a million Ukrainians settled in Poland. We follow five mothers who arrived with children and suitcases — and built community from nothing.",
+    excerpt_uk: "Понад мільйон українців оселились у Польщі. П'ять матерів, які побудували спільноту з нічого.",
+    _filename: "diaspora-warsaw.md",
+    body: `<p>Daryna arrived in Warsaw on the fourth of March, 2022, with two children, one suitcase, and the address of a volunteer centre she had found on a Facebook group at three in the morning while the sky above Kyiv turned orange.</p><p>She spoke no Polish. She had four hundred euros. She had no idea where she would sleep. Two years later, Daryna runs a community kitchen that feeds three hundred people a week.</p><h2>Networks of Mutual Aid</h2><p>What emerged in the first weeks was not primarily a government response — it was a citizen one. And quickly, Ukrainian refugees stopped being recipients of help and became organisers of it.</p><blockquote>"We could not just accept. It is not in us to just accept." — Daryna</blockquote><h2>The Children</h2><p>Nine-year-old Mykyta now dreams in Polish. He still knows every word of the Ukrainian national anthem. He insisted on teaching it to his class.</p><h2>Looking Toward Home</h2><p>"The home I left doesn't exist anymore," says Tetyana, who is from Mariupol. "Home is where my children are safe. Right now, that is here. When it can be Ukraine — we will go."</p>`
+  },
+  {
+    title: "Solar Ukraine — How a War-Torn Country Became a Clean Energy Pioneer",
+    title_uk: "Сонячна Україна — як країна стала піонером чистої енергетики",
+    author: "Anton Holovatyi", author_initials: "AH", author_color: "#713f12",
+    author_role: "Technology & Economy Reporter", date: "2025-03-05",
+    category: "rebuild", read_time: "9", emoji: "⚡",
+    excerpt: "Stripped of its grid, Ukraine improvised with solar panels, batteries, and microgrids — and is now exporting lessons in energy resilience to the world.",
+    excerpt_uk: "Позбавившись мережі, Україна імпровізувала з сонячними панелями та мікромережами.",
+    _filename: "solar-ukraine.md",
+    body: `<p>In October 2022, Russian missiles struck the Trypilska thermal power plant outside Kyiv. Within hours, 1.5 million people lost electricity. Within months, something nobody planned for had begun to take shape: a distributed, decentralised, renewable energy system that may ultimately prove more resilient than the centralised grid it replaced.</p><h2>Necessity as the Mother of Innovation</h2><p>What followed was one of the fastest energy transitions on record. By mid-2023, Ukraine had installed more rooftop solar capacity than it had in the previous five years combined.</p><blockquote>"We didn't have the luxury of debate. We just had to do it." — Mykola Kovalenko, Energy Ministry</blockquote><h2>The Numbers</h2><p>Solar panel imports to Ukraine increased by 340% in 2023. The share of renewables in Ukraine's energy mix reached 23% by the end of 2024 — faster than almost any comparable transition anywhere in the world.</p><h2>2027 and Beyond</h2><p>By 2027, analysts project Ukraine's renewable capacity will exceed its pre-war total electricity generation. Ukraine will not rebuild what it had. It will build what Europe is still trying to become.</p>`
+  },
+  {
+    title: "From Rubble to Blueprint — Mariupol's Architects Refuse to Forget",
+    title_uk: "З руїн до креслення — архітектори Маріуполя відмовляються забути",
+    author: "Svitlana Pryimak", author_initials: "SP", author_color: "#065f46",
+    author_role: "Senior Reporter, Lviv", date: "2025-02-28",
+    category: "rebuild", read_time: "7", emoji: "🏗️",
+    excerpt: "In exile, a group of Mariupol-born architects documents every lost building — preparing for the day reconstruction can begin.",
+    excerpt_uk: "У вигнанні група архітекторів з Маріуполя документує кожну втрачену будівлю.",
+    _filename: "mariupol-architects.md",
+    body: `<p>In a shared workspace in Lviv, seven architects sit at computers covered in blueprints. None of them have been to their hometown of Mariupol in over three years. Most do not know what remains of the streets they grew up on.</p><p>They are building the city they cannot yet visit — street by street, building by building — from satellite images, pre-war photographs, and the memories of survivors.</p><h2>Documenting the Undocumentable</h2><p>The Mariupol Architecture Memory Project has catalogued over 4,300 buildings: their pre-war state, their last known condition, and in many cases, their destruction. The database is the most comprehensive record of the city's built heritage in existence.</p><blockquote>"When Mariupol is liberated, and it will be liberated, we will be ready." — Dmytro Shevchenko, project lead</blockquote><h2>A City in Exile</h2><p>What the architects are creating is more than a technical document. It is an act of memory, a refusal to let the physical record of Mariupol's existence disappear along with its buildings.</p><p>History will judge those who destroyed Mariupol. These architects are making sure history has the evidence.</p>`
+  },
+  {
+    title: "The Medics of the 93rd Brigade — Saving Lives in the Mud",
+    title_uk: "Медики 93-ї бригади — рятують життя в болоті",
+    author: "Dmytro Koval", author_initials: "DK", author_color: "#7f1d1d",
+    author_role: "Front Lines Reporter", date: "2025-02-20",
+    category: "frontlines", read_time: "12", emoji: "🪖",
+    excerpt: "A frontline report from combat medics who work in near-total darkness, under constant shelling, with equipment held together by resourcefulness and courage.",
+    excerpt_uk: "Репортаж з передової від бойових медиків, які працюють під постійним обстрілом.",
+    _filename: "medics-93rd.md",
+    body: `<p>At 2:14 in the morning, the radio crackles. A soldier has been hit 400 metres from the tree line. Sergeant Olha Petrenko, 29, a former nurse from Dnipro, is already moving before the transmission ends.</p><p>She has done this three hundred times. She does not count anymore.</p><h2>The Training That Saved Lives</h2><p>The 93rd Brigade's medical team is one of the most experienced combat medicine units in the Ukrainian Armed Forces. In three years of full-scale war, they have treated over 2,000 casualties. Their survival rate — 94% for soldiers who reach them alive — is among the highest recorded in modern warfare.</p><blockquote>"We are not heroes. We are just people who learned very fast." — Olha Petrenko</blockquote><h2>The Equipment Problem</h2><p>They work with what they have. Donated tourniquets from Poland. Field dressings from Britain. Hemostatic gauze from America. And improvisation — always improvisation.</p><h2>What They Carry Home</h2><p>Olha will return to Dnipro after this rotation. She will sleep for two days. Then she will go back. "I don't know how to explain why," she says. "I just know that someone has to."</p>`
+  },
+  {
+    title: "The Language That Would Not Die — Ukrainian Literature's Renaissance",
+    title_uk: "Мова, яка не померла — ренесанс української літератури",
+    author: "Nataliya Shevchenko", author_initials: "NS", author_color: "#0c4a6e",
+    author_role: "Culture Correspondent", date: "2025-02-15",
+    category: "culture", read_time: "6", emoji: "📚",
+    excerpt: "Ukrainian-language books now top bestseller lists across Europe. We speak to the writers and translators igniting a global rediscovery of Ukrainian literature.",
+    excerpt_uk: "Книги українською мовою тепер очолюють списки бестселерів по всій Європі.",
+    _filename: "language-revival.md",
+    body: `<p>In a bookshop in Warsaw, a Polish woman is buying a Ukrainian novel. She does not read Ukrainian. She has ordered the Polish translation, which arrived last week. She is one of forty thousand people who have bought it.</p><p>The novel is by Sophia Andrukhovych. Three years ago, almost no one outside Ukraine had heard of her.</p><h2>The Translation Boom</h2><p>Ukrainian literature is being translated at a pace without precedent. In 2024 alone, over 340 Ukrainian literary works were published in translation across Europe and North America — a tenfold increase from 2021.</p><blockquote>"They tried to prove our language didn't exist. Now the whole world is learning it." — Sophia Andrukhovych</blockquote><h2>The Writers Who Stayed</h2><p>Many of Ukraine's most celebrated writers remained in the country throughout the war. Some served in the military. All continued to write. Their work — urgent, raw, necessary — is reaching readers who had never considered Ukrainian literature before the invasion.</p><h2>A Language Choosing Itself</h2><p>Inside Ukraine, something equally significant is happening. Many Ukrainians who grew up speaking Russian as their primary language are switching to Ukrainian — not because they are required to, but because they choose to. Language, for them, has become an act of identity.</p>`
+  }
+];
+
+// Override fetchArticle to use embedded data
+async function fetchArticle(filename) {
+  var found = ARTICLES.find(function(a){return a._filename===filename});
+  if (found) {
+    found._html = found.body || renderMd(found._raw || '');
+    return found;
+  }
+  try {
+    var r = await fetch('./articles/' + filename);
+    if (!r.ok) return null;
+    var md = await r.text();
+    var fm = parseFm(md);
+    fm._html = renderMd(md);
+    return fm;
+  } catch(e) { return null; }
+}
+</script>
+
+</body>
+</html>

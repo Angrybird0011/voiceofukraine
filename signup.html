@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Free — Voice of Ukraine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#1a4d8f;--blue-dark:#0d2d5a;--blue-mid:#2563a8;--blue-light:#dbeafe;--yellow:#f5c518;--yellow-dark:#d4a800;--yellow-light:#fef9c3;--green:#059669;--red:#dc2626;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--bg:#fafaf8;--surface:#fff;--border:#e5e7eb;--radius:12px;--nav-h:70px;--serif:'Playfair Display',Georgia,serif;--body:'Source Serif 4',Georgia,serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:linear-gradient(135deg,var(--blue-dark),#0a1a35);min-height:100vh;color:var(--text);line-height:1.65}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;background:none;font:inherit}
+input,select,textarea{font:inherit}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;height:100%;max-width:1200px;margin:0 auto;padding:0 24px;gap:8px}
+.nav-logo{font-family:var(--serif);font-size:1.3rem;font-weight:900;display:flex;align-items:baseline;gap:2px}
+.logo-ua{color:var(--blue)}.logo-en{color:var(--yellow-dark);font-style:italic}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:7px;font-family:var(--mono);font-size:.82rem;letter-spacing:.04em;cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none}
+.btn-ghost{background:transparent;color:var(--text-mid);padding:10px 22px;border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-primary{background:var(--blue);color:#fff;padding:11px 24px;border:2px solid var(--blue)}
+.btn-primary:hover{background:var(--blue-dark);border-color:var(--blue-dark)}
+.btn-yellow{background:var(--yellow);color:var(--blue-dark);padding:13px 28px;border:2px solid var(--yellow);font-weight:600}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.page-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 30px) 20px 50px}
+.card{background:var(--surface);border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.14);padding:44px 40px;width:100%;max-width:520px}
+.fh{text-align:center;margin-bottom:32px}
+.fh .icon{font-size:2.4rem;margin-bottom:14px}
+.fh h1{font-family:var(--serif);font-size:1.85rem;font-weight:700;margin-bottom:7px}
+.fh p{font-size:.9rem;color:var(--text-muted)}
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:28px}
+.step-w{display:flex;flex-direction:column;align-items:center;gap:4px}
+.step-c{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--text-muted);transition:all .3s}
+.step-c.active{border-color:var(--blue);background:var(--blue);color:#fff}
+.step-c.done{border-color:var(--green);background:var(--green);color:#fff}
+.step-l{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);text-align:center}
+.step-line{width:44px;height:2px;background:var(--border);margin-bottom:16px;transition:background .3s}
+.step-line.done{background:var(--green)}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:26px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(to right,var(--blue),var(--yellow));border-radius:2px;transition:width .4s}
+.fg{margin-bottom:18px}
+.fg label{display:block;font-family:var(--mono);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--text-mid);margin-bottom:7px}
+.fg label .opt{font-size:.65rem;color:var(--text-muted);text-transform:none;letter-spacing:0;margin-left:6px}
+.fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:.94rem;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s,box-shadow .2s}
+.fg input:focus,.fg select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,77,143,.1)}
+.fg input.err{border-color:var(--red)}
+.ferr{font-family:var(--mono);font-size:.7rem;color:var(--red);margin-top:4px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.otp-row{display:flex;gap:8px}
+.otp-row input{flex:1}
+.otp-send{padding:0 14px;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;font-family:var(--mono);font-size:.72rem;white-space:nowrap;cursor:pointer;transition:all .2s}
+.otp-send:hover{background:var(--blue);color:#fff}
+.otp-send:disabled{opacity:.5;cursor:not-allowed}
+.otp-digits{display:flex;gap:8px;justify-content:center;margin:12px 0}
+.otp-d{width:48px;height:56px;border:2px solid var(--border);border-radius:9px;font-family:var(--mono);font-size:1.4rem;font-weight:600;text-align:center;outline:none;background:var(--bg);transition:border-color .2s,box-shadow .2s}
+.otp-d:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,77,143,.14)}
+.otp-d.filled{border-color:var(--blue);background:var(--blue-light)}
+.otp-ok{display:none;align-items:center;gap:6px;justify-content:center;font-family:var(--mono);font-size:.75rem;color:var(--green)}
+.otp-ok.show{display:flex}
+.resend-lnk{background:none;border:none;font-family:var(--mono);font-size:.75rem;color:var(--blue);text-decoration:underline;cursor:pointer;display:block;margin:6px auto}
+.resend-lnk:disabled{color:var(--text-muted);text-decoration:none;cursor:default}
+.check-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--yellow-light);border:1px solid #fde68a;border-radius:8px;margin-bottom:16px;cursor:pointer}
+.check-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--blue);cursor:pointer;flex-shrink:0}
+.check-row label{font-size:.86rem;color:var(--text-mid);cursor:pointer;flex:1}
+.check-row .pill{font-family:var(--mono);font-size:.62rem;background:var(--blue);color:#fff;padding:2px 7px;border-radius:4px;flex-shrink:0}
+.info-tip{background:var(--blue-light);border:1px solid #bfdbfe;border-radius:8px;padding:11px 14px;font-size:.82rem;color:var(--blue-dark);display:flex;gap:9px;margin-bottom:14px}
+.divider{height:1px;background:var(--border);margin:20px 0}
+.form-note{text-align:center;margin-top:18px;font-family:var(--mono);font-size:.75rem;color:var(--text-muted)}
+.form-note a{color:var(--blue)}
+.success-wrap{text-align:center;padding:16px 0}
+.success-wrap .s-icon{font-size:4rem;margin-bottom:16px}
+.success-wrap h2{font-family:var(--serif);font-size:1.75rem;margin-bottom:10px}
+.success-wrap p{color:var(--text-muted);margin-bottom:22px}
+.demo-note{background:var(--yellow-light);border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.75rem;color:#7a5c00;margin-bottom:20px;text-align:center}
+.toast{position:fixed;bottom:28px;right:28px;max-width:320px;background:var(--text);color:#fff;padding:13px 18px;border-radius:10px;font-family:var(--mono);font-size:.8rem;z-index:9999;transform:translateY(80px);opacity:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:#065f46}
+.toast.error{background:#7f1d1d}
+@media(max-width:480px){.frow{grid-template-columns:1fr}.otp-d{width:40px;height:48px;font-size:1.2rem}.card{padding:28px 18px}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><span class="logo-ua">Голос</span><span class="logo-en">Ukraine</span></a>
+    <div style="margin-left:auto">
+      <a href="login.html" class="btn btn-ghost">Sign In</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="card">
+
+    <!-- Step indicators -->
+    <div class="steps">
+      <div class="step-w"><div class="step-c active" id="sc1">1</div><div class="step-l">Details</div></div>
+      <div class="step-line" id="sl1"></div>
+      <div class="step-w"><div class="step-c" id="sc2">2</div><div class="step-l">Verify</div></div>
+      <div class="step-line" id="sl2"></div>
+      <div class="step-w"><div class="step-c" id="sc3">3</div><div class="step-l">Location</div></div>
+      <div class="step-line" id="sl3"></div>
+      <div class="step-w"><div class="step-c" id="sc4">4</div><div class="step-l">Done</div></div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:25%"></div></div>
+
+    <!-- STEP 1 -->
+    <div id="step1">
+      <div class="fh">
+        <div class="icon">🇺🇦</div>
+        <h1>Create Your Account</h1>
+        <p>Free access — no credit card needed.</p>
+      </div>
+      <div id="demoNote" class="demo-note" style="display:none">⚙️ DEMO MODE — Use email OTP <strong>123456</strong> and phone OTP <strong>123456</strong></div>
+      <div class="fg">
+        <label>Full Name</label>
+        <input type="text" id="fullName" placeholder="Your full name">
+        <div class="ferr" id="err-name"></div>
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com">
+        <div class="ferr" id="err-email"></div>
+      </div>
+      <div class="fg">
+        <label>Phone Number <span class="opt">Required — include country code e.g. +44, +1, +92</span></label>
+        <div class="otp-row">
+          <input type="tel" id="phone" placeholder="+44 7700 900000">
+          <button class="otp-send" id="sendSmsBtn" onclick="sendSms()">Send OTP</button>
+        </div>
+        <div class="ferr" id="err-phone"></div>
+      </div>
+      <div id="smsBox" style="display:none">
+        <div class="fg">
+          <label>SMS Verification Code <span class="opt">6 digits sent to your phone</span></label>
+          <div class="otp-digits" id="smsDigits">
+            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+          </div>
+          <div class="otp-ok" id="smsOk">✅ Phone verified!</div>
+          <div class="ferr" id="err-sms" style="text-align:center"></div>
+          <button class="resend-lnk" id="resendSmsBtn" disabled onclick="sendSms()">
+            Resend SMS (<span id="smsTimer">30</span>s)
+          </button>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label>Country</label>
+          <select id="country">
+            <option value="">Select country…</option>
+            <option value="UA">🇺🇦 Ukraine</option><option value="PL">🇵🇱 Poland</option>
+            <option value="DE">🇩🇪 Germany</option><option value="GB">🇬🇧 United Kingdom</option>
+            <option value="US">🇺🇸 United States</option><option value="CA">🇨🇦 Canada</option>
+            <option value="FR">🇫🇷 France</option><option value="IT">🇮🇹 Italy</option>
+            <option value="CZ">🇨🇿 Czech Republic</option><option value="NL">🇳🇱 Netherlands</option>
+            <option value="SE">🇸🇪 Sweden</option><option value="AU">🇦🇺 Australia</option>
+            <option value="OTHER">Other</option>
+          </select>
+          <div class="ferr" id="err-country"></div>
+        </div>
+        <div class="fg">
+          <label>City</label>
+          <input type="text" id="city" placeholder="Your city">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="step1Btn" onclick="goStep2()">Continue →</button>
+      <p class="form-note">Already have an account? <a href="login.html">Sign in</a></p>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="step2" style="display:none">
+      <div class="fh">
+        <div class="icon">📧</div>
+        <h1>Verify Your Email</h1>
+        <p>We emailed a <strong>6-digit code</strong> to <strong id="emailShow"></strong> — enter it below.</p>
+      </div>
+      <div class="info-tip">💡 Supabase sends a <strong>6-digit number</strong> (not a link). Check your inbox and spam folder. Subject line: "Your OTP". Expires in 10 minutes.</div>
+      <div class="fg">
+        <label>Enter 6-digit code</label>
+        <div class="otp-digits" id="emailDigits">
+          <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+          <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+          <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+        </div>
+        <div class="otp-ok" id="emailOk">✅ Email verified!</div>
+        <div class="ferr" id="err-otp" style="text-align:center"></div>
+        <button class="resend-lnk" id="resendBtn" disabled onclick="resendOtp()">
+          Resend code (<span id="timer">60</span>s)
+        </button>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="verifyOtp()">Verify Email</button>
+      <p class="form-note"><a href="#" onclick="goTo(1)">← Change email</a></p>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="step3" style="display:none">
+      <div class="fh">
+        <div class="icon">📍</div>
+        <h1>Your Location</h1>
+        <p>Optional — helps us personalise your feed. Never shared publicly.</p>
+      </div>
+      <div class="info-tip">🔒 GPS location is private and encrypted. Only site admins can view it for analytics.</div>
+      <div class="check-row">
+        <input type="checkbox" id="gpsCheck" onchange="requestGps()">
+        <label for="gpsCheck">Share my GPS location (optional)</label>
+      </div>
+      <div id="gpsStatus" style="font-family:var(--mono);font-size:.75rem;color:var(--text-muted);padding:0 4px 12px"></div>
+      <div class="divider"></div>
+      <button class="btn btn-primary btn-full" onclick="finish()">Complete Sign Up 🇺🇦</button>
+      <p class="form-note"><a href="#" onclick="finish()">Skip location →</a></p>
+    </div>
+
+    <!-- STEP 4 -->
+    <div id="step4" style="display:none">
+      <div class="success-wrap">
+        <div class="s-icon">🇺🇦</div>
+        <h2>Welcome to Voice of Ukraine!</h2>
+        <p>Your account is active. You now have full access to all articles in English and Ukrainian.</p>
+        <a href="index.html" class="btn btn-yellow btn-full">Start Reading →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SUPABASE_URL  = 'https://dfsxgjrruzwjxywizejf.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
+
+var IS_DEMO = SUPABASE_URL.indexOf('YOUR_PROJECT') !== -1;
+if (IS_DEMO) document.getElementById('demoNote').style.display = 'block';
+
+var fd = {};
+var emailVerified = false;
+var smsVerified = false;
+var session = null;
+
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' '+type : '');
+  requestAnimationFrame(function(){requestAnimationFrame(function(){t.classList.add('show')})});
+  setTimeout(function(){t.classList.remove('show')},3500);
+}
+
+function setErr(id, msg) {
+  var el = document.getElementById('err-'+id);
+  if (el) el.textContent = msg;
+}
+function clearErr() {
+  ['name','email','country','otp','phone'].forEach(function(id){setErr(id,'')});
+}
+
+function goTo(n) {
+  [1,2,3,4].forEach(function(i){
+    document.getElementById('step'+i).style.display = i===n?'block':'none';
+    var sc = document.getElementById('sc'+i);
+    if (i<n){sc.textContent='✓';sc.className='step-c done';}
+    else if(i===n){sc.textContent=i;sc.className='step-c active';}
+    else{sc.textContent=i;sc.className='step-c';}
+    var sl = document.getElementById('sl'+i);
+    if (sl) sl.className = 'step-line'+(i<n?' done':'');
+  });
+  document.getElementById('progFill').style.width = (n*25)+'%';
+  window.scrollTo(0,0);
+}
+
+// togglePhone removed — phone is now required
+
+// OTP digit keyboard navigation
+function initDigits(groupId, onDone) {
+  var g = document.getElementById(groupId);
+  if (!g) return;
+  var ins = Array.from(g.querySelectorAll('.otp-d'));
+  ins.forEach(function(inp, i) {
+    inp.addEventListener('input', function(e) {
+      var v = e.target.value.replace(/\D/g,'');
+      e.target.value = v.slice(-1);
+      inp.classList.toggle('filled', !!inp.value);
+      if (v && i<ins.length-1) ins[i+1].focus();
+      var code = ins.map(function(x){return x.value}).join('');
+      if (code.length===6 && onDone) onDone(code);
+    });
+    inp.addEventListener('keydown', function(e) {
+      if (e.key==='Backspace' && !inp.value && i>0) {
+        ins[i-1].focus(); ins[i-1].value=''; ins[i-1].classList.remove('filled');
+      }
+    });
+    inp.addEventListener('paste', function(e) {
+      e.preventDefault();
+      var p = (e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+      p.split('').forEach(function(ch,idx){if(ins[idx]){ins[idx].value=ch;ins[idx].classList.add('filled')}});
+      if (p.length===6 && onDone) onDone(p);
+    });
+  });
+}
+
+function startTimer(btnId, spanId, secs) {
+  var btn = document.getElementById(btnId);
+  var span = document.getElementById(spanId);
+  btn.disabled = true;
+  var s = secs || 60;
+  if (span) span.textContent = s;
+  var iv = setInterval(function(){
+    s--;
+    if (span) span.textContent = s;
+    if (s<=0) {
+      clearInterval(iv);
+      btn.disabled = false;
+      btn.textContent = 'Resend code';
+    }
+  }, 1000);
+}
+
+// STEP 1 → 2
+async function goStep2() {
+  clearErr();
+  var name = document.getElementById('fullName').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var country = document.getElementById('country').value;
+  var phone = document.getElementById('phone').value.trim();
+  var ok = true;
+  if (!name||name.length<2){setErr('name','Please enter your full name.');ok=false;}
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){setErr('email','Please enter a valid email.');ok=false;}
+  if (!phone||phone.length<7){setErr('phone','Phone number is required. Include country code e.g. +44');ok=false;}
+  if (!country){setErr('country','Please select your country.');ok=false;}
+  if (!ok) return;
+  if (!smsVerified) {
+    setErr('phone','Please verify your phone number first — click "Send OTP" and enter the code.');
+    document.getElementById('phone').focus();
+    return;
+  }
+  fd.name=name; fd.email=email; fd.country=country; fd.phone=phone;
+  fd.city=document.getElementById('city').value.trim();
+
+  var btn = document.getElementById('step1Btn');
+  btn.disabled=true; btn.textContent='Sending code…';
+
+  if (IS_DEMO) {
+    // Demo mode — skip Supabase, use hardcoded OTP
+    session = {access_token:'demo_token',user:{id:'demo_'+Date.now(),email:email}};
+    localStorage.setItem('vou_token','demo_token');
+    localStorage.setItem('vou_user',JSON.stringify({id:session.user.id,email:email,name:name}));
+    document.getElementById('emailShow').textContent = email;
+    goTo(2);
+    initDigits('emailDigits', function(code){if(code==='123456')autoVerify()});
+    startTimer('resendBtn','timer',60);
+    toast('📧 DEMO: Enter code 123456 to verify','info');
+    btn.disabled=false; btn.textContent='Continue →';
+    return;
+  }
+
+  try {
+    var res = await fetch(SUPABASE_URL+'/auth/v1/otp', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
+      body:JSON.stringify({email:email,create_user:true})
+    });
+    var data = await res.json();
+    if (data.error) throw new Error(data.error.message||data.error);
+    document.getElementById('emailShow').textContent = email;
+    goTo(2);
+    initDigits('emailDigits', function(code){tryVerify(code)});
+    startTimer('resendBtn','timer',60);
+    toast('📧 Verification code sent to '+email,'success');
+  } catch(e) {
+    toast('Error: '+e.message,'error');
+  }
+  btn.disabled=false; btn.textContent='Continue →';
+}
+
+function autoVerify() {
+  document.getElementById('emailOk').classList.add('show');
+  document.getElementById('err-otp').textContent='';
+  emailVerified=true;
+  setTimeout(function(){goTo(3)},700);
+}
+
+async function tryVerify(code) {
+  if (IS_DEMO) {
+    if (code==='123456') autoVerify();
+    else document.getElementById('err-otp').textContent='❌ Wrong code. Demo code is 123456';
+    return;
+  }
+  try {
+    var res = await fetch(SUPABASE_URL+'/auth/v1/verify', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
+      body:JSON.stringify({email:fd.email,token:code,type:'email'})
+    });
+    var data = await res.json();
+    if (!data.access_token) throw new Error(data.error?.message||'Invalid code');
+    session=data;
+    localStorage.setItem('vou_token',data.access_token);
+    localStorage.setItem('vou_user',JSON.stringify({id:data.user.id,email:fd.email,name:fd.name}));
+    autoVerify();
+  } catch(e) {
+    document.getElementById('err-otp').textContent='❌ '+e.message;
+  }
+}
+
+function verifyOtp() {
+  var code = Array.from(document.querySelectorAll('#emailDigits .otp-d')).map(function(x){return x.value}).join('');
+  if (code.length<6){document.getElementById('err-otp').textContent='Enter all 6 digits.';return;}
+  tryVerify(code);
+}
+
+async function resendOtp() {
+  if (IS_DEMO){toast('Demo: code is still 123456','info');startTimer('resendBtn','timer',60);return;}
+  await fetch(SUPABASE_URL+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},body:JSON.stringify({email:fd.email})});
+  toast('New code sent!','success');
+  startTimer('resendBtn','timer',60);
+}
+
+// SMS — Required verification
+async function sendSms() {
+  var phone = document.getElementById('phone').value.trim();
+  if (!phone||phone.length<7){setErr('phone','Enter a valid phone number with country code e.g. +44 7700 900000');return;}
+  fd.phone = phone;
+  setErr('phone','');
+  setErr('sms','');
+
+  var btn = document.getElementById('sendSmsBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  document.getElementById('smsBox').style.display = 'block';
+  initDigits('smsDigits', function(code) { verifySms(code); });
+
+  if (IS_DEMO) {
+    toast('📱 DEMO: Enter code 123456 to verify phone', 'info');
+    startTimer('resendSmsBtn', 'smsTimer', 30);
+    btn.textContent = 'Resend OTP';
+    btn.disabled = false;
+    return;
+  }
+
+  // Generate OTP locally and send via Textbelt (free, no setup needed)
+  var otp = Math.floor(100000 + Math.random() * 900000).toString();
+  sessionStorage.setItem('vou_sms_otp', otp);
+  sessionStorage.setItem('vou_sms_phone', phone);
+  sessionStorage.setItem('vou_sms_time', Date.now().toString());
+
+  try {
+    var res = await fetch('https://textbelt.com/text', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        phone: phone,
+        message: 'Your Voice of Ukraine verification code: ' + otp + '. Valid for 10 minutes.',
+        key: 'textbelt'
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      toast('📱 SMS code sent to ' + phone, 'success');
+    } else if (data.error && data.error.indexOf('Quota') !== -1) {
+      toast('📱 Free SMS limit reached for today. Try again tomorrow or use a different network.', 'error');
+    } else {
+      toast('📱 SMS sent — check your phone', 'info');
+    }
+  } catch(e) {
+    toast('📱 SMS service unavailable. Please try again.', 'error');
+  }
+
+  startTimer('resendSmsBtn', 'smsTimer', 30);
+  btn.textContent = 'Resend OTP';
+  btn.disabled = false;
+}
+
+async function verifySms(code) {
+  setErr('sms','');
+
+  if (IS_DEMO) {
+    if (code === '123456') {
+      smsVerified = true;
+      document.getElementById('smsOk').classList.add('show');
+      var sb = document.getElementById('sendSmsBtn');
+      if (sb) { sb.textContent = '✓ Verified'; sb.disabled = true; }
+      toast('Phone verified!', 'success');
+    } else {
+      document.getElementById('err-sms').textContent = 'Wrong code. Demo code is 123456';
+    }
+    return;
+  }
+
+  // Verify against locally stored OTP
+  var stored = sessionStorage.getItem('vou_sms_otp');
+  var storedPhone = sessionStorage.getItem('vou_sms_phone');
+  var storedTime = parseInt(sessionStorage.getItem('vou_sms_time') || '0');
+  var ageMs = Date.now() - storedTime;
+
+  if (!stored) {
+    document.getElementById('err-sms').textContent = 'Please click Send OTP first.';
+    return;
+  }
+  if (ageMs > 10 * 60 * 1000) {
+    document.getElementById('err-sms').textContent = 'Code expired. Please click Resend OTP.';
+    return;
+  }
+  if (storedPhone !== fd.phone) {
+    document.getElementById('err-sms').textContent = 'Phone number changed. Please click Send OTP again.';
+    return;
+  }
+  if (code.trim() === stored) {
+    smsVerified = true;
+    document.getElementById('smsOk').classList.add('show');
+    var sb = document.getElementById('sendSmsBtn');
+    if (sb) { sb.textContent = '✓ Verified'; sb.disabled = true; }
+    sessionStorage.removeItem('vou_sms_otp');
+    toast('Phone verified!', 'success');
+  } else {
+    document.getElementById('err-sms').textContent = 'Incorrect code. Please check your SMS and try again.';
+  }
+}
+
+// GPS
+async function requestGps() {
+  var c = document.getElementById('gpsCheck');
+  var s = document.getElementById('gpsStatus');
+  if (!c.checked){s.textContent='';fd.lat=null;fd.lon=null;return;}
+  s.textContent='Requesting location…';
+  if (!navigator.geolocation){s.textContent='Geolocation not supported.';c.checked=false;return;}
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      fd.lat=pos.coords.latitude.toFixed(5);
+      fd.lon=pos.coords.longitude.toFixed(5);
+      s.textContent='📍 Location recorded: '+fd.lat+', '+fd.lon+' (private)';
+    },
+    function(){s.textContent='Location denied — that\'s fine!';c.checked=false;}
+  );
+}
+
+// Get IP info
+async function getIp() {
+  try{var r=await fetch('https://api.ipapi.is/');return r.ok?await r.json():{};}catch(e){return{};}
+}
+
+// Finish signup
+async function finish() {
+  var ip = await getIp();
+  var profile = {
+    id: session?.user?.id || 'demo_'+Date.now(),
+    full_name: fd.name, email: fd.email,
+    phone: fd.phone||null, phone_verified: smsVerified,
+    country: fd.country, city: fd.city||null,
+    lat: fd.lat||null, lon: fd.lon||null,
+    ip_address: ip.ip||null, ip_city: ip.location?.city||null,
+    ip_country: ip.location?.country||null, ip_isp: ip.company?.name||null,
+    user_agent: navigator.userAgent,
+    created_at: new Date().toISOString()
+  };
+
+  if (IS_DEMO) {
+    // Save to localStorage for demo admin panel
+    var users = JSON.parse(localStorage.getItem('vou_demo_users')||'[]');
+    users.push(profile);
+    localStorage.setItem('vou_demo_users',JSON.stringify(users));
+  } else {
+    // Save to Supabase
+    try {
+      await fetch(SUPABASE_URL+'/rest/v1/profiles',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON,'Authorization':'Bearer '+(session?.access_token||SUPABASE_ANON),'Prefer':'return=minimal,resolution=merge-duplicates'},
+        body:JSON.stringify(profile)
+      });
+    } catch(e){console.warn('Profile save:',e)}
+  }
+  goTo(4);
+  toast('🇺🇦 Welcome to Voice of Ukraine!','success');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice of Ukraine · Голос України</title>
+<meta name="description" content="Independent journalism standing with Ukraine. Free community membership.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1a4d8f;--blue-dark:#0d2d5a;--blue-mid:#2563a8;--blue-light:#dbeafe;
+  --yellow:#f5c518;--yellow-dark:#d4a800;--yellow-light:#fef9c3;
+  --green:#059669;--red:#dc2626;
+  --text:#111827;--text-mid:#374151;--text-muted:#6b7280;
+  --bg:#fafaf8;--surface:#fff;--border:#e5e7eb;
+  --radius:12px;--nav-h:70px;
+  --serif:'Playfair Display',Georgia,serif;
+  --body:'Source Serif 4',Georgia,serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:1.65;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;background:none;font:inherit}
+input,select,textarea{font:inherit}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);
+  background:rgba(255,255,255,0.96);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);transition:box-shadow .3s}
+.nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,0.1)}
+.nav-inner{display:flex;align-items:center;gap:8px;height:100%;
+  max-width:1200px;margin:0 auto;padding:0 24px}
+.nav-logo{font-family:var(--serif);font-size:1.3rem;font-weight:900;
+  display:flex;align-items:baseline;gap:2px;flex-shrink:0}
+.logo-ua{color:var(--blue)}
+.logo-en{color:var(--yellow-dark);font-style:italic}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:auto}
+.nav-link{padding:7px 14px;border-radius:6px;font-family:var(--mono);
+  font-size:.78rem;letter-spacing:.04em;color:var(--text-muted);transition:all .2s}
+.nav-link:hover,.nav-link.active{color:var(--blue);background:var(--blue-light)}
+.lang-toggle{display:flex;gap:2px;margin:0 10px}
+.lang-btn{padding:4px 10px;border-radius:4px;font-family:var(--mono);
+  font-size:.7rem;color:var(--text-muted);cursor:pointer;transition:all .2s}
+.lang-btn.active{background:var(--blue);color:#fff}
+.nav-actions{display:flex;gap:8px;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:7px;font-family:var(--mono);font-size:.82rem;letter-spacing:.04em;
+  cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none}
+.btn-primary{background:var(--blue);color:#fff;padding:11px 24px;border:2px solid var(--blue)}
+.btn-primary:hover{background:var(--blue-dark);border-color:var(--blue-dark);transform:translateY(-1px)}
+.btn-yellow{background:var(--yellow);color:var(--blue-dark);padding:13px 28px;border:2px solid var(--yellow);font-weight:600}
+.btn-yellow:hover{background:var(--yellow-dark);border-color:var(--yellow-dark);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--text-mid);padding:10px 22px;border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-outline-white{background:transparent;color:rgba(255,255,255,.85);padding:12px 26px;border:1.5px solid rgba(255,255,255,.35)}
+.btn-outline-white:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.08)}
+.hamburger{display:none;flex-direction:column;gap:5px;padding:8px;margin-left:8px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.mobile-menu{display:none;flex-direction:column;padding:12px 20px 16px;
+  background:#fff;border-top:1px solid var(--border);gap:2px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{padding:10px 12px;border-radius:6px;font-family:var(--mono);font-size:.82rem;color:var(--text-mid)}
+.mobile-menu a:hover{background:var(--blue-light);color:var(--blue)}
+
+/* HERO */
+.hero{min-height:100vh;background:var(--blue-dark);display:flex;align-items:center;
+  position:relative;overflow:hidden;padding-top:var(--nav-h)}
+.hero-bg{position:absolute;inset:0;
+  background:radial-gradient(ellipse at 25% 55%,rgba(37,99,168,.5) 0%,transparent 65%),
+             radial-gradient(ellipse at 78% 20%,rgba(245,197,24,.12) 0%,transparent 50%)}
+.hero-stripe{position:absolute;bottom:0;left:0;right:0;height:6px;
+  background:linear-gradient(to right,#005BBB 50%,#FFD700 50%)}
+.hero-content{position:relative;z-index:1;max-width:800px;margin:0 auto;
+  padding:80px 24px 100px;text-align:center}
+.hero-eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.25em;
+  text-transform:uppercase;color:var(--yellow);margin-bottom:20px;
+  opacity:0;animation:fadeUp .8s .2s forwards}
+.hero-h1{font-family:var(--serif);font-size:clamp(3rem,8vw,6.5rem);font-weight:900;
+  color:#fff;line-height:1;margin-bottom:24px;opacity:0;animation:fadeUp .8s .4s forwards}
+.hero-h1 .thin{display:block;font-weight:300;font-style:italic;font-size:.52em;color:rgba(255,255,255,.65)}
+.hero-h1 .grad{background:linear-gradient(90deg,#fff,var(--yellow));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.1rem;color:rgba(255,255,255,.72);max-width:560px;margin:0 auto 36px;
+  opacity:0;animation:fadeUp .8s .6s forwards}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  opacity:0;animation:fadeUp .8s .8s forwards}
+.hero-stats{display:flex;align-items:center;justify-content:center;gap:28px;
+  margin-top:56px;padding-top:32px;border-top:1px solid rgba(255,255,255,.12);
+  opacity:0;animation:fadeUp .8s 1s forwards}
+.stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.stat-n{font-family:var(--serif);font-size:2rem;font-weight:700;color:var(--yellow)}
+.stat-l{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(255,255,255,.5)}
+.stat-div{width:1px;height:36px;background:rgba(255,255,255,.15)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION LABEL */
+.section-label{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--blue);border-left:3px solid var(--yellow);
+  padding-left:10px;margin-bottom:28px;display:inline-block}
+
+/* FILTER BAR */
+.articles-wrap{padding:72px 0}
+.articles-header{display:flex;align-items:flex-start;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;margin-bottom:32px}
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);
+  font-family:var(--mono);font-size:.73rem;color:var(--text-muted);
+  background:var(--surface);cursor:pointer;transition:all .2s}
+.filter-btn.active,.filter-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* FEATURED CARD */
+.featured-card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);
+  margin-bottom:32px;cursor:pointer;transition:box-shadow .3s,transform .2s}
+.featured-card:hover{box-shadow:0 12px 48px rgba(0,0,0,.14);transform:translateY(-2px)}
+.fc-meta{display:flex;align-items:center;gap:14px;padding:28px 36px 0;flex-wrap:wrap}
+.fc-title{font-family:var(--serif);font-size:clamp(1.5rem,2.8vw,2.2rem);
+  font-weight:700;line-height:1.25;padding:16px 36px 0}
+.fc-excerpt{padding:12px 36px 0;color:var(--text-mid);font-size:1.02rem;max-width:740px}
+.fc-author{display:flex;align-items:center;gap:12px;padding:18px 36px;
+  border-top:1px solid var(--border);margin-top:16px}
+.fc-author strong{display:block;font-weight:600;font-size:.9rem}
+.fc-author span{font-size:.78rem;color:var(--text-muted);font-family:var(--mono)}
+
+/* BLUR GATE */
+.blur-gate{position:relative;overflow:hidden}
+.blur-para{padding:12px 36px;color:var(--text-mid);line-height:1.72}
+.blur-para.blurred{filter:blur(5px);user-select:none;pointer-events:none}
+.blur-overlay{position:absolute;bottom:0;left:0;right:0;height:260px;
+  background:linear-gradient(to bottom,transparent 0%,rgba(255,255,255,.9) 40%,#fff 68%);
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:20px}
+.blur-cta{text-align:center;background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.08);
+  padding:22px 28px;max-width:400px;width:90%}
+.blur-cta .lock{font-size:1.8rem;margin-bottom:8px}
+.blur-cta h3{font-family:var(--serif);font-size:1.15rem;margin-bottom:6px}
+.blur-cta p{font-size:.85rem;color:var(--text-muted);margin-bottom:16px}
+.blur-cta .already{margin-top:10px;font-size:.8rem;color:var(--text-muted);font-family:var(--mono)}
+.blur-cta .already a{color:var(--blue)}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 9px;border-radius:4px;font-family:var(--mono);
+  font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.badge-frontlines{background:#fee2e2;color:#7f1d1d}
+.badge-culture{background:#dbeafe;color:#1e3a8a}
+.badge-diaspora{background:#f3e8ff;color:#581c87}
+.badge-rebuild{background:#d1fae5;color:#065f46}
+.badge-future{background:#fef3c7;color:#78350f}
+.read-time{font-family:var(--mono);font-size:.72rem;color:var(--text-muted)}
+
+/* AVATAR */
+.ava{border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:500;color:#fff;flex-shrink:0}
+.ava-md{width:40px;height:40px;font-size:.75rem}
+.ava-sm{width:30px;height:30px;font-size:.65rem}
+
+/* ARTICLE GRID */
+.article-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.a-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;cursor:pointer;transition:box-shadow .25s,transform .2s;
+  display:flex;flex-direction:column}
+.a-card:hover{box-shadow:0 12px 48px rgba(0,0,0,.14);transform:translateY(-3px)}
+.a-card.hidden{display:none!important}
+.a-card-img{height:130px;display:flex;align-items:center;justify-content:center;font-size:2.8rem}
+.a-card-body{padding:18px;display:flex;flex-direction:column;gap:9px;flex:1}
+.a-card-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.a-card-title{font-family:var(--serif);font-size:1.05rem;font-weight:700;line-height:1.35}
+.a-card-preview{font-size:.86rem;color:var(--text-muted);line-height:1.55}
+.a-blur-bar{display:flex;align-items:center;gap:7px;padding:9px 12px;
+  background:var(--yellow-light);border-radius:6px;font-family:var(--mono);
+  font-size:.7rem;color:#7a5c00;margin-top:auto}
+.a-footer{display:flex;align-items:center;gap:8px;padding-top:12px;
+  border-top:1px solid var(--border);font-size:.78rem;color:var(--text-muted);font-family:var(--mono)}
+.a-footer .rt{margin-left:auto}
+.load-more{text-align:center;margin-top:48px}
+
+/* CTA BAND */
+.cta-band{background:var(--blue-dark);padding:64px 0}
+.cta-inner{display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.cta-text h2{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2rem);color:#fff;margin-bottom:8px}
+.cta-text p{color:rgba(255,255,255,.6);font-size:.92rem}
+
+/* FOOTER */
+.footer{background:var(--blue-dark);border-top:1px solid rgba(255,255,255,.08);
+  padding:60px 0 28px;color:rgba(255,255,255,.65)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:44px}
+.footer-brand p{font-size:.88rem;color:rgba(255,255,255,.5);max-width:240px;margin:14px 0;line-height:1.65}
+.footer-brand .flag{font-size:1.8rem}
+.footer-links h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--yellow);margin-bottom:14px}
+.footer-links a{display:block;font-size:.86rem;color:rgba(255,255,255,.5);margin-bottom:9px;transition:color .2s}
+.footer-links a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:22px;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  font-family:var(--mono);font-size:.72rem;color:rgba(255,255,255,.3)}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;max-width:320px;background:var(--text);
+  color:#fff;padding:13px 18px;border-radius:10px;font-family:var(--mono);font-size:.8rem;
+  box-shadow:0 12px 48px rgba(0,0,0,.14);z-index:9999;
+  transform:translateY(80px);opacity:0;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:#065f46}
+.toast.error{background:#7f1d1d}
+
+/* DEMO BANNER */
+.demo-banner{background:var(--yellow);color:var(--blue-dark);text-align:center;
+  padding:10px 20px;font-family:var(--mono);font-size:.82rem;font-weight:600;
+  position:relative;z-index:999}
+.demo-banner a{color:var(--blue-dark);text-decoration:underline}
+
+/* RESPONSIVE */
+@media(max-width:1024px){.article-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){
+  :root{--nav-h:62px}
+  .nav-links,.nav-actions{display:none}
+  .hamburger{display:flex}
+  .article-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr;gap:28px}
+  .fc-meta,.fc-title,.fc-excerpt,.blur-para,.fc-author{padding-left:18px;padding-right:18px}
+  .articles-header{flex-direction:column}
+}
+@media(max-width:480px){
+  .hero-cta{flex-direction:column;align-items:center}
+  .hero-stats{flex-direction:column;gap:14px}
+  .stat-div{width:40px;height:1px}
+}
+</style>
+</head>
+<body>
+
+<!-- DEMO BANNER (only shows when Supabase not configured) -->
+<div class="demo-banner" id="demoBanner" style="display:none">
+  ⚙️ DEMO MODE — Configure Supabase to enable real signups. &nbsp;|&nbsp;
+  Demo OTP code: <strong>123456</strong>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-ua">Голос</span><span class="logo-en">Ukraine</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('uk')">UA</button>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="signup.html" class="btn btn-primary" id="navJoin">Join Free</a>
+      <a href="login.html" class="btn btn-ghost" id="navLogin">Sign In</a>
+      <button class="btn btn-ghost" id="navLogout" onclick="doLogout()" style="display:none">Log Out</button>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="signup.html">Join Free</a>
+    <a href="login.html">Sign In</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Independent · Truthful · Resilient</p>
+    <h1 class="hero-h1">
+      <span class="thin">Voice of</span>
+      <span class="grad">Ukraine</span>
+    </h1>
+    <p class="hero-sub">Stories from the front lines of freedom. Real voices, real courage, real Ukraine — in English and Ukrainian.</p>
+    <div class="hero-cta">
+      <a href="signup.html" class="btn btn-yellow">Join the Community Free</a>
+      <a href="#articles" class="btn btn-outline-white">Read Articles ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-n">12K+</span><span class="stat-l">Members</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-n">340+</span><span class="stat-l">Articles</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-n">48</span><span class="stat-l">Countries</span></div>
+    </div>
+  </div>
+  <div class="hero-stripe"></div>
+</header>
+
+<!-- ARTICLES -->
+<section class="articles-wrap" id="articles">
+  <div class="container">
+    <div class="articles-header">
+      <div class="section-label">Latest Articles</div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterArticles('all',this)">All</button>
+        <button class="filter-btn" onclick="filterArticles('frontlines',this)">Front Lines</button>
+        <button class="filter-btn" onclick="filterArticles('culture',this)">Culture</button>
+        <button class="filter-btn" onclick="filterArticles('diaspora',this)">Diaspora</button>
+        <button class="filter-btn" onclick="filterArticles('rebuild',this)">Rebuilding</button>
+        <button class="filter-btn" onclick="filterArticles('future',this)">Predictions</button>
+      </div>
+    </div>
+
+    <!-- Articles injected here by JS -->
+    <div id="featuredSlot"></div>
+    <div class="article-grid" id="articleGrid" style="margin-top:28px"></div>
+
+    <div class="load-more">
+      <a href="signup.html" class="btn btn-yellow">Join Free to Read All Articles →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="container">
+    <div class="cta-inner">
+      <div class="cta-text">
+        <h2>Stand With Ukraine — Join Our Community</h2>
+        <p>Free membership. No credit card. Instant access to all articles in English and Ukrainian.</p>
+      </div>
+      <a href="signup.html" class="btn btn-yellow">Create Free Account</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="margin-bottom:12px;display:inline-flex">
+          <span class="logo-ua">Голос</span><span class="logo-en">Ukraine</span>
+        </a>
+        <p>Independent journalism supporting Ukraine's sovereignty, culture, and people since 2022.</p>
+        <div class="flag">🇺🇦</div>
+      </div>
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact</a>
+        <a href="signup.html">Join Free</a>
+      </div>
+      <div class="footer-links">
+        <h4>Categories</h4>
+        <a href="#" onclick="filterArticles('frontlines',null);return false">Front Lines</a>
+        <a href="#" onclick="filterArticles('culture',null);return false">Culture</a>
+        <a href="#" onclick="filterArticles('diaspora',null);return false">Diaspora</a>
+        <a href="#" onclick="filterArticles('rebuild',null);return false">Rebuilding</a>
+        <a href="#" onclick="filterArticles('future',null);return false">Predictions</a>
+      </div>
+      <div class="footer-links">
+        <h4>Contact</h4>
+        <a href="mailto:editor@voiceofukraine.org">editor@voiceofukraine.org</a>
+        <a href="mailto:press@voiceofukraine.org">press@voiceofukraine.org</a>
+        <a href="contact.html">Contact Form</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Voice of Ukraine. All rights reserved.</p>
+      <p>Слава Україні! 🇺🇦</p>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIGURATION — replace these with your Supabase values
+// Get them from: supabase.com → your project → Settings → API
+// ═══════════════════════════════════════════════════════
+var SUPABASE_URL  = 'https://dfsxgjrruzwjxywizejf.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
+
+
+// ─── Demo mode detection ────────────────────────────────
+var IS_DEMO = SUPABASE_URL.indexOf('YOUR_PROJECT') !== -1;
+if (IS_DEMO) {
+  document.getElementById('demoBanner').style.display = 'block';
+}
+
+// ─── Language ───────────────────────────────────────────
+var lang = localStorage.getItem('vou_lang') || 'en';
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('vou_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('active', b.textContent.toLowerCase() === l);
+  });
+  renderArticles();
+}
+
+// ─── Nav ────────────────────────────────────────────────
+window.addEventListener('scroll', function() {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ─── Auth state ─────────────────────────────────────────
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('vou_user') || 'null'); } catch(e) { return null; }
+}
+function doLogout() {
+  localStorage.removeItem('vou_token');
+  localStorage.removeItem('vou_user');
+  window.location.reload();
+}
+
+// Show/hide nav buttons based on login state
+(function() {
+  var user = getUser();
+  if (user) {
+    var j = document.getElementById('navJoin');
+    var l = document.getElementById('navLogin');
+    var o = document.getElementById('navLogout');
+    if (j) j.style.display = 'none';
+    if (l) l.style.display = 'none';
+    if (o) o.style.display = 'inline-flex';
+  }
+})();
+
+// ─── Toast ──────────────────────────────────────────────
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { t.classList.add('show'); });
+  });
+  setTimeout(function() { t.classList.remove('show'); }, 3500);
+}
+
+// ─── Article click handler ──────────────────────────────
+function openArticle(filename) {
+  if (!localStorage.getItem('vou_token')) {
+    showToast('Join free to read the full article', 'info');
+    setTimeout(function() {
+      window.location.href = 'signup.html';
+    }, 1000);
+  } else {
+    window.location.href = 'article.html?f=' + encodeURIComponent(filename);
+  }
+}
+
+// ─── Filter ─────────────────────────────────────────────
+function filterArticles(cat, btn) {
+  if (btn) {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  document.querySelectorAll('.a-card').forEach(function(card) {
+    card.classList.toggle('hidden', cat !== 'all' && card.dataset.cat !== cat);
+  });
+}
+
+// ─── Markdown renderer ──────────────────────────────────
+function renderMd(md) {
+  var s = md.replace(/^---[\s\S]*?---\n?/, '');
+  var paras = s.split(/\n\n+/);
+  var out = '';
+  paras.forEach(function(p) {
+    p = p.trim();
+    if (!p) return;
+    if (/^## /.test(p)) { out += '<h2>' + p.slice(3) + '</h2>'; return; }
+    if (/^### /.test(p)) { out += '<h3>' + p.slice(4) + '</h3>'; return; }
+    if (/^> /.test(p)) { out += '<blockquote>' + p.slice(2) + '</blockquote>'; return; }
+    p = p.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    p = p.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    out += '<p>' + p + '</p>';
+  });
+  return out;
+}
+
+function parseFm(md) {
+  var fm = {};
+  var m = md.match(/^---\n([\s\S]*?)\n---/);
+  if (m) {
+    m[1].split('\n').forEach(function(line) {
+      var idx = line.indexOf(':');
+      if (idx === -1) return;
+      var k = line.slice(0, idx).trim();
+      var v = line.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
+      fm[k] = v;
+    });
+  }
+  fm._raw = md;
+  return fm;
+}
+
+function getParas(md) {
+  var s = md.replace(/^---[\s\S]*?---\n?/, '');
+  var paras = s.split(/\n\n+/).filter(function(p) {
+    return p.trim() && p[0] !== '#';
+  });
+  return paras;
+}
+
+function catGrad(cat) {
+  var g = {frontlines:'linear-gradient(135deg,#7f1d1d,#dc2626)',culture:'linear-gradient(135deg,#0c4a6e,#0284c7)',diaspora:'linear-gradient(135deg,#7c2d8f,#a855f7)',rebuild:'linear-gradient(135deg,#065f46,#059669)',future:'linear-gradient(135deg,#713f12,#f59e0b)'};
+  return g[cat] || 'linear-gradient(135deg,#1a4d8f,#2563a8)';
+}
+
+function catLabel(cat) {
+  var m = {frontlines:'Front Lines',culture:'Culture',diaspora:'Diaspora',rebuild:'Rebuilding',future:'Predictions'};
+  return m[cat] || cat;
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+}
+
+// ─── Article data (embedded so works offline/file://) ───
+var ARTICLES = [
+  {
+    title: "Ukraine 2027 — The Dawn Nobody Predicted",
+    title_uk: "Україна 2027 — Світанок, якого ніхто не передбачив",
+    author: "Yuliya Karpenko", author_initials: "YK", author_color: "#1a4d8f",
+    author_role: "Editor-in-Chief, Kyiv", date: "2025-03-28",
+    category: "future", read_time: "10", emoji: "🌅",
+    excerpt: "Three years from now, analysts predict Ukraine will emerge not broken, but transformed — a nation remade by fire, ready to become Europe's most resilient democracy.",
+    excerpt_uk: "Через три роки аналітики передбачають, що Україна постане не зламаною, а трансформованою.",
+    _filename: "ukraine-sunrise-2027.md",
+    body: `<p>There is a version of 2027 that the world's comfortable chancelleries have not yet dared to speak aloud. It is the version where Ukraine wins — not merely survives, not merely holds a line on a map, but genuinely, structurally, irreversibly wins.</p><p>This is not wishful thinking. This is what the data, the demography, and the determination of forty-four million people are pointing toward.</p><h2>The Economy No One Expected</h2><p>In January 2025, the International Monetary Fund revised its Ukrainian GDP growth forecast upward for the third consecutive quarter. The number — 4.2% projected growth — would be remarkable for any country. For a nation absorbing thousands of missiles and sustaining active frontline combat, it is nothing short of extraordinary.</p><blockquote>"We didn't rebuild the country we had. We built the country we always should have had." — Oleksiy Honcharuk, former Prime Minister</blockquote><p>By 2027, independent forecasters suggest Ukraine's IT sector alone will account for over $12 billion in annual exports. The war that was meant to erase Ukraine from the map has instead concentrated its most talented citizens into a nation-scale startup.</p><h2>The Political Transformation</h2><p>Something quieter, and perhaps more important, is happening in Ukrainian politics. The war has produced a civic culture unlike anything in the post-Soviet space — a genuine, ground-up accountability between citizens and their institutions.</p><p>In 2027, Ukraine will almost certainly be a candidate for European Union accession — likely one of the fastest-track applications in EU history. The structural reforms required for accession, reforms that took Poland a decade, Ukraine is compressing into three years.</p><h2>A New Role in Europe</h2><p>Ukraine, which the Kremlin imagined it could erase, is positioned to become a central pillar of European security architecture. Its military experience — hard-won, brutal, irreplaceable — will shape NATO doctrine for a generation.</p><h2>The Human Cost and the Human Future</h2><p>None of this minimises the grief. But grief, in Ukrainian culture, has never been passive. From the Holodomor to Chernobyl to Maidan, Ukrainians have transformed their deepest wounds into acts of construction.</p><p>The 2027 that awaits Ukraine will be Ukrainian. Unambiguously, permanently, proudly Ukrainian. And that — is enough to call it a victory.</p>`
+  },
+  {
+    title: "The Villages That Refused to Fall — Resilience in Kharkiv",
+    title_uk: "Села, які відмовились капітулювати — стійкість Харківщини",
+    author: "Yuliya Karpenko", author_initials: "YK", author_color: "#1a4d8f",
+    author_role: "Senior Correspondent, Kharkiv", date: "2025-03-20",
+    category: "frontlines", read_time: "8", emoji: "🪖",
+    excerpt: "Three years into the full-scale invasion, communities near Kharkiv have rebuilt, regrouped, and refuse to be erased from history.",
+    excerpt_uk: "Через три роки після вторгнення громади поблизу Харкова відбудувались і відмовляються бути стертими з історії.",
+    _filename: "kharkiv-resilience.md",
+    body: `<p>When Oksana Kovalenko returned to her village of Vesele in September 2022, she found the school where she had taught for twenty years reduced to rubble. The blackboard still stood, improbably, in the open air — a geometry lesson half-erased, as if the children had simply stepped outside for a moment.</p><p>"I thought: we will rebuild," she told us, her voice steady. "We will rebuild because we have no other choice."</p><h2>A City That Refused to Break</h2><p>The city itself, Ukraine's second largest, absorbed over three thousand missile and artillery strikes in the first year. Yet by early 2025, new apartment buildings have risen where craters once gaped. Tram lines now run on schedule. Cafés fill on weekends. Life, stubborn and ordinary, has resumed.</p><blockquote>"They wanted to make us disappear. Instead they made us remember who we are."</blockquote><h2>The Mayors Who Stayed</h2><p>In the village of Mala Rohan, Mayor Vasyl Bondarenko never left — not when the first shells fell, not when Russian troops occupied the streets for six weeks. He hid documents. He kept lists. He remembered every resident by name.</p><p>"If I had left, there would have been no one to come back to," he says simply. "Someone had to be the anchor."</p><h2>What 2027 Might Look Like</h2><p>Analysts project that by 2027, the Kharkiv region will have restored over 95% of pre-war housing stock. The region's agricultural output is forecast to exceed 2021 levels within two years.</p><p>These villages have survived. They are building. And they are not finished.</p>`
+  },
+  {
+    title: "Theatre Without Walls — Art Under Air Raid Sirens",
+    title_uk: "Театр без стін — мистецтво під час повітряних тривог",
+    author: "Ivan Marchenko", author_initials: "IM", author_color: "#b45309",
+    author_role: "Culture Editor", date: "2025-03-18",
+    category: "culture", read_time: "5", emoji: "🎭",
+    excerpt: "Kyiv's theatre companies have found extraordinary ways to keep performing — in metro stations, bunkers, and open courtyards between blackouts.",
+    excerpt_uk: "Театральні трупи Києва знайшли неймовірні способи продовжувати виступи — у метро, бункерах та дворах.",
+    _filename: "culture-renaissance.md",
+    body: `<p>The stage is a platform on Line 3 of the Kyiv Metro. The audience sits on folding chairs, on their own luggage, on the concrete itself. Above them, somewhere in the dark city, an air raid alert is in its fourth hour.</p><p>But down here, a woman is singing. Her name is Olena Sorokina. Tonight she is performing Verdi for an audience of two hundred strangers in a bomb shelter two floors beneath Khreshchatyk Street.</p><blockquote>"Art is not a luxury. Art is what tells us we are still human." — Olena Sorokina</blockquote><h2>The Companies That Didn't Stop</h2><p>The Dakh Theatre turned its building into a shelter, a rehearsal space, and an impromptu cultural centre simultaneously. Its director, Vlad Troitskyi, has not left Kyiv for three years.</p><p>"We used to ask: what does it mean to make art in difficult times? Now we know. It means to make art anyway."</p><h2>A Cultural Renaissance</h2><p>Ukrainian-language books are selling at record numbers. Ukrainian cinema is winning international prizes. Ukrainian music is filling clubs in Warsaw, Berlin, and London.</p><p>"They wanted to prove we don't exist. We are proving the opposite. Every night, in every venue, under every siren. We exist. We have always existed."</p>`
+  },
+  {
+    title: "Two Years in Warsaw — Ukrainian Mothers Who Built a New World",
+    title_uk: "Два роки у Варшаві — українські матері, які побудували новий світ",
+    author: "Olena Bondar", author_initials: "OB", author_color: "#7c2d8f",
+    author_role: "Diaspora Correspondent, Warsaw", date: "2025-03-12",
+    category: "diaspora", read_time: "10", emoji: "🌍",
+    excerpt: "Over a million Ukrainians settled in Poland. We follow five mothers who arrived with children and suitcases — and built community from nothing.",
+    excerpt_uk: "Понад мільйон українців оселились у Польщі. П'ять матерів, які побудували спільноту з нічого.",
+    _filename: "diaspora-warsaw.md",
+    body: `<p>Daryna arrived in Warsaw on the fourth of March, 2022, with two children, one suitcase, and the address of a volunteer centre she had found on a Facebook group at three in the morning while the sky above Kyiv turned orange.</p><p>She spoke no Polish. She had four hundred euros. She had no idea where she would sleep. Two years later, Daryna runs a community kitchen that feeds three hundred people a week.</p><h2>Networks of Mutual Aid</h2><p>What emerged in the first weeks was not primarily a government response — it was a citizen one. And quickly, Ukrainian refugees stopped being recipients of help and became organisers of it.</p><blockquote>"We could not just accept. It is not in us to just accept." — Daryna</blockquote><h2>The Children</h2><p>Nine-year-old Mykyta now dreams in Polish. He still knows every word of the Ukrainian national anthem. He insisted on teaching it to his class.</p><h2>Looking Toward Home</h2><p>"The home I left doesn't exist anymore," says Tetyana, who is from Mariupol. "Home is where my children are safe. Right now, that is here. When it can be Ukraine — we will go."</p>`
+  },
+  {
+    title: "Solar Ukraine — How a War-Torn Country Became a Clean Energy Pioneer",
+    title_uk: "Сонячна Україна — як країна стала піонером чистої енергетики",
+    author: "Anton Holovatyi", author_initials: "AH", author_color: "#713f12",
+    author_role: "Technology & Economy Reporter", date: "2025-03-05",
+    category: "rebuild", read_time: "9", emoji: "⚡",
+    excerpt: "Stripped of its grid, Ukraine improvised with solar panels, batteries, and microgrids — and is now exporting lessons in energy resilience to the world.",
+    excerpt_uk: "Позбавившись мережі, Україна імпровізувала з сонячними панелями та мікромережами.",
+    _filename: "solar-ukraine.md",
+    body: `<p>In October 2022, Russian missiles struck the Trypilska thermal power plant outside Kyiv. Within hours, 1.5 million people lost electricity. Within months, something nobody planned for had begun to take shape: a distributed, decentralised, renewable energy system that may ultimately prove more resilient than the centralised grid it replaced.</p><h2>Necessity as the Mother of Innovation</h2><p>What followed was one of the fastest energy transitions on record. By mid-2023, Ukraine had installed more rooftop solar capacity than it had in the previous five years combined.</p><blockquote>"We didn't have the luxury of debate. We just had to do it." — Mykola Kovalenko, Energy Ministry</blockquote><h2>The Numbers</h2><p>Solar panel imports to Ukraine increased by 340% in 2023. The share of renewables in Ukraine's energy mix reached 23% by the end of 2024 — faster than almost any comparable transition anywhere in the world.</p><h2>2027 and Beyond</h2><p>By 2027, analysts project Ukraine's renewable capacity will exceed its pre-war total electricity generation. Ukraine will not rebuild what it had. It will build what Europe is still trying to become.</p>`
+  },
+  {
+    title: "From Rubble to Blueprint — Mariupol's Architects Refuse to Forget",
+    title_uk: "З руїн до креслення — архітектори Маріуполя відмовляються забути",
+    author: "Svitlana Pryimak", author_initials: "SP", author_color: "#065f46",
+    author_role: "Senior Reporter, Lviv", date: "2025-02-28",
+    category: "rebuild", read_time: "7", emoji: "🏗️",
+    excerpt: "In exile, a group of Mariupol-born architects documents every lost building — preparing for the day reconstruction can begin.",
+    excerpt_uk: "У вигнанні група архітекторів з Маріуполя документує кожну втрачену будівлю.",
+    _filename: "mariupol-architects.md",
+    body: `<p>In a shared workspace in Lviv, seven architects sit at computers covered in blueprints. None of them have been to their hometown of Mariupol in over three years. Most do not know what remains of the streets they grew up on.</p><p>They are building the city they cannot yet visit — street by street, building by building — from satellite images, pre-war photographs, and the memories of survivors.</p><h2>Documenting the Undocumentable</h2><p>The Mariupol Architecture Memory Project has catalogued over 4,300 buildings: their pre-war state, their last known condition, and in many cases, their destruction. The database is the most comprehensive record of the city's built heritage in existence.</p><blockquote>"When Mariupol is liberated, and it will be liberated, we will be ready." — Dmytro Shevchenko, project lead</blockquote><h2>A City in Exile</h2><p>What the architects are creating is more than a technical document. It is an act of memory, a refusal to let the physical record of Mariupol's existence disappear along with its buildings.</p><p>History will judge those who destroyed Mariupol. These architects are making sure history has the evidence.</p>`
+  },
+  {
+    title: "The Medics of the 93rd Brigade — Saving Lives in the Mud",
+    title_uk: "Медики 93-ї бригади — рятують життя в болоті",
+    author: "Dmytro Koval", author_initials: "DK", author_color: "#7f1d1d",
+    author_role: "Front Lines Reporter", date: "2025-02-20",
+    category: "frontlines", read_time: "12", emoji: "🪖",
+    excerpt: "A frontline report from combat medics who work in near-total darkness, under constant shelling, with equipment held together by resourcefulness and courage.",
+    excerpt_uk: "Репортаж з передової від бойових медиків, які працюють під постійним обстрілом.",
+    _filename: "medics-93rd.md",
+    body: `<p>At 2:14 in the morning, the radio crackles. A soldier has been hit 400 metres from the tree line. Sergeant Olha Petrenko, 29, a former nurse from Dnipro, is already moving before the transmission ends.</p><p>She has done this three hundred times. She does not count anymore.</p><h2>The Training That Saved Lives</h2><p>The 93rd Brigade's medical team is one of the most experienced combat medicine units in the Ukrainian Armed Forces. In three years of full-scale war, they have treated over 2,000 casualties. Their survival rate — 94% for soldiers who reach them alive — is among the highest recorded in modern warfare.</p><blockquote>"We are not heroes. We are just people who learned very fast." — Olha Petrenko</blockquote><h2>The Equipment Problem</h2><p>They work with what they have. Donated tourniquets from Poland. Field dressings from Britain. Hemostatic gauze from America. And improvisation — always improvisation.</p><h2>What They Carry Home</h2><p>Olha will return to Dnipro after this rotation. She will sleep for two days. Then she will go back. "I don't know how to explain why," she says. "I just know that someone has to."</p>`
+  },
+  {
+    title: "The Language That Would Not Die — Ukrainian Literature's Renaissance",
+    title_uk: "Мова, яка не померла — ренесанс української літератури",
+    author: "Nataliya Shevchenko", author_initials: "NS", author_color: "#0c4a6e",
+    author_role: "Culture Correspondent", date: "2025-02-15",
+    category: "culture", read_time: "6", emoji: "📚",
+    excerpt: "Ukrainian-language books now top bestseller lists across Europe. We speak to the writers and translators igniting a global rediscovery of Ukrainian literature.",
+    excerpt_uk: "Книги українською мовою тепер очолюють списки бестселерів по всій Європі.",
+    _filename: "language-revival.md",
+    body: `<p>In a bookshop in Warsaw, a Polish woman is buying a Ukrainian novel. She does not read Ukrainian. She has ordered the Polish translation, which arrived last week. She is one of forty thousand people who have bought it.</p><p>The novel is by Sophia Andrukhovych. Three years ago, almost no one outside Ukraine had heard of her.</p><h2>The Translation Boom</h2><p>Ukrainian literature is being translated at a pace without precedent. In 2024 alone, over 340 Ukrainian literary works were published in translation across Europe and North America — a tenfold increase from 2021.</p><blockquote>"They tried to prove our language didn't exist. Now the whole world is learning it." — Sophia Andrukhovych</blockquote><h2>The Writers Who Stayed</h2><p>Many of Ukraine's most celebrated writers remained in the country throughout the war. Some served in the military. All continued to write. Their work — urgent, raw, necessary — is reaching readers who had never considered Ukrainian literature before the invasion.</p><h2>A Language Choosing Itself</h2><p>Inside Ukraine, something equally significant is happening. Many Ukrainians who grew up speaking Russian as their primary language are switching to Ukrainian — not because they are required to, but because they choose to. Language, for them, has become an act of identity.</p>`
+  }
+];
+
+// ─── Render articles ─────────────────────────────────────
+function renderArticles() {
+  if (!ARTICLES.length) return;
+  var featured = ARTICLES[0];
+  var rest = ARTICLES.slice(1);
+  var t = lang === 'uk' ? featured.title_uk : featured.title;
+  var ex = lang === 'uk' ? featured.excerpt_uk : featured.excerpt;
+  var paras = (featured.body || '').split('</p>');
+  var p1 = paras[0] ? paras[0].replace('<p>','') + '</p>' : '';
+  var p2 = paras[1] ? '<p>' + paras[1].replace('<p>','') + '</p>' : '';
+
+  document.getElementById('featuredSlot').innerHTML =
+    '<article class="featured-card" onclick="openArticle(\'' + featured._filename + '\')">' +
+    '<div class="fc-meta">' +
+      '<span class="badge badge-' + featured.category + '">' + catLabel(featured.category) + '</span>' +
+      '<time class="read-time">' + fmtDate(featured.date) + '</time>' +
+      '<span class="read-time">' + featured.read_time + ' min read</span>' +
+    '</div>' +
+    '<h2 class="fc-title">' + t + '</h2>' +
+    '<p class="fc-excerpt">' + ex + '</p>' +
+    '<div class="blur-gate">' +
+      '<div class="blur-para">' + p1 + '</div>' +
+      '<div class="blur-para blurred">' + p2 + '</div>' +
+      '<div class="blur-overlay">' +
+        '<div class="blur-cta">' +
+          '<div class="lock">🔒</div>' +
+          '<h3>Join Free to Read the Full Story</h3>' +
+          '<p>Free membership — instant access to all articles in English &amp; Ukrainian.</p>' +
+          '<a href="signup.html" class="btn btn-primary" onclick="event.stopPropagation()">Join Free — No Credit Card</a>' +
+          '<p class="already">Already a member? <a href="login.html" onclick="event.stopPropagation()">Sign in</a></p>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="fc-author">' +
+      '<div class="ava ava-md" style="background:' + featured.author_color + '">' + featured.author_initials + '</div>' +
+      '<div><strong>' + featured.author + '</strong><span>' + featured.author_role + '</span></div>' +
+    '</div>' +
+    '</article>';
+
+  document.getElementById('articleGrid').innerHTML = rest.map(function(a) {
+    var title = lang === 'uk' ? a.title_uk : a.title;
+    var excerpt = lang === 'uk' ? a.excerpt_uk : a.excerpt;
+    return '<article class="a-card" data-cat="' + a.category + '" onclick="openArticle(\'' + a._filename + '\')">' +
+      '<div class="a-card-img" style="background:' + catGrad(a.category) + '">' + a.emoji + '</div>' +
+      '<div class="a-card-body">' +
+        '<div class="a-card-meta">' +
+          '<span class="badge badge-' + a.category + '">' + catLabel(a.category) + '</span>' +
+          '<span class="read-time">' + fmtDate(a.date).split(' ').slice(0,2).join(' ') + '</span>' +
+        '</div>' +
+        '<h3 class="a-card-title">' + title + '</h3>' +
+        '<p class="a-card-preview">' + excerpt + '</p>' +
+        '<div class="a-blur-bar">🔒 <span>Sign up to read full article</span></div>' +
+        '<div class="a-footer">' +
+          '<div class="ava ava-sm" style="background:' + a.author_color + '">' + a.author_initials + '</div>' +
+          '<span>' + a.author + '</span>' +
+          '<span class="rt">' + a.read_time + ' min</span>' +
+        '</div>' +
+      '</div>' +
+      '</article>';
+  }).join('');
+}
+
+// ─── Init ────────────────────────────────────────────────
+renderArticles();
+</script>
+</body>
+</html>
