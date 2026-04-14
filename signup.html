@@ -424,7 +424,7 @@ async function resendOtp() {
 // SMS — Required verification
 async function sendSms() {
   var phone = document.getElementById('phone').value.trim();
-  if (!phone||phone.length<7){setErr('phone','Enter a valid phone number with country code e.g. +44 7700 900000');return;}
+  if (!phone||phone.length<7){setErr('phone','Enter phone with country code e.g. +44 7700 900000');return;}
   fd.phone = phone;
   setErr('phone','');
   setErr('sms','');
@@ -434,92 +434,82 @@ async function sendSms() {
   btn.textContent = 'Sending...';
 
   document.getElementById('smsBox').style.display = 'block';
-  initDigits('smsDigits', function(code) { verifySms(code); });
 
   if (IS_DEMO) {
-    toast('📱 DEMO: Enter code 123456 to verify phone', 'info');
-    startTimer('resendSmsBtn', 'smsTimer', 30);
+    toast('DEMO: Enter code 123456', 'info');
+    startTimer('resendSmsBtn','smsTimer',30);
+    initDigits('smsDigits', function(code){ verifySms(code); });
     btn.textContent = 'Resend OTP';
     btn.disabled = false;
     return;
   }
 
-  // Generate OTP locally and send via Textbelt (free, no setup needed)
+  // Generate a 6-digit code and store it
   var otp = Math.floor(100000 + Math.random() * 900000).toString();
-  sessionStorage.setItem('vou_sms_otp', otp);
-  sessionStorage.setItem('vou_sms_phone', phone);
-  sessionStorage.setItem('vou_sms_time', Date.now().toString());
+  sessionStorage.setItem('sms_otp_' + phone, otp);
+  sessionStorage.setItem('sms_otp_time', Date.now().toString());
 
   try {
+    // Send via Textbelt (1 free SMS per day)
     var res = await fetch('https://textbelt.com/text', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         phone: phone,
-        message: 'Your Voice of Ukraine verification code: ' + otp + '. Valid for 10 minutes.',
+        message: 'Your Voice of Ukraine code: ' + otp + '. Valid 10 mins.',
         key: 'textbelt'
       })
     });
     var data = await res.json();
     if (data.success) {
-      toast('📱 SMS code sent to ' + phone, 'success');
-    } else if (data.error && data.error.indexOf('Quota') !== -1) {
-      toast('📱 Free SMS limit reached for today. Try again tomorrow or use a different network.', 'error');
+      toast('SMS sent to ' + phone, 'success');
     } else {
-      toast('📱 SMS sent — check your phone', 'info');
+      // Textbelt free limit hit — tell user to check quota
+      toast('SMS limit reached today. Try again tomorrow or contact admin.', 'error');
     }
   } catch(e) {
-    toast('📱 SMS service unavailable. Please try again.', 'error');
+    toast('SMS error: ' + e.message, 'error');
   }
 
-  startTimer('resendSmsBtn', 'smsTimer', 30);
+  initDigits('smsDigits', function(code){ verifySms(code); });
+  startTimer('resendSmsBtn','smsTimer',30);
   btn.textContent = 'Resend OTP';
   btn.disabled = false;
 }
 
 async function verifySms(code) {
   setErr('sms','');
-
   if (IS_DEMO) {
     if (code === '123456') {
       smsVerified = true;
       document.getElementById('smsOk').classList.add('show');
-      var sb = document.getElementById('sendSmsBtn');
-      if (sb) { sb.textContent = '✓ Verified'; sb.disabled = true; }
+      document.getElementById('sendSmsBtn').textContent = '✓ Verified';
+      document.getElementById('sendSmsBtn').disabled = true;
       toast('Phone verified!', 'success');
     } else {
-      document.getElementById('err-sms').textContent = 'Wrong code. Demo code is 123456';
+      document.getElementById('err-sms').textContent = 'Wrong code. Demo is 123456';
     }
     return;
   }
 
-  // Verify against locally stored OTP
-  var stored = sessionStorage.getItem('vou_sms_otp');
-  var storedPhone = sessionStorage.getItem('vou_sms_phone');
-  var storedTime = parseInt(sessionStorage.getItem('vou_sms_time') || '0');
-  var ageMs = Date.now() - storedTime;
+  // Check against stored OTP
+  var stored = sessionStorage.getItem('sms_otp_' + fd.phone);
+  var storedTime = parseInt(sessionStorage.getItem('sms_otp_time') || '0');
+  var expired = (Date.now() - storedTime) > 10 * 60 * 1000; // 10 min
 
-  if (!stored) {
-    document.getElementById('err-sms').textContent = 'Please click Send OTP first.';
+  if (expired) {
+    document.getElementById('err-sms').textContent = 'Code expired. Click Resend OTP.';
     return;
   }
-  if (ageMs > 10 * 60 * 1000) {
-    document.getElementById('err-sms').textContent = 'Code expired. Please click Resend OTP.';
-    return;
-  }
-  if (storedPhone !== fd.phone) {
-    document.getElementById('err-sms').textContent = 'Phone number changed. Please click Send OTP again.';
-    return;
-  }
-  if (code.trim() === stored) {
+  if (code === stored) {
     smsVerified = true;
     document.getElementById('smsOk').classList.add('show');
-    var sb = document.getElementById('sendSmsBtn');
-    if (sb) { sb.textContent = '✓ Verified'; sb.disabled = true; }
-    sessionStorage.removeItem('vou_sms_otp');
+    document.getElementById('sendSmsBtn').textContent = '✓ Verified';
+    document.getElementById('sendSmsBtn').disabled = true;
+    sessionStorage.removeItem('sms_otp_' + fd.phone);
     toast('Phone verified!', 'success');
   } else {
-    document.getElementById('err-sms').textContent = 'Incorrect code. Please check your SMS and try again.';
+    document.getElementById('err-sms').textContent = 'Incorrect code. Please try again.';
   }
 }
 
