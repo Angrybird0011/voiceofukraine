@@ -235,11 +235,6 @@ input,select,textarea{font:inherit}
 </head>
 <body>
 
-<!-- DEMO BANNER (only shows when Supabase not configured) -->
-<div class="demo-banner" id="demoBanner" style="display:none">
-  ⚙️ DEMO MODE — Configure Supabase to enable real signups. &nbsp;|&nbsp;
-  Demo OTP code: <strong>123456</strong>
-</div>
 
 <!-- NAV -->
 <nav class="nav" id="nav">
@@ -379,20 +374,13 @@ input,select,textarea{font:inherit}
 
 <div class="toast" id="toast"></div>
 
+<script type="module" src="auth.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════
-// CONFIGURATION — replace these with your Supabase values
-// Get them from: supabase.com → your project → Settings → API
+// Page script (content + UI)
 // ═══════════════════════════════════════════════════════
-var SUPABASE_URL  = 'https://dfsxgjrruzwjxywizejf.supabase.co';
-var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
-
-
 // ─── Demo mode detection ────────────────────────────────
-var IS_DEMO = SUPABASE_URL.indexOf('YOUR_PROJECT') !== -1;
-if (IS_DEMO) {
-  document.getElementById('demoBanner').style.display = 'block';
-}
+var IS_DEMO = false;
 
 // ─── Language ───────────────────────────────────────────
 var lang = localStorage.getItem('vou_lang') || 'en';
@@ -428,6 +416,7 @@ function doLogout() {
 // Show/hide nav buttons based on login state
 (function() {
   var user = getUser();
+  if (user && user.emailVerified === false) user = null;
   if (user) {
     var j = document.getElementById('navJoin');
     var l = document.getElementById('navLogin');
@@ -451,10 +440,11 @@ function showToast(msg, type) {
 
 // ─── Article click handler ──────────────────────────────
 function openArticle(filename) {
-  if (!localStorage.getItem('vou_token')) {
+  var user = getUser();
+  if (!user || user.emailVerified === false || !localStorage.getItem('vou_token')) {
     showToast('Join free to read the full article', 'info');
     setTimeout(function() {
-      window.location.href = 'signup.html';
+      window.location.href = 'signup.html?next=' + encodeURIComponent('article.html?f=' + filename);
     }, 1000);
   } else {
     window.location.href = 'article.html?f=' + encodeURIComponent(filename);
@@ -685,6 +675,11 @@ function renderArticles() {
 
 // ─── Init ────────────────────────────────────────────────
 renderArticles();
+window.setLang = setLang;
+window.toggleMenu = toggleMenu;
+window.doLogout = doLogout;
+window.openArticle = openArticle;
+window.filterArticles = filterArticles;
 </script>
 </body>
 </html>

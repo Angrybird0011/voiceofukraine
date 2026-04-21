@@ -57,81 +57,24 @@ body{background:linear-gradient(135deg,var(--blue-dark),#0a1a35)}
 <div class="page-wrap">
   <div class="card">
     <div id="loginView">
-      <div class="fh"><div class="icon">🔐</div><h1>Welcome Back</h1><p>Sign in with a magic code — no password needed.</p></div>
+      <div class="fh"><div class="icon">🔐</div><h1>Welcome Back</h1><p>Sign in with your email and password.</p></div>
       <div class="fg">
         <label>Email Address</label>
         <input type="email" id="loginEmail" placeholder="you@example.com">
         <div class="ferr" id="err-login"></div>
       </div>
-      <button class="btn btn-primary btn-full" id="magicBtn" onclick="sendMagic()">Send Magic Code →</button>
-      <div class="or-divider">or enter OTP directly</div>
       <div class="fg">
-        <label>Email for OTP</label>
-        <div class="otp-row">
-          <input type="email" id="otpEmail" placeholder="you@example.com">
-          <button class="otp-send" onclick="sendOtp()">Send OTP</button>
-        </div>
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password">
       </div>
-      <div id="otpSection" style="display:none">
-        <div class="fg">
-          <label>Enter 6-digit code</label>
-          <div class="otp-digits" id="loginDigits">
-            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
-            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
-            <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
-          </div>
-          <div class="ferr" id="err-otp" style="text-align:center"></div>
-        </div>
-        <button class="btn btn-primary btn-full" onclick="verifyOtp()">Sign In →</button>
-      </div>
+      <button class="btn btn-primary btn-full" id="magicBtn" onclick="sendMagic()">Sign In →</button>
+      <p class="form-note" style="margin-top:10px">
+        Email not verified? <a href="#" onclick="resendVerificationFromLogin();return false;">Resend verification email</a>
+      </p>
       <p class="form-note">Don't have an account? <a href="signup.html">Join free →</a></p>
-    </div>
-    <div id="sentView" style="display:none">
-      <div class="success-wrap">
-        <div class="s-icon">📧</div>
-        <h2>Check Your Email</h2>
-        <p>We sent a magic link to <strong id="sentEmail"></strong>. Click it to sign in instantly.</p>
-        <button class="btn btn-ghost btn-full" onclick="document.getElementById('loginView').style.display='block';document.getElementById('sentView').style.display='none'" style="margin-top:8px">← Use a different email</button>
-      </div>
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
-<script>
-var SUPABASE_URL  = 'https://dfsxgjrruzwjxywizejf.supabase.co';
-var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
-var IS_DEMO=SUPABASE_URL.indexOf('YOUR_PROJECT')!==-1;
-
-function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type?' '+type:'');requestAnimationFrame(function(){requestAnimationFrame(function(){t.classList.add('show')})});setTimeout(function(){t.classList.remove('show')},3500);}
-
-function initDigits(groupId,onDone){var g=document.getElementById(groupId);if(!g)return;var ins=Array.from(g.querySelectorAll('.otp-d'));ins.forEach(function(inp,i){inp.addEventListener('input',function(e){var v=e.target.value.replace(/\D/g,'');e.target.value=v.slice(-1);inp.classList.toggle('filled',!!inp.value);if(v&&i<ins.length-1)ins[i+1].focus();var code=ins.map(function(x){return x.value}).join('');if(code.length===6&&onDone)onDone(code)});inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!inp.value&&i>0){ins[i-1].focus();ins[i-1].value='';ins[i-1].classList.remove('filled')}});})}
-async function sendMagic(){
-  var email=document.getElementById('loginEmail').value.trim();
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){document.getElementById('err-login').textContent='Please enter a valid email.';return;}
-  if(IS_DEMO){localStorage.setItem('vou_token','demo_token');localStorage.setItem('vou_user',JSON.stringify({email:email,id:'demo_'+Date.now()}));toast('✅ Demo login!','success');setTimeout(function(){window.location.href='index.html'},1200);return;}
-  var btn=document.getElementById('magicBtn');btn.disabled=true;btn.textContent='Sending…';
-  try{await fetch(SUPABASE_URL+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},body:JSON.stringify({email:email,create_user:false})});document.getElementById('sentEmail').textContent=email;document.getElementById('loginView').style.display='none';document.getElementById('sentView').style.display='block';}catch(e){toast('Error: '+e.message,'error');}btn.disabled=false;btn.textContent='Send Magic Code →';
-}
-async function sendOtp(){
-  var email=document.getElementById('otpEmail').value.trim();
-  if(!email){toast('Enter your email','error');return;}
-  document.getElementById('otpSection').style.display='block';
-  initDigits('loginDigits',function(code){verifyCode(email,code)});
-  if(IS_DEMO){toast('📧 DEMO: Enter 123456','info');return;}
-  await fetch(SUPABASE_URL+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},body:JSON.stringify({email:email,create_user:false})});
-  toast('📧 Code sent!','success');
-}
-async function verifyOtp(){
-  var email=document.getElementById('otpEmail').value.trim();
-  var code=Array.from(document.querySelectorAll('#loginDigits .otp-d')).map(function(x){return x.value}).join('');
-  if(code.length<6){document.getElementById('err-otp').textContent='Enter all 6 digits.';return;}
-  await verifyCode(email,code);
-}
-async function verifyCode(email,code){
-  if(IS_DEMO){if(code==='123456'){localStorage.setItem('vou_token','demo_token');localStorage.setItem('vou_user',JSON.stringify({email:email,id:'demo_'+Date.now()}));toast('✅ Signed in!','success');setTimeout(function(){window.location.href='index.html'},1000);}else{document.getElementById('err-otp').textContent='❌ Demo code is 123456'}return;}
-  try{var res=await fetch(SUPABASE_URL+'/auth/v1/verify',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},body:JSON.stringify({email:email,token:code,type:'email'})});var data=await res.json();if(!data.access_token)throw new Error(data.error?.message||'Invalid code');localStorage.setItem('vou_token',data.access_token);localStorage.setItem('vou_user',JSON.stringify({id:data.user.id,email:email}));toast('✅ Signed in!','success');setTimeout(function(){window.location.href='index.html'},1000);}catch(e){document.getElementById('err-otp').textContent='❌ '+e.message;}
-}
-var hash=new URLSearchParams(window.location.hash.slice(1));var at=hash.get('access_token');
-if(at){localStorage.setItem('vou_token',at);toast('✅ Signed in!','success');setTimeout(function(){window.location.href='index.html'},1000);}
-</script>
+<script type="module" src="auth.js"></script>
 </body></html>

@@ -746,671 +746,187 @@ tbody tr:hover { background: #f8fafc; }
   </div>
 </div>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-<script>
-const ADMIN_EMAIL = 'admin@voiceofukraine.org'; // Change to your admin email
+const firebaseConfig = {
+  apiKey: "AIzaSyAga6UWDBzwzE8u7g8Z7iYb3QLKbkJLI9c",
+  authDomain: "voice-of-ukraine.firebaseapp.com",
+  projectId: "voice-of-ukraine",
+  storageBucket: "voice-of-ukraine.firebasestorage.app",
+  messagingSenderId: "464319888247",
+  appId: "1:464319888247:web:b46733df41c6b92b7d3f72"
+};
+const ADMIN_EMAIL = "admin@voiceofukraine.org";
 const PAGE_SIZE = 20;
 let allUsers = [];
 let filtered = [];
 let currentPage = 1;
 
-// ── Admin auth ──
-// ── Tab switcher ──────────────────────────────────────────
-function showAdminTab(tab) {
-  ['login','setpass','otp'].forEach(function(t) {
-    var panel = document.getElementById('adminTab-'+t);
-    var btn   = document.getElementById('tab-'+t);
-    if (panel) panel.style.display = t===tab ? 'block' : 'none';
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+function esc(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function fmtDate(s) { if (!s) return "—"; const d = s.toDate ? s.toDate() : new Date(s); return d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
+function setErr(id, msg) { const el = document.getElementById(id); if (el) el.textContent = msg; }
+function showToast(msg, type) {
+  const t = document.getElementById("globalToast") || document.createElement("div");
+  if (!t.id) { t.id = "globalToast"; t.className = "toast"; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.className = "toast " + (type === "success" ? "success" : type === "error" ? "error" : "");
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add("show")));
+  setTimeout(() => t.classList.remove("show"), 3500);
+}
+
+window.showAdminTab = function(tab) {
+  ["login","setpass","otp"].forEach((t) => {
+    const panel = document.getElementById("adminTab-" + t);
+    const btn = document.getElementById("tab-" + t);
+    if (panel) panel.style.display = t === tab ? "block" : "none";
     if (btn) {
-      btn.style.background = t===tab ? 'var(--blue)' : 'transparent';
-      btn.style.color      = t===tab ? '#fff' : 'var(--text-muted)';
+      btn.style.background = t === tab ? "var(--blue)" : "transparent";
+      btn.style.color = t === tab ? "#fff" : "var(--text-muted)";
     }
   });
-}
+};
 
-// ── Sign in with email + password ─────────────────────────
-async function adminLogin() {
-  const email = document.getElementById('adminEmail').value.trim();
-  const pass  = document.getElementById('adminPass').value;
-  setErr('err-adminLogin','');
-
-  if (!email) { setErr('err-adminLogin','Please enter your admin email.'); return; }
-  if (!pass)  { setErr('err-adminLogin','Please enter your password. Use the Set Password tab if first time.'); return; }
-
+window.adminLogin = async function adminLogin() {
+  const email = document.getElementById("adminEmail").value.trim();
+  const pass = document.getElementById("adminPass").value;
+  setErr("err-adminLogin", "");
+  if (!email || !pass) { setErr("err-adminLogin", "Enter admin email and password."); return; }
   try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
-      body: JSON.stringify({ email, password: pass })
-    });
-    const data = await res.json();
-    if (data.error || !data.access_token) throw new Error(data.error_description || data.error?.message || 'Invalid credentials. Use Set Password tab if first time.');
-
-    localStorage.setItem('vou_admin_token', data.access_token);
-    document.getElementById('adminLoginPage').style.display = 'none';
-    document.getElementById('adminDash').style.display = 'block';
-    loadUsers();
-  } catch(e) {
-    setErr('err-adminLogin', '❌ ' + e.message);
-  }
-}
-
-// ── Send password reset / first-time setup email ──────────
-async function sendAdminReset() {
-  const email = document.getElementById('resetEmail').value.trim();
-  document.getElementById('err-resetEmail').textContent = '';
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    document.getElementById('err-resetEmail').textContent = 'Please enter a valid email address.';
-    return;
-  }
-
-  if (IS_DEMO) {
-    document.getElementById('setPassForm').style.display = 'block';
-    showToast('DEMO: OTP is 123456 — enter it and set your password', 'info');
-    return;
-  }
-
-  try {
-    // Send OTP to email — user enters it along with new password
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
-      body: JSON.stringify({ email, create_user: false })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message || data.error);
-    document.getElementById('setPassForm').style.display = 'block';
-    showToast('📧 Check your email for the 6-digit code', 'success');
-  } catch(e) {
-    document.getElementById('err-setpass').textContent = '❌ ' + e.message;
-  }
-}
-
-// ── Verify OTP and set new password ──────────────────────
-async function setAdminPassword() {
-  const email   = document.getElementById('resetEmail').value.trim();
-  const otp     = document.getElementById('resetOtp').value.trim();
-  const pass    = document.getElementById('newPass').value;
-  const confirm = document.getElementById('confirmPass').value;
-  document.getElementById('err-resetOtp').textContent = '';
-  document.getElementById('err-newPass').textContent = '';
-  document.getElementById('err-setpass').textContent = '';
-
-  if (!otp || otp.length < 6) { document.getElementById('err-resetOtp').textContent = 'Enter the 6-digit code from your email.'; return; }
-  if (!pass || pass.length < 8) { document.getElementById('err-newPass').textContent = 'Password must be at least 8 characters.'; return; }
-  if (pass !== confirm) { document.getElementById('err-newPass').textContent = 'Passwords do not match.'; return; }
-
-  if (IS_DEMO) {
-    if (otp === '123456') {
-      localStorage.setItem('vou_admin_token','demo_admin');
-      document.getElementById('adminLoginPage').style.display = 'none';
-      document.getElementById('adminDash').style.display = 'block';
-      loadUsers();
-      showToast('✅ Demo admin access granted!', 'success');
-    } else {
-      document.getElementById('err-resetOtp').textContent = '❌ Demo OTP is 123456';
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    if (cred.user.email !== ADMIN_EMAIL) {
+      await signOut(auth);
+      throw new Error("This account is not authorized as admin.");
     }
-    return;
+    document.getElementById("adminLoginPage").style.display = "none";
+    document.getElementById("adminDash").style.display = "block";
+    await loadUsers();
+  } catch (e) {
+    setErr("err-adminLogin", "❌ " + (e.message || "Admin login failed"));
   }
+};
 
-  try {
-    // Step 1: verify OTP to get a session
-    const verifyRes = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
-      body: JSON.stringify({ email, token: otp, type: 'email' })
-    });
-    const verifyData = await verifyRes.json();
-    if (!verifyData.access_token) throw new Error(verifyData.error?.message || 'Invalid OTP code');
+window.adminLogout = async function adminLogout() {
+  await signOut(auth);
+  location.reload();
+};
 
-    // Step 2: use the session token to update the password
-    const updateRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      method:'PUT',
-      headers:{
-        'Content-Type':'application/json',
-        'apikey':SUPABASE_ANON,
-        'Authorization':'Bearer '+verifyData.access_token
-      },
-      body: JSON.stringify({ password: pass })
-    });
-    const updateData = await updateRes.json();
-    if (updateData.error) throw new Error(updateData.error.message || 'Password update failed');
-
-    // Step 3: log in with new password
-    localStorage.setItem('vou_admin_token', verifyData.access_token);
-    document.getElementById('adminLoginPage').style.display = 'none';
-    document.getElementById('adminDash').style.display = 'block';
-    loadUsers();
-    showToast('✅ Password set! You are now signed in.', 'success');
-  } catch(e) {
-    document.getElementById('err-setpass').textContent = '❌ ' + e.message;
-  }
-}
-
-// ── OTP-only login (no password) ─────────────────────────
-async function sendAdminOtp() {
-  const email = document.getElementById('otpAdminEmail').value.trim();
-  if (!email) { showToast('Enter your admin email', 'error'); return; }
-
-  if (IS_DEMO) {
-    document.getElementById('adminOtpBox').style.display = 'block';
-    initAdminOtpDigits(email);
-    showToast('DEMO: Enter 123456', 'info');
-    return;
-  }
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
-      body: JSON.stringify({ email, create_user: false })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message || data.error);
-    document.getElementById('adminOtpBox').style.display = 'block';
-    initAdminOtpDigits(email);
-    showToast('📧 6-digit code sent to ' + email, 'success');
-  } catch(e) {
-    showToast('Error: ' + e.message, 'error');
-  }
-}
-
-function initAdminOtpDigits(email) {
-  const box  = document.getElementById('adminOtpBox');
-  const ins  = Array.from(box.querySelectorAll('.otp-d'));
-  ins.forEach(function(inp, i) {
-    inp.style.borderColor = 'var(--border)';
-    inp.addEventListener('input', function(e) {
-      var v = e.target.value.replace(/\D/g,'');
-      e.target.value = v.slice(-1);
-      inp.style.borderColor = inp.value ? 'var(--blue)' : 'var(--border)';
-      inp.style.background  = inp.value ? 'var(--blue-light)' : 'var(--bg)';
-      if (v && i < ins.length-1) ins[i+1].focus();
-      var code = ins.map(function(x){return x.value}).join('');
-      if (code.length === 6) verifyAdminOtpCode(email, code);
-    });
-    inp.addEventListener('keydown', function(e) {
-      if (e.key==='Backspace' && !inp.value && i>0) {
-        ins[i-1].focus(); ins[i-1].value='';
-        ins[i-1].style.borderColor='var(--border)'; ins[i-1].style.background='var(--bg)';
-      }
-    });
-  });
-}
-
-async function verifyAdminOtp() {
-  const email = document.getElementById('otpAdminEmail').value.trim();
-  const box   = document.getElementById('adminOtpBox');
-  const code  = Array.from(box.querySelectorAll('.otp-d')).map(function(x){return x.value}).join('');
-  if (code.length < 6) { document.getElementById('err-adminOtp').textContent = 'Enter all 6 digits.'; return; }
-  await verifyAdminOtpCode(email, code);
-}
-
-async function verifyAdminOtpCode(email, code) {
-  document.getElementById('err-adminOtp').textContent = '';
-
-  if (IS_DEMO) {
-    if (code === '123456') {
-      localStorage.setItem('vou_admin_token','demo_admin');
-      document.getElementById('adminLoginPage').style.display = 'none';
-      document.getElementById('adminDash').style.display = 'block';
-      loadUsers();
-    } else {
-      document.getElementById('err-adminOtp').textContent = '❌ Demo code is 123456';
-    }
-    return;
-  }
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON},
-      body: JSON.stringify({ email, token: code, type: 'email' })
-    });
-    const data = await res.json();
-    if (!data.access_token) throw new Error(data.error?.message || 'Invalid code');
-    localStorage.setItem('vou_admin_token', data.access_token);
-    document.getElementById('adminLoginPage').style.display = 'none';
-    document.getElementById('adminDash').style.display = 'block';
-    loadUsers();
-  } catch(e) {
-    document.getElementById('err-adminOtp').textContent = '❌ ' + e.message;
-  }
-}
-
-function adminLogout() {
-  localStorage.removeItem('vou_admin_token');
-  window.location.reload();
-}
-
-// Check if already logged in as admin
-if (localStorage.getItem('vou_admin_token')) {
-  document.getElementById('adminLoginPage').style.display = 'none';
-  document.getElementById('adminDash').style.display = 'block';
-  loadUsers();
-}
-
-// ── Load users from Supabase ──
 async function loadUsers() {
-  document.getElementById('usersTableBody').innerHTML =
-    '<tr><td colspan="12" style="text-align:center;padding:32px;color:var(--text-muted);font-family:var(--font-mono);">Loading…</td></tr>';
-  try {
-    const token = localStorage.getItem('vou_admin_token') || SUPABASE_ANON;
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*&order=created_at.desc`, {
-      headers:{ 'apikey':SUPABASE_ANON, 'Authorization':'Bearer '+token }
-    });
-    allUsers = await res.json();
-    if (!Array.isArray(allUsers)) { allUsers = []; }
-
-    // Populate country filter
-    const countries = [...new Set(allUsers.map(u=>u.country).filter(Boolean))].sort();
-    const sel = document.getElementById('countryFilter');
-    sel.innerHTML = '<option value="">All countries</option>' +
-      countries.map(c=>`<option value="${c}">${c}</option>`).join('');
-
-    // Stats
-    document.getElementById('statTotal').textContent    = allUsers.length;
-    document.getElementById('statVerified').textContent = allUsers.length; // email verified = registered
-    document.getElementById('statPhone').textContent    = allUsers.filter(u=>u.phone).length;
-    document.getElementById('statGeo').textContent      = allUsers.filter(u=>u.lat).length;
-
-    filtered = [...allUsers];
-    currentPage = 1;
-    renderTable();
-  } catch(e) {
-    document.getElementById('usersTableBody').innerHTML =
-      `<tr><td colspan="12" style="text-align:center;padding:28px;color:var(--red);font-family:var(--font-mono);">Error: ${e.message}</td></tr>`;
-  }
+  const tbody = document.getElementById("usersTableBody");
+  tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:32px;color:var(--text-muted);font-family:var(--font-mono);">Loading…</td></tr>';
+  const snap = await getDocs(collection(db, "profiles"));
+  allUsers = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => new Date(b.created_at?.toDate ? b.created_at.toDate() : b.created_at || 0) - new Date(a.created_at?.toDate ? a.created_at.toDate() : a.created_at || 0));
+  document.getElementById("statTotal").textContent = allUsers.length;
+  document.getElementById("statVerified").textContent = allUsers.length;
+  document.getElementById("statPhone").textContent = allUsers.filter((u) => !!u.phone).length;
+  document.getElementById("statGeo").textContent = allUsers.filter((u) => !!u.lat).length;
+  const countries = [...new Set(allUsers.map((u) => u.country).filter(Boolean))].sort();
+  const sel = document.getElementById("countryFilter");
+  sel.innerHTML = '<option value="">All countries</option>' + countries.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+  filtered = [...allUsers];
+  currentPage = 1;
+  renderTable();
 }
 
-// ── Render table page ──
 function renderTable() {
-  const start = (currentPage-1)*PAGE_SIZE;
-  const page  = filtered.slice(start, start+PAGE_SIZE);
-  const tbody = document.getElementById('usersTableBody');
-
-  if (filtered.length === 0) {
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page = filtered.slice(start, start + PAGE_SIZE);
+  const tbody = document.getElementById("usersTableBody");
+  if (!filtered.length) {
     tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:28px;color:var(--text-muted);">No users found.</td></tr>';
-    document.getElementById('pageInfo').textContent = '0 results';
+    document.getElementById("pageInfo").textContent = "0 results";
     return;
   }
-
-  tbody.innerHTML = page.map((u,i) => `
+  tbody.innerHTML = page.map((u, i) => `
     <tr>
-      <td style="font-family:var(--font-mono);color:var(--text-muted);">${start+i+1}</td>
-      <td><strong>${esc(u.full_name||'—')}</strong></td>
-      <td style="font-family:var(--font-mono);font-size:0.78rem;">${esc(u.email||'—')}</td>
-      <td style="font-family:var(--font-mono);font-size:0.78rem;">${esc(u.phone||'—')}</td>
-      <td>${esc(u.country||'—')}</td>
-      <td>${esc(u.city||'—')}</td>
-      <td style="font-family:var(--font-mono);font-size:0.72rem;">${u.lat ? u.lat+', '+u.lon : '—'}</td>
-      <td style="font-family:var(--font-mono);font-size:0.72rem;">${esc(u.ip_address||'—')}</td>
-      <td style="font-size:0.78rem;">${esc(u.ip_city||'') + (u.ip_country?' ('+u.ip_country+')':'') || '—'}</td>
-      <td><span class="status-pill status-verified">✓ Email</span>${u.phone_verified?'<br><span class="status-pill status-verified" style="margin-top:3px;">✓ SMS</span>':''}</td>
+      <td style="font-family:var(--font-mono);color:var(--text-muted);">${start + i + 1}</td>
+      <td><strong>${esc(u.full_name || "—")}</strong></td>
+      <td style="font-family:var(--font-mono);font-size:0.78rem;">${esc(u.email || "—")}</td>
+      <td style="font-family:var(--font-mono);font-size:0.78rem;">${esc(u.phone || "—")}</td>
+      <td>${esc(u.country || "—")}</td>
+      <td>${esc(u.city || "—")}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${u.lat ? esc(u.lat + ", " + (u.lon || "")) : "—"}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${esc(u.ip_address || "—")}</td>
+      <td style="font-size:0.78rem;">${esc((u.ip_city || "") + (u.ip_country ? " (" + u.ip_country + ")" : "")) || "—"}</td>
+      <td><span class="status-pill status-verified">✓ Email</span>${u.phone_verified ? '<br><span class="status-pill status-verified" style="margin-top:3px;">✓ SMS</span>' : ""}</td>
       <td style="font-family:var(--font-mono);font-size:0.72rem;">${fmtDate(u.created_at)}</td>
-      <td>
-        <div class="admin-actions">
-          <button class="admin-btn admin-btn-view" onclick='showUser(${JSON.stringify(u)})'>View</button>
-          <button class="admin-btn admin-btn-del"  onclick="deleteUser('${u.id}','${esc(u.full_name||'')}')">Del</button>
-        </div>
-      </td>
-    </tr>`).join('');
-
+      <td><div class="admin-actions"><button class="admin-btn admin-btn-view" onclick='showUser(${JSON.stringify(u)})'>View</button><button class="admin-btn admin-btn-del" onclick="deleteUser('${u.id}','${esc(u.full_name || "")}')">Del</button></div></td>
+    </tr>
+  `).join("");
   const total = filtered.length;
-  const pages = Math.ceil(total/PAGE_SIZE);
-  document.getElementById('pageInfo').textContent = `Showing ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total} users`;
-  document.getElementById('prevBtn').disabled = currentPage<=1;
-  document.getElementById('nextBtn').disabled = currentPage>=pages;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  document.getElementById("pageInfo").textContent = `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, total)} of ${total} users`;
+  document.getElementById("prevBtn").disabled = currentPage <= 1;
+  document.getElementById("nextBtn").disabled = currentPage >= pages;
 }
 
-function prevPage() { if (currentPage>1) { currentPage--; renderTable(); } }
-function nextPage() { const pages=Math.ceil(filtered.length/PAGE_SIZE); if (currentPage<pages) { currentPage++; renderTable(); } }
-
-// ── Filter ──
-function filterUsers() {
-  const q  = document.getElementById('userSearch').value.toLowerCase();
-  const ct = document.getElementById('countryFilter').value;
-  filtered = allUsers.filter(u => {
-    const matchQ  = !q || [u.full_name,u.email,u.city,u.ip_address].some(f=>(f||'').toLowerCase().includes(q));
+window.filterUsers = function filterUsers() {
+  const q = document.getElementById("userSearch").value.toLowerCase();
+  const ct = document.getElementById("countryFilter").value;
+  filtered = allUsers.filter((u) => {
+    const matchQ = !q || [u.full_name, u.email, u.city, u.ip_address, u.phone].some((f) => (f || "").toLowerCase().includes(q));
     const matchCt = !ct || u.country === ct;
     return matchQ && matchCt;
   });
   currentPage = 1;
   renderTable();
-}
+};
+window.prevPage = function prevPage() { if (currentPage > 1) { currentPage -= 1; renderTable(); } };
+window.nextPage = function nextPage() { const pages = Math.ceil(filtered.length / PAGE_SIZE); if (currentPage < pages) { currentPage += 1; renderTable(); } };
+window.loadUsers = loadUsers;
 
-// ── Show user modal ──
-function showUser(u) {
-  document.getElementById('modalContent').innerHTML = [
-    ['Full Name',   u.full_name],
-    ['Email',       u.email],
-    ['Phone',       u.phone || '—'],
-    ['SMS Verified',u.phone_verified ? 'Yes ✅' : 'No'],
-    ['Country',     u.country],
-    ['City',        u.city || '—'],
-    ['GPS Lat/Lon', u.lat ? `${u.lat}, ${u.lon}` : '—'],
-    ['IP Address',  u.ip_address || '—'],
-    ['IP City',     u.ip_city || '—'],
-    ['IP Country',  u.ip_country || '—'],
-    ['ISP/Org',     u.ip_isp || '—'],
-    ['User Agent',  u.user_agent ? u.user_agent.substring(0,60)+'…' : '—'],
-    ['Joined',      fmtDate(u.created_at)],
-    ['User ID',     u.id],
-  ].map(([k,v]) => `<div class="modal-row"><span class="mk">${k}</span><span class="mv">${esc(String(v||'—'))}</span></div>`).join('');
-  document.getElementById('userModal').classList.remove('hidden');
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('userModal'))
-    document.getElementById('userModal').classList.add('hidden');
-}
-
-// ── Delete user ──
-async function deleteUser(id, name) {
+window.showUser = function showUser(u) {
+  document.getElementById("modalContent").innerHTML = [
+    ["Full Name", u.full_name], ["Email", u.email], ["Phone", u.phone || "—"], ["SMS Verified", u.phone_verified ? "Yes ✅" : "No"],
+    ["Country", u.country], ["City", u.city || "—"], ["GPS Lat/Lon", u.lat ? `${u.lat}, ${u.lon}` : "—"],
+    ["IP Address", u.ip_address || "—"], ["IP City", u.ip_city || "—"], ["IP Country", u.ip_country || "—"], ["ISP/Org", u.ip_isp || "—"],
+    ["User Agent", u.user_agent || "—"], ["Joined", fmtDate(u.created_at)], ["User ID", u.id]
+  ].map(([k, v]) => `<div class="modal-row"><span class="mk">${k}</span><span class="mv">${esc(String(v || "—"))}</span></div>`).join("");
+  document.getElementById("userModal").classList.remove("hidden");
+};
+window.closeModal = function closeModal(e) {
+  if (!e || e.target === document.getElementById("userModal")) document.getElementById("userModal").classList.add("hidden");
+};
+window.deleteUser = async function deleteUser(id, name) {
   if (!confirm(`Delete user "${name}"? This cannot be undone.`)) return;
-  try {
-    const token = localStorage.getItem('vou_admin_token') || SUPABASE_ANON;
-    await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${id}`, {
-      method:'DELETE',
-      headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+token}
-    });
-    toast('User deleted.', 'success');
-    loadUsers();
-  } catch(e) { toast('Delete error: '+e.message,'error'); }
-}
-
-// ── Export CSV ──
-function exportCsv() {
-  const cols = ['full_name','email','phone','phone_verified','country','city',
-                'lat','lon','ip_address','ip_city','ip_country','ip_isp','user_agent','created_at'];
-  const header = cols.join(',');
-  const rows = filtered.map(u =>
-    cols.map(c => `"${(u[c]||'').toString().replace(/"/g,'""')}"`).join(',')
-  );
-  const csv = [header,...rows].join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'vou-users-' + new Date().toISOString().slice(0,10) + '.csv';
+  await deleteDoc(doc(db, "profiles", id));
+  showToast("User deleted.", "success");
+  await loadUsers();
+};
+window.exportCsv = function exportCsv() {
+  const cols = ["full_name","email","phone","phone_verified","country","city","lat","lon","ip_address","ip_city","ip_country","ip_isp","user_agent","created_at"];
+  const rows = filtered.map((u) => cols.map((c) => `"${(u[c] || "").toString().replace(/"/g,'""')}"`).join(","));
+  const csv = [cols.join(","), ...rows].join("\n");
+  const a = document.createElement("a");
+  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+  a.download = "vou-users-" + new Date().toISOString().slice(0, 10) + ".csv";
   a.click();
-  toast('CSV exported!', 'success');
-}
-
-// ── Helpers ──
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function fmtDate(s) {
-  if (!s) return '—';
-  return new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-}
-
-// Allow pressing Enter on admin login
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('adminPass')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') adminLogin();
-  });
-});
-</script>
-<script>
-/* ============================================================
-   ГОЛОС УКРАЇНИ · Voice of Ukraine — app.js
-   ============================================================ */
-'use strict';
-
-/* ── SUPABASE CONFIG ──────────────────────────────────────────
-   Replace these with your actual Supabase project values.
-   Get them from: https://supabase.com → Project → Settings → API
-   ──────────────────────────────────────────────────────────── */
-const SUPABASE_URL    = 'https://dfsxgjrruzwjxywizejf.supabase.co';
-const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
-
-
-/* ── LANGUAGE ─────────────────────────────────────────────── */
-let currentLang = localStorage.getItem('vou_lang') || 'en';
-
-function setLang(lang) {
-  currentLang = lang;
-  localStorage.setItem('vou_lang', lang);
-  document.querySelectorAll('.lang-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.lang === lang));
-  document.querySelectorAll('[data-en]').forEach(el => {
-    const v = el.getAttribute('data-' + lang);
-    if (!v) return;
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = v;
-    else el.innerHTML = v;
-  });
-}
-
-/* ── NAV SCROLL ───────────────────────────────────────────── */
-const navEl = document.getElementById('nav');
-if (navEl) window.addEventListener('scroll', () =>
-  navEl.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
-
-/* ── HAMBURGER ────────────────────────────────────────────── */
-const hamburgerEl = document.getElementById('hamburger');
-const mobileMenuEl = document.getElementById('mobileMenu');
-if (hamburgerEl && mobileMenuEl)
-  hamburgerEl.addEventListener('click', () =>
-    mobileMenuEl.classList.toggle('open'));
-
-/* ── ARTICLE FILTER ───────────────────────────────────────── */
-function filterArticles(cat, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  document.querySelectorAll('.a-card').forEach(card => {
-    card.classList.toggle('hidden', cat !== 'all' && card.dataset.cat !== cat);
-  });
-}
-
-/* ── AUTH GATE (for blurred content) ─────────────────────── */
-function requireAuth(redirectUrl) {
-  if (localStorage.getItem('vou_token')) return true;
-  toast('Join free to read the full article.', 'info', 3500);
-  setTimeout(() => { window.location.href = 'signup.html?next=' + (redirectUrl || ''); }, 800);
-  return false;
-}
-
-/* ── OTP DIGIT BOXES ─────────────────────────────────────── */
-function initOtpDigits(groupId, onComplete) {
-  const group = document.getElementById(groupId);
-  if (!group) return;
-  const inputs = Array.from(group.querySelectorAll('.otp-d'));
-  inputs.forEach((inp, i) => {
-    inp.addEventListener('input', e => {
-      const v = e.target.value.replace(/\D/g, '');
-      e.target.value = v.slice(-1);
-      inp.classList.toggle('filled', !!inp.value);
-      if (v && i < inputs.length - 1) inputs[i + 1].focus();
-      const code = inputs.map(x => x.value).join('');
-      if (code.length === 6 && onComplete) onComplete(code);
-    });
-    inp.addEventListener('keydown', e => {
-      if (e.key === 'Backspace' && !inp.value && i > 0) {
-        inputs[i - 1].focus(); inputs[i - 1].value = '';
-        inputs[i - 1].classList.remove('filled');
-      }
-    });
-    inp.addEventListener('paste', e => {
-      e.preventDefault();
-      const p = (e.clipboardData || window.clipboardData).getData('text')
-                  .replace(/\D/g,'').slice(0,6);
-      p.split('').forEach((ch, idx) => {
-        if (inputs[idx]) { inputs[idx].value = ch; inputs[idx].classList.add('filled'); }
-      });
-      if (p.length === 6 && onComplete) onComplete(p);
-    });
-  });
-}
-
-/* ── RESEND COUNTDOWN ─────────────────────────────────────── */
-function startCountdown(btnId, spanId, secs = 60) {
-  const btn = document.getElementById(btnId);
-  const span = document.getElementById(spanId);
-  if (!btn) return;
-  btn.disabled = true;
-  let s = secs;
-  if (span) span.textContent = s;
-  const iv = setInterval(() => {
-    s--;
-    if (span) span.textContent = s;
-    if (s <= 0) {
-      clearInterval(iv);
-      btn.disabled = false;
-      if (span) span.textContent = '';
-      btn.textContent = 'Resend code';
-    }
-  }, 1000);
-  return iv;
-}
-
-/* ── FIELD VALIDATION ─────────────────────────────────────── */
-function setErr(id, msg) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = msg;
-  const inp = document.getElementById(id.replace('err-',''));
-  if (inp) inp.classList.toggle('err-field', !!msg);
-}
-function clearErrs(...ids) { ids.forEach(id => setErr(id, '')); }
-
-/* ── TOAST ────────────────────────────────────────────────── */
-function showToast(msg,type){toast(msg,type);}
-function toast(msg, type = 'info', dur = 3500) {
-  let t = document.getElementById('globalToast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'globalToast'; t.className = 'toast';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
-  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
-  setTimeout(() => t.classList.remove('show'), dur);
-}
-
-/* ── GEOLOCATION HELPER ───────────────────────────────────── */
-function getGeoLocation() {
-  return new Promise((resolve) => {
-    if (!navigator.geolocation) return resolve(null);
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude.toFixed(5),
-                       lon: pos.coords.longitude.toFixed(5),
-                       acc: pos.coords.accuracy }),
-      () => resolve(null),
-      { timeout: 8000 }
-    );
-  });
-}
-
-/* ── IP FETCH ─────────────────────────────────────────────── */
-async function getIpInfo() {
-  try {
-    const r = await fetch('https://api.ipapi.is/');
-    if (!r.ok) return {};
-    return await r.json();
-  } catch { return {}; }
-}
-
-/* ── SUPABASE HELPERS ─────────────────────────────────────── */
-const API = {
-  headers: () => ({
-    'Content-Type': 'application/json',
-    'apikey': SUPABASE_ANON,
-    'Authorization': 'Bearer ' + (localStorage.getItem('vou_token') || SUPABASE_ANON)
-  }),
-
-  async rpc(fn, body) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
-      method: 'POST',
-      headers: this.headers(),
-      body: JSON.stringify(body)
-    });
-    return r.json();
-  },
-
-  async insert(table, data) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
-      method: 'POST',
-      headers: { ...this.headers(), 'Prefer': 'return=representation' },
-      body: JSON.stringify(data)
-    });
-    return r.json();
-  },
-
-  async select(table, params = '') {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
-      headers: this.headers()
-    });
-    return r.json();
-  },
-
-  async delete(table, id) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
-      method: 'DELETE', headers: this.headers()
-    });
-    return r.status;
-  }
 };
 
-/* ── SESSION ──────────────────────────────────────────────── */
-function getUser() {
-  try { return JSON.parse(localStorage.getItem('vou_user') || 'null'); }
-  catch { return null; }
-}
-function saveSession(token, user) {
-  localStorage.setItem('vou_token', token);
-  localStorage.setItem('vou_user', JSON.stringify(user));
-}
-function clearSession() {
-  localStorage.removeItem('vou_token');
-  localStorage.removeItem('vou_user');
-}
-function logout() {
-  clearSession();
-  window.location.href = 'index.html';
-}
-
-/* ── INIT ─────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
-  setLang(currentLang);
-
-  // Update nav based on login state
-  const user = getUser();
-  const joinBtn = document.getElementById('navJoin');
-  const loginBtn = document.getElementById('navLogin');
-  const logoutBtn = document.getElementById('navLogout');
-  if (user) {
-    if (joinBtn) joinBtn.style.display = 'none';
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
-  } else {
-    if (logoutBtn) logoutBtn.style.display = 'none';
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  const otpBtn = document.getElementById("tab-otp");
+  const setPassBtn = document.getElementById("tab-setpass");
+  if (otpBtn) otpBtn.style.display = "none";
+  if (setPassBtn) setPassBtn.style.display = "none";
+  const setPassPanel = document.getElementById("adminTab-setpass");
+  const otpPanel = document.getElementById("adminTab-otp");
+  if (setPassPanel) setPassPanel.style.display = "none";
+  if (otpPanel) otpPanel.style.display = "none";
+  onAuthStateChanged(auth, async (user) => {
+    if (user && user.email === ADMIN_EMAIL) {
+      document.getElementById("adminLoginPage").style.display = "none";
+      document.getElementById("adminDash").style.display = "block";
+      await loadUsers();
+    }
+  });
 });
-
-</script>
-
-<script>
-var _IS_DEMO_ADMIN = typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL.indexOf('YOUR_PROJECT') !== -1;
-if (_IS_DEMO_ADMIN) {
-  window.adminLogin = function() {
-    var e=document.getElementById('adminEmail').value.trim();
-    var p=document.getElementById('adminPass').value;
-    if(e&&p){localStorage.setItem('vou_admin_token','demo_admin');document.getElementById('adminLoginPage').style.display='none';document.getElementById('adminDash').style.display='block';loadUsers();}
-    else{var el=document.getElementById('err-adminLogin');if(el)el.textContent='Enter any email and password for demo mode.';}
-  };
-  window.loadUsers = function() {
-    var users = JSON.parse(localStorage.getItem('vou_demo_users')||'[]');
-    var allUsers = users.map(function(u,i){return{id:'demo_'+i,full_name:u.full_name||u.name||'—',email:u.email||'—',phone:u.phone||null,phone_verified:u.phone_verified||false,country:u.country||'—',city:u.city||'—',lat:u.lat||null,lon:u.lon||null,ip_address:u.ip_address||'127.0.0.1 (demo)',ip_city:u.ip_city||null,ip_country:u.ip_country||null,ip_isp:u.ip_isp||null,user_agent:u.user_agent||navigator.userAgent,created_at:u.created_at||new Date().toISOString()}});
-    document.getElementById('statTotal').textContent=allUsers.length;
-    document.getElementById('statVerified').textContent=allUsers.length;
-    document.getElementById('statPhone').textContent=allUsers.filter(function(u){return u.phone}).length;
-    document.getElementById('statGeo').textContent=allUsers.filter(function(u){return u.lat}).length;
-    window.filtered=allUsers; window.allUsers=allUsers; window.currentPage=1;
-    if(typeof renderTable==='function')renderTable();
-    if(allUsers.length===0){var tb=document.getElementById('usersTableBody');if(tb)tb.innerHTML='<tr><td colspan="12" style="text-align:center;padding:32px;font-family:monospace;color:#6b7280;">No users yet — sign up via signup.html first!</td></tr>';}
-  };
-}
-if(localStorage.getItem('vou_admin_token')){document.getElementById('adminLoginPage').style.display='none';document.getElementById('adminDash').style.display='block';if(typeof loadUsers==='function')loadUsers();}
 </script>
 </body>
 </html>

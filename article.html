@@ -584,22 +584,16 @@ tbody tr:hover { background: #f8fafc; }
 
 
 
+<script type="module" src="auth.js"></script>
 <script>
-  // Protect article — redirect if not logged in
-  if (!localStorage.getItem('vou_token')) {
-    window.location.href = 'signup.html?next=' + encodeURIComponent(window.location.href);
-  } else {
-    document.addEventListener('DOMContentLoaded', loadArticlePage);
-  }
-
-  function shareArticle() {
+  window.shareArticle = function() {
     if (navigator.share) {
       navigator.share({ title: document.title, url: window.location.href });
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast('Link copied!', 'success');
     }
-  }
+  };
 </script>
 
 <script>
@@ -608,12 +602,9 @@ tbody tr:hover { background: #f8fafc; }
    ============================================================ */
 'use strict';
 
-/* ── SUPABASE CONFIG ──────────────────────────────────────────
-   Replace these with your actual Supabase project values.
-   Get them from: https://supabase.com → Project → Settings → API
+/* ── FIREBASE CONFIG NOTE ────────────────────────────────────
+   Firebase config is initialized in the first module script.
    ──────────────────────────────────────────────────────────── */
-const SUPABASE_URL    = 'https://dfsxgjrruzwjxywizejf.supabase.co';
-const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
 
 
 /* ── LANGUAGE ─────────────────────────────────────────────── */
@@ -759,47 +750,6 @@ async function getIpInfo() {
     return await r.json();
   } catch { return {}; }
 }
-
-/* ── SUPABASE HELPERS ─────────────────────────────────────── */
-const API = {
-  headers: () => ({
-    'Content-Type': 'application/json',
-    'apikey': SUPABASE_ANON,
-    'Authorization': 'Bearer ' + (localStorage.getItem('vou_token') || SUPABASE_ANON)
-  }),
-
-  async rpc(fn, body) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
-      method: 'POST',
-      headers: this.headers(),
-      body: JSON.stringify(body)
-    });
-    return r.json();
-  },
-
-  async insert(table, data) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
-      method: 'POST',
-      headers: { ...this.headers(), 'Prefer': 'return=representation' },
-      body: JSON.stringify(data)
-    });
-    return r.json();
-  },
-
-  async select(table, params = '') {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}`, {
-      headers: this.headers()
-    });
-    return r.json();
-  },
-
-  async delete(table, id) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
-      method: 'DELETE', headers: this.headers()
-    });
-    return r.status;
-  }
-};
 
 /* ── SESSION ──────────────────────────────────────────────── */
 function getUser() {

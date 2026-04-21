@@ -116,7 +116,6 @@ input,select,textarea{font:inherit}
         <h1>Create Your Account</h1>
         <p>Free access — no credit card needed.</p>
       </div>
-      <div id="demoNote" class="demo-note" style="display:none">⚙️ DEMO MODE — Use email OTP <strong>123456</strong> and phone OTP <strong>123456</strong></div>
       <div class="fg">
         <label>Full Name</label>
         <input type="text" id="fullName" placeholder="Your full name">
@@ -126,6 +125,18 @@ input,select,textarea{font:inherit}
         <label>Email Address</label>
         <input type="email" id="email" placeholder="you@example.com">
         <div class="ferr" id="err-email"></div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="At least 8 characters">
+          <div class="ferr" id="err-password"></div>
+        </div>
+        <div class="fg">
+          <label>Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Re-enter password">
+          <div class="ferr" id="err-confirm"></div>
+        </div>
       </div>
       <div class="fg">
         <label>Phone Number <span class="opt">Required — include country code e.g. +44, +1, +92</span></label>
@@ -179,20 +190,18 @@ input,select,textarea{font:inherit}
       <div class="fh">
         <div class="icon">📧</div>
         <h1>Verify Your Email</h1>
-        <p>We emailed a <strong>6-digit code</strong> to <strong id="emailShow"></strong> — enter it below.</p>
+        <p>We sent a verification email to <strong id="emailShow"></strong>.</p>
       </div>
-      <div class="info-tip">💡 Supabase sends a <strong>6-digit number</strong> (not a link). Check your inbox and spam folder. Subject line: "Your OTP". Expires in 10 minutes.</div>
+      <div class="info-tip">💡 We send a <strong>verification link</strong> to your email. Open it, then come back and click Verify Email.</div>
       <div class="fg">
-        <label>Enter 6-digit code</label>
-        <div class="otp-digits" id="emailDigits">
-          <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
-          <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
-          <input class="otp-d" maxlength="1"><input class="otp-d" maxlength="1">
+        <label>Email verification status</label>
+        <div style="text-align:center;font-family:var(--mono);font-size:.78rem;color:var(--text-muted);padding:8px 0 12px">
+          Click the verification link in your inbox, then press Verify Email below.
         </div>
         <div class="otp-ok" id="emailOk">✅ Email verified!</div>
         <div class="ferr" id="err-otp" style="text-align:center"></div>
         <button class="resend-lnk" id="resendBtn" disabled onclick="resendOtp()">
-          Resend code (<span id="timer">60</span>s)
+          Resend verification email (<span id="timer">60</span>s)
         </button>
       </div>
       <button class="btn btn-primary btn-full" onclick="verifyOtp()">Verify Email</button>
@@ -232,6 +241,7 @@ input,select,textarea{font:inherit}
 
 <div class="toast" id="toast"></div>
 
+<<<<<<< HEAD
 <script>
 var SUPABASE_URL  = 'https://dfsxgjrruzwjxywizejf.supabase.co';
 var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmc3hnanJydXp3anh5d2l6ZWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTkxMzEsImV4cCI6MjA5MDk3NTEzMX0.tPVrNFAk5glUsCtTGy0gRoCLR6UmLD2eI48AeAwjGks';
@@ -569,5 +579,8 @@ async function finish() {
   toast('🇺🇦 Welcome to Voice of Ukraine!','success');
 }
 </script>
+=======
+<script type="module" src="auth.js"></script>
+>>>>>>> 5239282 (Migrate auth and admin flow to Firebase)
 </body>
 </html>
