@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify your email — Voice of Ukraine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{--blue:#1a4d8f;--blue-dark:#0d2d5a;--blue-light:#dbeafe;--yellow:#f5c518;--yellow-dark:#d4a800;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--bg:#fafaf8;--surface:#fff;--border:#e5e7eb;--nav-h:70px;--serif:'Playfair Display',Georgia,serif;--body:'Source Serif 4',Georgia,serif;--mono:'JetBrains Mono',monospace}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--body);background:linear-gradient(135deg,var(--blue-dark),#0a1a35);min-height:100vh;color:var(--text);line-height:1.65}
+    a{color:inherit;text-decoration:none}
+    .nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+    .nav-inner{display:flex;align-items:center;height:100%;max-width:1200px;margin:0 auto;padding:0 24px;gap:8px}
+    .nav-logo{font-family:var(--serif);font-size:1.3rem;font-weight:900;display:flex;align-items:baseline;gap:2px}
+    .logo-ua{color:var(--blue)}.logo-en{color:var(--yellow-dark);font-style:italic}
+    .page-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 30px) 20px 50px}
+    .card{background:var(--surface);border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.14);padding:44px 40px;width:100%;max-width:560px}
+    .fh{text-align:center;margin-bottom:24px}
+    .fh .icon{font-size:2.6rem;margin-bottom:14px}
+    .fh h1{font-family:var(--serif);font-size:1.9rem;font-weight:700;margin-bottom:8px}
+    .fh p{font-size:.92rem;color:var(--text-muted)}
+    .tip{background:var(--blue-light);border:1px solid #bfdbfe;border-radius:10px;padding:14px 16px;color:var(--blue-dark);margin:16px 0;font-size:.9rem}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:7px;font-family:var(--mono);font-size:.82rem;letter-spacing:.04em;cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none;border:none}
+    .btn-primary{background:var(--blue);color:#fff;padding:11px 24px;border:2px solid var(--blue)}
+    .btn-primary:hover{background:var(--blue-dark);border-color:var(--blue-dark)}
+    .btn-ghost{background:transparent;color:var(--text-mid);padding:10px 22px;border:1.5px solid var(--border)}
+    .btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+    .mono{font-family:var(--mono);font-size:.82rem;color:var(--text-mid)}
+    @media(max-width:480px){.card{padding:28px 18px}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo"><span class="logo-ua">Голос</span><span class="logo-en">Ukraine</span></a>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="card">
+      <div class="fh">
+        <div class="icon">📩</div>
+        <h1>Waiting for email verification</h1>
+        <p>We sent you a verification link. Please open your email and click the link to verify your account.</p>
+      </div>
+
+      <div class="tip">
+        <div><strong>Tip:</strong> If you don’t see the email, check your Spam / Promotions folder.</div>
+        <div class="mono" style="margin-top:8px;">Email: <span id="emailShow">—</span></div>
+      </div>
+
+      <div class="btn-row">
+        <a class="btn btn-primary" id="goLogin" href="login.html">I verified my email → Sign In</a>
+        <a class="btn btn-ghost" href="signup.html">Back to Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="auth.js"></script>
+</body>
+</html>
+

@@ -403,29 +403,10 @@ function toggleMenu() {
   document.getElementById('mobileMenu').classList.toggle('open');
 }
 
-// ─── Auth state ─────────────────────────────────────────
+// ─── Auth state (local session cache) ───────────────────
 function getUser() {
   try { return JSON.parse(localStorage.getItem('vou_user') || 'null'); } catch(e) { return null; }
 }
-function doLogout() {
-  localStorage.removeItem('vou_token');
-  localStorage.removeItem('vou_user');
-  window.location.reload();
-}
-
-// Show/hide nav buttons based on login state
-(function() {
-  var user = getUser();
-  if (user && user.emailVerified === false) user = null;
-  if (user) {
-    var j = document.getElementById('navJoin');
-    var l = document.getElementById('navLogin');
-    var o = document.getElementById('navLogout');
-    if (j) j.style.display = 'none';
-    if (l) l.style.display = 'none';
-    if (o) o.style.display = 'inline-flex';
-  }
-})();
 
 // ─── Toast ──────────────────────────────────────────────
 function showToast(msg, type) {

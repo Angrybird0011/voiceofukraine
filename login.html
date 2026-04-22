@@ -77,4 +77,14 @@ body{background:linear-gradient(135deg,var(--blue-dark),#0a1a35)}
 </div>
 <div class="toast" id="toast"></div>
 <script type="module" src="auth.js"></script>
+<script>
+  // Prefill email if provided in URL (from verify-waiting page)
+  (function () {
+    try {
+      var p = new URLSearchParams(window.location.search);
+      var email = p.get('email');
+      if (email) document.getElementById('loginEmail').value = email;
+    } catch (e) {}
+  })();
+</script>
 </body></html>
