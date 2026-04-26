@@ -116,10 +116,22 @@ input,select,textarea{font:inherit}
         <div class="ferr" id="err-email"></div>
       </div>
 
-      <div class="fg">
-        <label>Password <span class="opt">Minimum 6 characters</span></label>
-        <input type="password" id="password" placeholder="Create a password" minlength="6" required>
-        <div class="ferr" id="err-password"></div>
+      <div class="frow">
+        <div class="fg">
+          <label>Country</label>
+          <select id="country" required>
+            <option value="">Loading countries...</option>
+          </select>
+          <div class="ferr" id="err-country"></div>
+        </div>
+        <div class="fg">
+          <label>City</label>
+          <select id="city" required>
+            <option value="">Select country first</option>
+          </select>
+          <div class="ferr" id="city-status" style="color:var(--text-muted)"></div>
+          <div class="ferr" id="err-city"></div>
+        </div>
       </div>
 
       <div class="fg">
@@ -129,22 +141,10 @@ input,select,textarea{font:inherit}
         <div class="ferr" id="err-phone"></div>
       </div>
 
-      <div class="frow">
-        <div class="fg">
-          <label>City</label>
-          <select id="city" required>
-            <option value="">Select country first</option>
-          </select>
-          <div class="ferr" id="city-status" style="color:var(--text-muted)"></div>
-          <div class="ferr" id="err-city"></div>
-        </div>
-        <div class="fg">
-          <label>Country</label>
-          <select id="country" required>
-            <option value="">Loading countries...</option>
-          </select>
-          <div class="ferr" id="err-country"></div>
-        </div>
+      <div class="fg">
+        <label>Password <span class="opt">Minimum 6 characters</span></label>
+        <input type="password" id="password" placeholder="Create a password" minlength="6" required>
+        <div class="ferr" id="err-password"></div>
       </div>
 
       <div class="check-row" style="margin-top:4px">

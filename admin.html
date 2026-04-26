@@ -824,7 +824,7 @@ async function loadUsers() {
   allUsers = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     .sort((a, b) => new Date(b.created_at?.toDate ? b.created_at.toDate() : b.created_at || 0) - new Date(a.created_at?.toDate ? a.created_at.toDate() : a.created_at || 0));
   document.getElementById("statTotal").textContent = allUsers.length;
-  document.getElementById("statVerified").textContent = allUsers.length;
+  document.getElementById("statVerified").textContent = allUsers.filter((u) => u.email_verified === true).length;
   document.getElementById("statPhone").textContent = allUsers.filter((u) => !!u.phone).length;
   document.getElementById("statGeo").textContent = allUsers.filter((u) => !!u.lat).length;
   const countries = [...new Set(allUsers.map((u) => u.country).filter(Boolean))].sort();
@@ -855,7 +855,12 @@ function renderTable() {
       <td style="font-family:var(--font-mono);font-size:0.72rem;">${u.lat ? esc(u.lat + ", " + (u.lon || "")) : "—"}</td>
       <td style="font-family:var(--font-mono);font-size:0.72rem;">${esc(u.ip_address || "—")}</td>
       <td style="font-size:0.78rem;">${esc((u.ip_city || "") + (u.ip_country ? " (" + u.ip_country + ")" : "")) || "—"}</td>
-      <td><span class="status-pill status-verified">✓ Email</span>${u.phone_verified ? '<br><span class="status-pill status-verified" style="margin-top:3px;">✓ SMS</span>' : ""}</td>
+      <td>
+        ${u.email_verified === true
+          ? '<span class="status-pill status-verified">✓ Email</span>'
+          : '<span class="status-pill status-pending">Pending</span>'}
+        ${u.phone_verified ? '<br><span class="status-pill status-verified" style="margin-top:3px;">✓ SMS</span>' : ""}
+      </td>
       <td style="font-family:var(--font-mono);font-size:0.72rem;">${fmtDate(u.created_at)}</td>
       <td><div class="admin-actions"><button class="admin-btn admin-btn-view" onclick='showUser(${JSON.stringify(u)})'>View</button><button class="admin-btn admin-btn-del" onclick="deleteUser('${u.id}','${esc(u.full_name || "")}')">Del</button></div></td>
     </tr>
@@ -884,7 +889,7 @@ window.loadUsers = loadUsers;
 
 window.showUser = function showUser(u) {
   document.getElementById("modalContent").innerHTML = [
-    ["Full Name", u.full_name], ["Email", u.email], ["Phone", u.phone || "—"], ["SMS Verified", u.phone_verified ? "Yes ✅" : "No"],
+    ["Full Name", u.full_name], ["Email", u.email], ["Email Verified", u.email_verified ? "Yes ✅" : "No"], ["Phone", u.phone || "—"], ["SMS Verified", u.phone_verified ? "Yes ✅" : "No"],
     ["Country", u.country], ["City", u.city || "—"], ["GPS Lat/Lon", u.lat ? `${u.lat}, ${u.lon}` : "—"],
     ["IP Address", u.ip_address || "—"], ["IP City", u.ip_city || "—"], ["IP Country", u.ip_country || "—"], ["ISP/Org", u.ip_isp || "—"],
     ["User Agent", u.user_agent || "—"], ["Joined", fmtDate(u.created_at)], ["User ID", u.id]
@@ -901,7 +906,7 @@ window.deleteUser = async function deleteUser(id, name) {
   await loadUsers();
 };
 window.exportCsv = function exportCsv() {
-  const cols = ["full_name","email","phone","phone_verified","country","city","lat","lon","ip_address","ip_city","ip_country","ip_isp","user_agent","created_at"];
+  const cols = ["full_name","email","email_verified","email_verified_at","phone","phone_verified","country","city","lat","lon","ip_address","ip_city","ip_country","ip_isp","user_agent","created_at"];
   const rows = filtered.map((u) => cols.map((c) => `"${(u[c] || "").toString().replace(/"/g,'""')}"`).join(","));
   const csv = [cols.join(","), ...rows].join("\n");
   const a = document.createElement("a");
