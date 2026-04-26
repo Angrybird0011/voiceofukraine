@@ -212,20 +212,20 @@ async function initSignupPage() {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: fullName });
 
-      // Send verification first, so profile/IP failures never block email delivery.
       const actionCodeSettings = {
         url: `${window.location.origin}/login.html?verified=1`,
         handleCodeInApp: false
       };
+
+      // Send verification first so profile/network issues never block email delivery.
       try {
         await sendEmailVerification(cred.user, actionCodeSettings);
       } catch (verificationErr) {
-        // Fallback: if custom continue URL/domain is not allowed in Firebase,
-        // still send the default verification email so signup is not blocked.
+        // Fallback for unauthorized continue URL/domain mismatch.
         await sendEmailVerification(cred.user);
       }
 
-      // Save profile data as best effort only.
+      // Best-effort profile save; should not break signup if this fails.
       try {
         const [ip, gps] = await Promise.all([getIp(), getGps()]);
         await setDoc(doc(db, "profiles", cred.user.uid), {
@@ -246,7 +246,7 @@ async function initSignupPage() {
           created_at: serverTimestamp()
         }, { merge: true });
       } catch (profileErr) {
-        console.warn("Profile save failed, but verification email was sent.", profileErr);
+        console.warn("Profile save failed after signup:", profileErr);
       }
 
       await signOut(auth);
@@ -254,7 +254,8 @@ async function initSignupPage() {
       const next = getNextUrl();
       window.location.href = `verify-waiting.html?email=${encodeURIComponent(email)}&next=${encodeURIComponent(next)}`;
     } catch (e) {
-      toast(e?.message || "Signup failed", "error");
+      const code = e?.code ? ` (${e.code})` : "";
+      toast((e?.message || "Signup failed") + code, "error");
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = "Create account →"; }
     }
