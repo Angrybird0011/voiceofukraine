@@ -14,6 +14,10 @@ import {
   setDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+  AsYouType,
+  parsePhoneNumberFromString
+} from "https://cdn.jsdelivr.net/npm/libphonenumber-js@1.11.13/+esm";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAga6UWDBzwzE8u7g8Z7iYb3QLKbkJLI9c",
@@ -152,11 +156,223 @@ async function initLoginPage() {
 async function initSignupPage() {
   const form = document.getElementById("signupForm");
   if (!form) return;
+  const countryEl = document.getElementById("country");
+  const cityEl = document.getElementById("city");
+  const phoneEl = document.getElementById("phone");
+  const cityStatus = document.getElementById("city-status");
+  const phoneHint = document.getElementById("phone-hint");
+
+  const countryMap = new Map();
+  const cityCache = new Map();
+  let countryTs = null;
+  let cityTs = null;
+  let selectedCountry = null;
 
   function setErr(id, msg) {
     const el = document.getElementById("err-" + id);
     if (el) el.textContent = msg || "";
   }
+
+  function setCityStatus(msg) {
+    if (cityStatus) cityStatus.textContent = msg || "";
+  }
+
+  function setPhoneHint(msg) {
+    if (phoneHint) phoneHint.textContent = msg || "";
+  }
+
+  function getCountryValue() {
+    return countryTs ? countryTs.getValue() : (countryEl?.value || "");
+  }
+
+  function getCityValue() {
+    return cityTs ? cityTs.getValue() : (cityEl?.value || "");
+  }
+
+  function normalizeCountries(rows) {
+    const temp = [];
+    for (const c of rows || []) {
+      const name = c?.name?.common?.trim();
+      const code = (c?.cca2 || "").toUpperCase();
+      const root = c?.idd?.root || "";
+      const suffixes = Array.isArray(c?.idd?.suffixes) ? c.idd.suffixes : [];
+      if (!name || !code || !root || suffixes.length === 0) continue;
+      for (const suffix of suffixes) {
+        const dialCode = `${root}${suffix}`.replace(/\s+/g, "");
+        if (!dialCode.startsWith("+")) continue;
+        temp.push({ name, code, dialCode, label: `${name} (${dialCode})` });
+      }
+    }
+    const dedup = new Map();
+    for (const row of temp) {
+      const prev = dedup.get(row.code);
+      if (!prev || row.dialCode.length < prev.dialCode.length) dedup.set(row.code, row);
+    }
+    return [...dedup.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  function resetCities(message) {
+    if (cityTs) {
+      cityTs.clearOptions();
+      cityTs.addOption({ value: "", text: "Select city" });
+      cityTs.setValue("", true);
+    } else if (cityEl) {
+      cityEl.innerHTML = '<option value="">Select city</option>';
+    }
+    setCityStatus(message || "");
+  }
+
+  async function loadCountries() {
+    try {
+      const r = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2,idd");
+      if (!r.ok) throw new Error("countries_api_failed");
+      const data = await r.json();
+      const countries = normalizeCountries(data);
+      countryEl.innerHTML = '<option value="">Select country</option>';
+      countries.forEach((c) => {
+        countryMap.set(c.code, c);
+        const opt = document.createElement("option");
+        opt.value = c.code;
+        opt.textContent = c.label;
+        countryEl.appendChild(opt);
+      });
+      if (window.TomSelect) {
+        countryTs = new window.TomSelect(countryEl, {
+          create: false,
+          maxOptions: 260,
+          placeholder: "Search country..."
+        });
+        cityTs = new window.TomSelect(cityEl, {
+          create: false,
+          maxOptions: 2000,
+          placeholder: "Search city..."
+        });
+      }
+    } catch (e) {
+      countryEl.innerHTML = '<option value="">Could not load countries</option>';
+      setErr("country", "Could not load countries. Please refresh.");
+    }
+  }
+
+  async function loadCities(countryName) {
+    if (!countryName) {
+      resetCities("Select a country first.");
+      return;
+    }
+    if (cityCache.has(countryName)) {
+      const cached = cityCache.get(countryName);
+      if (cityTs) {
+        cityTs.clearOptions();
+        cityTs.addOption(cached.map((v) => ({ value: v, text: v })));
+        cityTs.refreshOptions(false);
+        cityTs.setValue("", true);
+      } else {
+        cityEl.innerHTML = '<option value="">Select city</option>';
+        cached.forEach((v) => {
+          const opt = document.createElement("option");
+          opt.value = v;
+          opt.textContent = v;
+          cityEl.appendChild(opt);
+        });
+      }
+      setCityStatus(`Loaded ${cached.length} cities (cached).`);
+      return;
+    }
+    resetCities("Loading cities...");
+    try {
+      const r = await fetch("https://countriesnow.space/api/v0.1/countries/cities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country: countryName })
+      });
+      if (!r.ok) throw new Error("cities_api_failed");
+      const payload = await r.json();
+      const cities = Array.isArray(payload?.data) ? payload.data : [];
+      const deduped = [...new Set(cities.map((c) => c.trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b));
+      if (!deduped.length) {
+        resetCities("No cities returned for this country.");
+        return;
+      }
+      cityCache.set(countryName, deduped);
+      if (cityTs) {
+        cityTs.clearOptions();
+        cityTs.addOption(deduped.map((v) => ({ value: v, text: v })));
+        cityTs.refreshOptions(false);
+        cityTs.setValue("", true);
+      } else {
+        cityEl.innerHTML = '<option value="">Select city</option>';
+        deduped.forEach((v) => {
+          const opt = document.createElement("option");
+          opt.value = v;
+          opt.textContent = v;
+          cityEl.appendChild(opt);
+        });
+      }
+      setCityStatus(`Loaded ${deduped.length} cities.`);
+    } catch (e) {
+      resetCities("");
+      setErr("city", "Could not load cities. Try changing country or refresh.");
+    }
+  }
+
+  function applyCountryPhoneUI(country) {
+    if (!country) {
+      phoneEl.placeholder = "+XXXXXXXXXXX";
+      setPhoneHint("");
+      return;
+    }
+    phoneEl.placeholder = `${country.dialCode}XXXXXXXXXX`;
+    setPhoneHint(`Country code: ${country.dialCode} (${country.code})`);
+    if (!phoneEl.value.trim()) phoneEl.value = country.dialCode;
+  }
+
+  function validatePhone(phoneRaw, countryCode) {
+    if (!countryCode || !countryMap.has(countryCode)) {
+      return { ok: false, message: "Select country first." };
+    }
+    const parsed = parsePhoneNumberFromString(phoneRaw, countryCode);
+    if (!parsed || !parsed.isValid()) {
+      return { ok: false, message: "Phone is invalid for selected country." };
+    }
+    if (parsed.country && parsed.country !== countryCode) {
+      return { ok: false, message: "Phone does not match selected country." };
+    }
+    return { ok: true, e164: parsed.number };
+  }
+
+  await loadCountries();
+  resetCities("Select country first.");
+
+  countryEl.addEventListener("change", async () => {
+    setErr("country", "");
+    setErr("city", "");
+    setErr("phone", "");
+    const countryCode = getCountryValue();
+    selectedCountry = countryMap.get(countryCode) || null;
+    applyCountryPhoneUI(selectedCountry);
+    await loadCities(selectedCountry?.name || "");
+  });
+
+  phoneEl.addEventListener("input", () => {
+    const countryCode = getCountryValue();
+    if (!countryCode) return;
+    const formatter = new AsYouType(countryCode);
+    phoneEl.value = formatter.input(phoneEl.value);
+  });
+
+  phoneEl.addEventListener("blur", () => {
+    const countryCode = getCountryValue();
+    const phoneRaw = phoneEl.value.trim();
+    if (!phoneRaw) return;
+    const checked = validatePhone(phoneRaw, countryCode);
+    if (!checked.ok) {
+      setErr("phone", checked.message);
+      return;
+    }
+    setErr("phone", "");
+    phoneEl.value = checked.e164;
+  });
 
   async function getIp() {
     try { const r = await fetch("https://api.ipapi.is/"); return r.ok ? await r.json() : {}; }
@@ -185,18 +401,31 @@ async function initSignupPage() {
     const fullName = document.getElementById("fullName").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const phone = document.getElementById("phone").value.trim();
-    const city = document.getElementById("city").value.trim();
-    const country = document.getElementById("country").value.trim();
+    const phoneRaw = document.getElementById("phone").value.trim();
+    const city = getCityValue().trim();
+    const countryCode = getCountryValue().trim().toUpperCase();
+    const countryObj = countryMap.get(countryCode) || null;
     const consent = !!document.getElementById("consent")?.checked;
 
     let ok = true;
+    let phone = "";
     if (!fullName || fullName.length < 2) { setErr("name", "Full name is required."); ok = false; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr("email", "Enter a valid email."); ok = false; }
     if (!password || password.length < 6) { setErr("password", "Password must be at least 6 characters."); ok = false; }
-    if (!phone || phone.length < 7) { setErr("phone", "Phone number is required."); ok = false; }
+    if (!countryObj) { setErr("country", "Country is required."); ok = false; }
+    if (!phoneRaw || phoneRaw.length < 7) {
+      setErr("phone", "Phone number is required.");
+      ok = false;
+    } else {
+      const checked = validatePhone(phoneRaw, countryCode);
+      if (!checked.ok) {
+        setErr("phone", checked.message);
+        ok = false;
+      } else {
+        phone = checked.e164;
+      }
+    }
     if (!city) { setErr("city", "City is required."); ok = false; }
-    if (!country) { setErr("country", "Country is required."); ok = false; }
     if (!consent) { setErr("consent", "You must agree to continue."); ok = false; }
     if (!ok) return;
 
@@ -233,7 +462,9 @@ async function initSignupPage() {
           email,
           phone,
           city,
-          country,
+          country: countryObj.name,
+          country_code: countryObj.code,
+          dial_code: countryObj.dialCode,
           consent: true,
           lat: gps?.lat || null,
           lon: gps?.lon || null,
