@@ -6,6 +6,7 @@
 <title>Join Free — Voice of Ukraine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
 <style>
 :root{--blue:#1a4d8f;--blue-dark:#0d2d5a;--blue-mid:#2563a8;--blue-light:#dbeafe;--yellow:#f5c518;--yellow-dark:#d4a800;--yellow-light:#fef9c3;--green:#059669;--red:#dc2626;--text:#111827;--text-mid:#374151;--text-muted:#6b7280;--bg:#fafaf8;--surface:#fff;--border:#e5e7eb;--radius:12px;--nav-h:70px;--serif:'Playfair Display',Georgia,serif;--body:'Source Serif 4',Georgia,serif;--mono:'JetBrains Mono',monospace}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -123,19 +124,24 @@ input,select,textarea{font:inherit}
 
       <div class="fg">
         <label>Phone Number</label>
-        <input type="tel" id="phone" placeholder="+44 7700 900000" required>
+        <input type="tel" id="phone" placeholder="+XXXXXXXXXXX" required>
         <div class="ferr" id="err-phone"></div>
       </div>
 
       <div class="frow">
         <div class="fg">
           <label>City</label>
-          <input type="text" id="city" placeholder="Your city" required>
+          <select id="city" required>
+            <option value="">Select country first</option>
+          </select>
+          <div class="ferr" id="city-status" style="color:var(--text-muted)"></div>
           <div class="ferr" id="err-city"></div>
         </div>
         <div class="fg">
           <label>Country</label>
-          <input type="text" id="country" placeholder="Your country" required>
+          <select id="country" required>
+            <option value="">Loading countries...</option>
+          </select>
           <div class="ferr" id="err-country"></div>
         </div>
       </div>
@@ -155,6 +161,7 @@ input,select,textarea{font:inherit}
 </div>
 
 <div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script type="module" src="auth.js"></script>
 </body>
 </html>
