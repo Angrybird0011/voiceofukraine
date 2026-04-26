@@ -14,10 +14,6 @@ import {
   setDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import {
-  AsYouType,
-  parsePhoneNumberFromString
-} from "https://cdn.jsdelivr.net/npm/libphonenumber-js@1.11.13/+esm";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAga6UWDBzwzE8u7g8Z7iYb3QLKbkJLI9c",
@@ -156,243 +152,11 @@ async function initLoginPage() {
 async function initSignupPage() {
   const form = document.getElementById("signupForm");
   if (!form) return;
-  const countryEl = document.getElementById("country");
-  const cityEl = document.getElementById("city");
-  const phoneEl = document.getElementById("phone");
-  const cityStatusEl = document.getElementById("city-status");
-
-  const countryMap = new Map();
-  let selectedCountry = null;
-  let countrySelectControl = null;
-  let citySelectControl = null;
-  let lastDialCode = "";
-  const cityCache = new Map();
 
   function setErr(id, msg) {
     const el = document.getElementById("err-" + id);
     if (el) el.textContent = msg || "";
   }
-
-  function setCityStatus(msg) {
-    if (cityStatusEl) cityStatusEl.textContent = msg || "";
-  }
-
-  function guessPhonePlaceholder(dialCode) {
-    if (!dialCode) return "+XXXXXXXXXXX";
-    return `${dialCode}XXXXXXXXXX`;
-  }
-
-  function setPhoneCodeSuggestion(dialCode) {
-    phoneEl.placeholder = guessPhonePlaceholder(dialCode);
-    if (!dialCode) return;
-    if (!phoneEl.value.trim()) {
-      phoneEl.value = dialCode;
-      return;
-    }
-    const current = phoneEl.value.trim();
-    if (lastDialCode && (current === lastDialCode || current === `${lastDialCode} `)) {
-      phoneEl.value = dialCode;
-    }
-  }
-
-  function normalizeCountries(rawCountries) {
-    const out = [];
-    for (const c of rawCountries || []) {
-      const name = c?.name?.common?.trim();
-      const code = (c?.cca2 || "").toUpperCase();
-      const root = c?.idd?.root || "";
-      const suffixes = Array.isArray(c?.idd?.suffixes) ? c.idd.suffixes : [];
-      if (!name || !code || !root || !suffixes.length) continue;
-      for (const s of suffixes) {
-        const dialCode = `${root}${s}`.replace(/\s+/g, "");
-        if (!dialCode.startsWith("+")) continue;
-        out.push({
-          code,
-          name,
-          dialCode,
-          label: `${name} (${dialCode})`
-        });
-      }
-    }
-
-    // Prefer shortest dialing code when a country has multiple suffixes
-    const dedup = new Map();
-    for (const item of out) {
-      const prev = dedup.get(item.code);
-      if (!prev || item.dialCode.length < prev.dialCode.length) dedup.set(item.code, item);
-    }
-    return Array.from(dedup.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  async function loadCountries() {
-    countryEl.innerHTML = '<option value="">Loading countries...</option>';
-    try {
-      const r = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2,idd");
-      if (!r.ok) throw new Error("Unable to load countries.");
-      const data = await r.json();
-      const countries = normalizeCountries(data);
-
-      countryEl.innerHTML = '<option value="">Select country</option>';
-      for (const c of countries) {
-        countryMap.set(c.code, c);
-        const opt = document.createElement("option");
-        opt.value = c.code;
-        opt.textContent = c.label;
-        countryEl.appendChild(opt);
-      }
-
-      if (window.TomSelect) {
-        countrySelectControl = new window.TomSelect(countryEl, {
-          create: false,
-          maxOptions: 300,
-          sortField: [{ field: "text", direction: "asc" }],
-          placeholder: "Search country..."
-        });
-        citySelectControl = new window.TomSelect(cityEl, {
-          create: false,
-          maxOptions: 1000,
-          placeholder: "Search city..."
-        });
-      }
-    } catch {
-      countryEl.innerHTML = '<option value="">Could not load countries</option>';
-      setErr("country", "Failed to load countries. Check internet and refresh.");
-    }
-  }
-
-  function resetCities(message) {
-    setCityStatus(message || "");
-    if (citySelectControl) {
-      citySelectControl.clearOptions();
-      citySelectControl.addOption({ value: "", text: "Select city" });
-      citySelectControl.setValue("", true);
-    } else {
-      cityEl.innerHTML = '<option value="">Select city</option>';
-    }
-  }
-
-  async function loadCitiesForCountry(countryName) {
-    resetCities("Loading cities...");
-    if (cityCache.has(countryName)) {
-      const cached = cityCache.get(countryName);
-      if (citySelectControl) {
-        citySelectControl.clearOptions();
-        citySelectControl.addOption(cached.map((c) => ({ value: c, text: c })));
-        citySelectControl.refreshOptions(false);
-        citySelectControl.setValue("", true);
-      } else {
-        cityEl.innerHTML = '<option value="">Select city</option>';
-        cached.forEach((c) => {
-          const opt = document.createElement("option");
-          opt.value = c;
-          opt.textContent = c;
-          cityEl.appendChild(opt);
-        });
-      }
-      setCityStatus(`Loaded ${cached.length} cities (cached).`);
-      return;
-    }
-    try {
-      const r = await fetch("https://countriesnow.space/api/v0.1/countries/cities", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ country: countryName })
-      });
-      if (!r.ok) throw new Error("City API failed");
-      const payload = await r.json();
-      const cities = Array.isArray(payload?.data) ? payload.data : [];
-      const deduped = [...new Set(cities.map((c) => c.trim()).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b));
-
-      if (!deduped.length) {
-        resetCities("No cities found for this country.");
-        return;
-      }
-
-      if (citySelectControl) {
-        citySelectControl.clearOptions();
-        citySelectControl.addOption(deduped.map((c) => ({ value: c, text: c })));
-        citySelectControl.refreshOptions(false);
-        citySelectControl.setValue("", true);
-      } else {
-        cityEl.innerHTML = '<option value="">Select city</option>';
-        deduped.forEach((c) => {
-          const opt = document.createElement("option");
-          opt.value = c;
-          opt.textContent = c;
-          cityEl.appendChild(opt);
-        });
-      }
-      cityCache.set(countryName, deduped);
-      setCityStatus(`Loaded ${deduped.length} cities.`);
-    } catch {
-      resetCities("");
-      setErr("city", "Could not load cities for selected country.");
-    }
-  }
-
-  function getCountryValue() {
-    return countrySelectControl ? countrySelectControl.getValue() : countryEl.value;
-  }
-
-  function getCityValue() {
-    return citySelectControl ? citySelectControl.getValue() : cityEl.value;
-  }
-
-  function validatePhoneForCountry(phoneRaw, countryCode) {
-    if (!countryCode || !countryMap.has(countryCode)) {
-      return { ok: false, message: "Select a country first." };
-    }
-    const parsed = parsePhoneNumberFromString(phoneRaw, countryCode);
-    if (!parsed || !parsed.isValid()) {
-      return { ok: false, message: "Invalid phone number for selected country." };
-    }
-    if (parsed.country && parsed.country !== countryCode) {
-      return { ok: false, message: "Phone number does not match selected country." };
-    }
-    return { ok: true, e164: parsed.number };
-  }
-
-  countryEl.addEventListener("change", async () => {
-    const countryCode = getCountryValue();
-    selectedCountry = countryMap.get(countryCode) || null;
-    setErr("country", "");
-    setErr("city", "");
-    setErr("phone", "");
-    if (!selectedCountry) {
-      lastDialCode = "";
-      setPhoneCodeSuggestion("");
-      resetCities("Select a country to load cities.");
-      return;
-    }
-    lastDialCode = selectedCountry.dialCode;
-    setPhoneCodeSuggestion(selectedCountry.dialCode);
-    await loadCitiesForCountry(selectedCountry.name);
-  });
-
-  phoneEl.addEventListener("blur", () => {
-    const countryCode = getCountryValue();
-    const phoneRaw = phoneEl.value.trim();
-    if (!phoneRaw) return;
-    const validated = validatePhoneForCountry(phoneRaw, countryCode);
-    if (!validated.ok) {
-      setErr("phone", validated.message);
-    } else {
-      setErr("phone", "");
-      phoneEl.value = validated.e164;
-    }
-  });
-
-  phoneEl.addEventListener("input", () => {
-    const countryCode = getCountryValue();
-    if (!countryCode) return;
-    const formatter = new AsYouType(countryCode);
-    const formatted = formatter.input(phoneEl.value);
-    phoneEl.value = formatted;
-  });
-
-  await loadCountries();
-  resetCities("Select a country to load cities.");
 
   async function getIp() {
     try { const r = await fetch("https://api.ipapi.is/"); return r.ok ? await r.json() : {}; }
@@ -421,31 +185,18 @@ async function initSignupPage() {
     const fullName = document.getElementById("fullName").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const phoneRaw = document.getElementById("phone").value.trim();
-    const city = getCityValue().trim();
-    const countryCode = getCountryValue().trim().toUpperCase();
-    const countryObj = countryMap.get(countryCode) || null;
+    const phone = document.getElementById("phone").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const country = document.getElementById("country").value.trim();
     const consent = !!document.getElementById("consent")?.checked;
 
     let ok = true;
-    let e164Phone = "";
     if (!fullName || fullName.length < 2) { setErr("name", "Full name is required."); ok = false; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr("email", "Enter a valid email."); ok = false; }
     if (!password || password.length < 6) { setErr("password", "Password must be at least 6 characters."); ok = false; }
-    if (!countryCode || !countryObj) { setErr("country", "Country is required."); ok = false; }
-    if (!phoneRaw || phoneRaw.length < 7) {
-      setErr("phone", "Phone number is required.");
-      ok = false;
-    } else {
-      const validated = validatePhoneForCountry(phoneRaw, countryCode);
-      if (!validated.ok) {
-        setErr("phone", validated.message);
-        ok = false;
-      } else {
-        e164Phone = validated.e164;
-      }
-    }
+    if (!phone || phone.length < 7) { setErr("phone", "Phone number is required."); ok = false; }
     if (!city) { setErr("city", "City is required."); ok = false; }
+    if (!country) { setErr("country", "Country is required."); ok = false; }
     if (!consent) { setErr("consent", "You must agree to continue."); ok = false; }
     if (!ok) return;
 
@@ -461,33 +212,43 @@ async function initSignupPage() {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: fullName });
 
-      const [ip, gps] = await Promise.all([getIp(), getGps()]);
-
-      await setDoc(doc(db, "profiles", cred.user.uid), {
-        full_name: fullName,
-        email,
-        phone: e164Phone,
-        city,
-        country: countryObj.name,
-        country_code: countryObj.code,
-        dial_code: countryObj.dialCode,
-        consent: true,
-        lat: gps?.lat || null,
-        lon: gps?.lon || null,
-        gps_acc: gps?.acc || null,
-        ip_address: ip.ip || null,
-        ip_city: ip.location?.city || null,
-        ip_country: ip.location?.country || null,
-        ip_isp: ip.company?.name || null,
-        user_agent: navigator.userAgent,
-        created_at: serverTimestamp()
-      }, { merge: true });
-
+      // Send verification first, so profile/IP failures never block email delivery.
       const actionCodeSettings = {
         url: `${window.location.origin}/login.html?verified=1`,
         handleCodeInApp: false
       };
-      await sendEmailVerification(cred.user, actionCodeSettings);
+      try {
+        await sendEmailVerification(cred.user, actionCodeSettings);
+      } catch (verificationErr) {
+        // Fallback: if custom continue URL/domain is not allowed in Firebase,
+        // still send the default verification email so signup is not blocked.
+        await sendEmailVerification(cred.user);
+      }
+
+      // Save profile data as best effort only.
+      try {
+        const [ip, gps] = await Promise.all([getIp(), getGps()]);
+        await setDoc(doc(db, "profiles", cred.user.uid), {
+          full_name: fullName,
+          email,
+          phone,
+          city,
+          country,
+          consent: true,
+          lat: gps?.lat || null,
+          lon: gps?.lon || null,
+          gps_acc: gps?.acc || null,
+          ip_address: ip.ip || null,
+          ip_city: ip.location?.city || null,
+          ip_country: ip.location?.country || null,
+          ip_isp: ip.company?.name || null,
+          user_agent: navigator.userAgent,
+          created_at: serverTimestamp()
+        }, { merge: true });
+      } catch (profileErr) {
+        console.warn("Profile save failed, but verification email was sent.", profileErr);
+      }
+
       await signOut(auth);
 
       const next = getNextUrl();
