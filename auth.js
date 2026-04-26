@@ -123,6 +123,14 @@ async function initLoginPage() {
       }
       const token = await cred.user.getIdToken();
       saveLocalSession(cred.user, token);
+      try {
+        await setDoc(doc(db, "profiles", cred.user.uid), {
+          email_verified: true,
+          email_verified_at: serverTimestamp()
+        }, { merge: true });
+      } catch (syncErr) {
+        console.warn("Could not sync email_verified on login:", syncErr);
+      }
       toast("Signed in successfully", "success");
       setTimeout(() => { window.location.href = getNextUrl(); }, 900);
     } catch (e) {
@@ -465,6 +473,7 @@ async function initSignupPage() {
           country: countryObj.name,
           country_code: countryObj.code,
           dial_code: countryObj.dialCode,
+          email_verified: false,
           consent: true,
           lat: gps?.lat || null,
           lon: gps?.lon || null,
@@ -499,6 +508,14 @@ function initIndexPage() {
     if (!user || !user.emailVerified) return;
     const token = await user.getIdToken();
     saveLocalSession(user, token);
+    try {
+      await setDoc(doc(db, "profiles", user.uid), {
+        email_verified: true,
+        email_verified_at: serverTimestamp()
+      }, { merge: true });
+    } catch (syncErr) {
+      console.warn("Could not sync email_verified on index:", syncErr);
+    }
   });
 }
 
@@ -511,6 +528,14 @@ function initArticlePage() {
     }
     const token = await user.getIdToken();
     saveLocalSession(user, token);
+    try {
+      await setDoc(doc(db, "profiles", user.uid), {
+        email_verified: true,
+        email_verified_at: serverTimestamp()
+      }, { merge: true });
+    } catch (syncErr) {
+      console.warn("Could not sync email_verified on article:", syncErr);
+    }
     document.addEventListener("DOMContentLoaded", () => {
       if (typeof window.loadArticlePage === "function") window.loadArticlePage();
     });
