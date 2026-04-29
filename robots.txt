@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Block sensitive/admin pages
+Disallow: /admin.html
+Disallow: /admin/
+Disallow: /private/
+Disallow: /auth/
+Disallow: /api/
+
+# Block URLs with query parameters (best effort)
+Disallow: /*?email=
+Disallow: /*?token=
+Disallow: /*?user=
+Disallow: /*?auth=
+
+# Sitemap (optional)
+Sitemap: https://voiceukraine.com/sitemap.xml
