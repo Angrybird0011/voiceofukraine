@@ -451,13 +451,21 @@ async function initSignupPage() {
 
             // Send verification email using Firebase's default action URL.
       // This bypasses issues related to actionCodeSettings.url not matching authorized domains.
+            // Define the settings for the email action link
+      const actionCodeSettings = {
+        // This 'url' is the *final destination* after the email is verified
+        // by your email-action-handler.html page.
+        url: `https://voiceukraine.com/login.html?verified=1`,
+        handleCodeInApp: false // Set to false so the verification happens in the browser
+      };
+
       try {
-        await sendEmailVerification(cred.user);
+        await sendEmailVerification(cred.user, actionCodeSettings);
       } catch (verificationErr) {
         console.error("Error sending email verification:", verificationErr);
-        // You might want to log this error or show a message to the user
-        // indicating that there was an issue sending the verification email.
+        // You might add a more user-friendly error message here if needed.
       }
+
 
 
       // Best-effort profile save; should not break signup if this fails.
