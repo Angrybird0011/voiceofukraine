@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Action - Voice of Ukraine</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #f4f4f4; color: #333; }
+        .container { background-color: #fff; margin: auto; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 600px; }
+        h1 { color: #0056b3; }
+        p { margin-bottom: 20px; }
+        .loading { font-style: italic; color: #666; }
+        .error { color: #d9534f; }
+        .success { color: #5cb85c; }
+        a { color: #0056b3; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Processing Email Action</h1>
+        <p id="status" class="loading">Please wait while we process your request...</p>
+        <p id="redirectInfo"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import { getAuth, applyActionCode } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+        // Your Firebase config (ensure this matches what you use elsewhere)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAga6UWDBzwzE8u7g8Z7iYb3QLKbkJLI9c",
+            authDomain: "voice-of-ukraine.firebaseapp.com",
+            projectId: "voice-of-ukraine",
+            storageBucket: "voice-of-ukraine.firebasestorage.app",
+            messagingSenderId: "464319888247",
+            appId: "1:464319888247:web:b46733df41c6b92b7d3f72"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Helper function to get query parameters
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const mode = getParameterByName('mode');
+            const actionCode = getParameterByName('oobCode');
+            const continueUrl = getParameterByName('continueUrl'); // This is the URL to redirect to after success
+            const statusElement = document.getElementById('status');
+            const redirectInfoElement = document.getElementById('redirectInfo');
+
+            if (!mode || !actionCode) {
+                statusElement.className = 'error';
+                statusElement.textContent = 'Error: Missing verification parameters. The link might be invalid or expired.';
+                redirectInfoElement.innerHTML = '<p>Please try signing in again or request a new verification email.</p><p><a href="https://voiceukraine.com/login.html">Go to Login Page</a></p>';
+                return;
+            }
+
+            try {
+                if (mode === 'verifyEmail') {
+                    await applyActionCode(auth, actionCode);
+                    statusElement.className = 'success';
+                    statusElement.textContent = 'Email successfully verified! You will be redirected shortly.';
+
+                    let finalRedirectUrl = continueUrl || 'https://voiceukraine.com/login.html?verified=1';
+                    if (!finalRedirectUrl.startsWith('https://voiceukraine.com')) {
+                        // Security check: only redirect to our own domain
+                        finalRedirectUrl = 'https://voiceukraine.com/login.html?verified=1';
+                    }
+
+                    redirectInfoElement.innerHTML = `<p>Redirecting to <a href="${finalRedirectUrl}">${finalRedirectUrl}</a> in 3 seconds...</p>`;
+                    setTimeout(() => {
+                        window.location.href = finalRedirectUrl;
+                    }, 3000); // Redirect after 3 seconds
+                }
+                // You can add 'resetPassword' and 'recoverEmail' modes here if you implement those features later
+                else {
+                    statusElement.className = 'error';
+                    statusElement.textContent = `Error: Unsupported action mode: ${mode}.`;
+                    redirectInfoElement.innerHTML = '<p><a href="https://voiceukraine.com/login.html">Go to Login Page</a></p>';
+                }
+            } catch (error) {
+                console.error("Error during email action:", error);
+                statusElement.className = 'error';
+                statusElement.textContent = `Error during verification: ${error.message}.`;
+                // Provide a link to retry or go to login page
+                redirectInfoElement.innerHTML = '<p>Please try signing in again or request a new verification email.</p><p><a href="https://voiceukraine.com/login.html">Go to Login Page</a></p>';
+            }
+        });
+    </script>
+</body>
+</html>
